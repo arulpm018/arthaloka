@@ -26,7 +26,7 @@ import {
 import { Category } from "@/types";
 import { useCategories } from "@/hooks/useCategories";
 import { useAppStore } from "@/store/useAppStore";
-import { categoryIconOptions, getCategoryIcon } from "@/lib/utils/categoryIcons";
+import { categoryIconOptions } from "@/lib/utils/categoryIcons";
 import { cn } from "@/lib/utils/cn";
 
 interface CategoryFormProps {
