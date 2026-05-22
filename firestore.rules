@@ -2,8 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isAuth() {
-      return request.auth != null;
+    // Only Arul & Fifi — by UID and email for maximum security
+    function isAllowedUser() {
+      return request.auth != null
+        && request.auth.uid in ['RPS8bvX5eGerNJDm20RvQS0tnHI2', 'UIioxgSjFceo0lmwAWWnrFLm6uJ2']
+        && request.auth.token.email in ['fifi.work27@gmail.com', 'arulpm010@gmail.com'];
     }
 
     function isOwnerOrPartner(ownerUid) {
@@ -20,31 +23,31 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isAuth() && (request.auth.uid == userId ||
+      allow read: if isAllowedUser() && (request.auth.uid == userId ||
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerUid == userId);
-      allow write: if isAuth() && request.auth.uid == userId;
+      allow write: if isAllowedUser() && request.auth.uid == userId;
     }
 
     match /accounts/{accountId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && isOwnerOrPartner(resource.data.ownerUid);
+      allow read: if isAllowedUser();
+      allow create: if isAllowedUser();
+      allow update, delete: if isAllowedUser() && isOwnerOrPartner(resource.data.ownerUid);
     }
 
     match /transactions/{txId} {
-      allow read: if isAuth();
-      allow create: if isAuth() && isValidTransaction();
-      allow update, delete: if isAuth() && isOwnerOrPartner(resource.data.ownerUid);
+      allow read: if isAllowedUser();
+      allow create: if isAllowedUser() && isValidTransaction();
+      allow update, delete: if isAllowedUser() && isOwnerOrPartner(resource.data.ownerUid);
     }
 
     match /transfers/{transferId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && isOwnerOrPartner(resource.data.ownerUid);
+      allow read: if isAllowedUser();
+      allow create: if isAllowedUser();
+      allow update, delete: if isAllowedUser() && isOwnerOrPartner(resource.data.ownerUid);
     }
 
     match /categories/{catId} {
-      allow read, write: if isAuth();
+      allow read, write: if isAllowedUser();
     }
   }
 }

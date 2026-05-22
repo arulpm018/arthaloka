@@ -3,12 +3,11 @@
 import { useState, useEffect } from "react";
 import {
   onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
   User as FirebaseUser,
+  UserCredential,
 } from "firebase/auth";
 import {
   doc,
@@ -64,17 +63,9 @@ export function useAuth() {
     return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = async (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-  };
-
-  const register = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+    return await signInWithPopup(auth, provider);
   };
 
   const logout = async () => {
@@ -116,9 +107,7 @@ export function useAuth() {
     partner,
     firebaseUser,
     isLoading,
-    login,
     loginWithGoogle,
-    register,
     logout,
     linkPartner,
   };

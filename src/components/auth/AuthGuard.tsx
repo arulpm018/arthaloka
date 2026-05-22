@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { LoadingState } from "@/components/shared/LoadingState";
 
+const ALLOWED_EMAILS = (process.env.NEXT_PUBLIC_ALLOWED_EMAILS || "").split(",").map(e => e.trim());
+
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
 export const AuthGuard = ({ children }: AuthGuardProps) => {
-  const { firebaseUser, user, isLoading } = useAuth();
+  const { firebaseUser, user, isLoading, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -18,6 +20,17 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
       router.replace("/login");
     }
   }, [firebaseUser, isLoading, router]);
+
+  // Block unauthorized emails
+  useEffect(() => {
+    if (!isLoading && firebaseUser) {
+      const email = firebaseUser.email || "";
+      if (!ALLOWED_EMAILS.includes(email)) {
+        logout();
+        router.replace("/login");
+      }
+    }
+  }, [firebaseUser, isLoading, logout, router]);
 
   useEffect(() => {
     if (!isLoading && firebaseUser && !user) {
