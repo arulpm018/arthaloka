@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Pencil } from "lucide-react";
-import { Account, Transaction } from "@/types";
+import { Account } from "@/types";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useAppStore } from "@/store/useAppStore";
