@@ -37,7 +37,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Header title="Arthaloka">
+      <Header title="Arthafiloka">
         <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
       </Header>
 

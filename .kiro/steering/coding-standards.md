@@ -2,7 +2,7 @@
 inclusion: auto
 ---
 
-# Coding Standards — Arthaloka
+# Coding Standards — Arthafiloka
 
 ## File & Naming Conventions
 - Components: PascalCase (e.g., `AccountCard.tsx`)

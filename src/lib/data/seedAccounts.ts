@@ -2,7 +2,7 @@ import { CreateAccountInput } from "@/types";
 import { accountsService } from "@/lib/firestore/accounts";
 
 /**
- * Initial account data for Arthaloka.
+ * Initial account data for Arthafiloka.
  * Call seedAccounts() to populate Firestore with these accounts.
  */
 const initialAccounts: CreateAccountInput[] = [

@@ -3,7 +3,7 @@ inclusion: fileMatch
 fileMatchPattern: "src/components/**"
 ---
 
-# Component Patterns — Arthaloka
+# Component Patterns — Arthafiloka
 
 ## Component Template
 Setiap component harus mengikuti struktur ini:

@@ -1,10 +1,10 @@
-# Design — Arthaloka
+# Design — Arthafiloka
 
 #[[file:plan.md]]
 
 ## Overview
 
-Arthaloka adalah personal finance tracker web app untuk pasangan (Arul & Fifi). App ini berjalan sepenuhnya di client-side menggunakan Next.js 14 App Router dengan Firebase sebagai backend (Auth + Firestore). Tidak ada API routes atau server-side logic — semua komunikasi langsung dari browser ke Firebase SDK.
+Arthafiloka adalah personal finance tracker web app untuk pasangan (Arul & Fifi). App ini berjalan sepenuhnya di client-side menggunakan Next.js 14 App Router dengan Firebase sebagai backend (Auth + Firestore). Tidak ada API routes atau server-side logic — semua komunikasi langsung dari browser ke Firebase SDK.
 
 ### Goals
 - Catat pengeluaran dalam < 5 tap (mobile)

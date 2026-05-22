@@ -1,7 +1,7 @@
 # Implementation Plan
 
 ## Overview
-Arthaloka personal finance tracker — a Next.js 14 client-side app with Firebase backend for couple (Arul & Fifi) to track personal and shared finances.
+Arthafiloka personal finance tracker — a Next.js 14 client-side app with Firebase backend for couple (Arul & Fifi) to track personal and shared finances.
 
 ## Tasks
 
@@ -11,7 +11,7 @@ Arthaloka personal finance tracker — a Next.js 14 client-side app with Firebas
   - [x] 1.3. Install shadcn/ui (init + core components: button, card, input, sheet, select, badge, tabs, dialog, progress, skeleton, dropdown-menu)
   - [x] 1.4. Install dependencies: zustand, react-hook-form, zod, date-fns, recharts, framer-motion, lucide-react, firebase, next-themes
   - [x] 1.5. Configure Geist font (next/font)
-  - [x] 1.6. Setup tailwind.config.ts with Arthaloka design tokens (colors, spacing, typography)
+  - [x] 1.6. Setup tailwind.config.ts with Arthafiloka design tokens (colors, spacing, typography)
   - [x] 1.7. Create globals.css with CSS variables (light + dark mode)
   - [x] 1.8. Create .env.example with Firebase config template
   - [x] 1.9. Setup .gitignore (node_modules, .env.local, .next)

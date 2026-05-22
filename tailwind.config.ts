@@ -66,7 +66,7 @@ const config = {
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
   			},
-  			// Arthaloka semantic colors
+  			// Arthafiloka semantic colors
   			income: '#0F9B58',
   			expense: '#E03E3E',
   			transfer: '#2383E2',

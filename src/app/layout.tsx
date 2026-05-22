@@ -15,7 +15,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Arthaloka",
+  title: "Arthafiloka",
   description: "Personal Finance Tracker",
 };
 

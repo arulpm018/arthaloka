@@ -11,6 +11,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { Logo } from "@/components/shared/Logo";
 
 const ALLOWED_EMAILS = (process.env.NEXT_PUBLIC_ALLOWED_EMAILS || "").split(",").map(e => e.trim());
 
@@ -50,7 +51,10 @@ export default function LoginPage() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-semibold">Arthaloka</CardTitle>
+        <div className="flex justify-center mb-2">
+          <Logo size="lg" showText={false} />
+        </div>
+        <CardTitle className="text-2xl font-semibold">Arthafiloka</CardTitle>
         <CardDescription>
           Masuk dengan akun Google kamu
         </CardDescription>

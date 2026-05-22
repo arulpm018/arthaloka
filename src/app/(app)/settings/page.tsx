@@ -166,7 +166,7 @@ export default function SettingsPage() {
 
         {/* Version */}
         <p className="text-center text-xs text-muted-foreground">
-          Arthaloka v0.1.0
+          Arthafiloka v0.1.0
         </p>
       </div>
 

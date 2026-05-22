@@ -3,7 +3,7 @@ inclusion: fileMatch
 fileMatchPattern: "src/lib/firestore/**,src/hooks/**"
 ---
 
-# Firestore Patterns — Arthaloka
+# Firestore Patterns — Arthafiloka
 
 ## Service Function Pattern
 Semua Firestore operations di `src/lib/firestore/`. Jangan akses Firestore langsung dari components.

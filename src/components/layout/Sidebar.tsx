@@ -13,6 +13,7 @@ import {
   Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { Logo } from "@/components/shared/Logo";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: Home },
@@ -32,7 +33,7 @@ export const Sidebar = () => {
     <div className="flex h-full flex-col">
       {/* App name */}
       <div className="flex h-14 items-center px-6">
-        <h1 className="text-lg font-semibold">Arthaloka</h1>
+        <Logo size="md" />
       </div>
 
       {/* Navigation */}

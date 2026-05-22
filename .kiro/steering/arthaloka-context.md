@@ -2,15 +2,15 @@
 inclusion: auto
 ---
 
-# Arthaloka — Project Context
+# Arthafiloka — Project Context
 
-Arthaloka adalah personal finance tracker web app untuk Arul & Fifi (pasangan). Referensi utama system design ada di:
+Arthafiloka adalah personal finance tracker web app untuk Arul & Fifi (pasangan). Referensi utama system design ada di:
 
 #[[file:plan.md]]
 
 ## Quick Reference
 
-- **Nama project**: Arthaloka ("Artha" = harta, "Loka" = dunia)
+- **Nama project**: Arthafiloka ("Artha" = harta, "Filo" = cinta, "Loka" = dunia)
 - **Tech stack**: Next.js 14 (App Router) + Tailwind + shadcn/ui + Firebase (Auth + Firestore) + Vercel
 - **Users**: Hanya 2 orang (Arul & Fifi), free tier Firebase cukup
 - **Design**: Notion-inspired, mobile-first, bottom sheet forms

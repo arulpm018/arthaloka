@@ -1,4 +1,4 @@
-# Requirements — Arthaloka Personal Finance Tracker
+# Requirements — Arthafiloka Personal Finance Tracker
 
 ## Requirement 1: Authentication & Partner System
 **User Story:** Sebagai user, saya ingin login dengan email/Google dan terhubung dengan pasangan saya agar kami bisa berbagi data keuangan secara realtime.
