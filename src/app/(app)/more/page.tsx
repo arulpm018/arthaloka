@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Receipt, Wallet, Tag, Settings, ChevronRight } from "lucide-react";
+import { Receipt, Wallet, Tag, Heart, Settings, ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 
 const menuItems = [
@@ -25,6 +25,13 @@ const menuItems = [
     description: "Atur kategori & budget",
     icon: Tag,
     color: "bg-shared/10 text-shared",
+  },
+  {
+    href: "/wishlist",
+    label: "Wishlist",
+    description: "Daftar barang yang ingin dibeli",
+    icon: Heart,
+    color: "bg-expense/10 text-expense",
   },
   {
     href: "/settings",

@@ -49,5 +49,13 @@ service cloud.firestore {
     match /categories/{catId} {
       allow read, write: if isAllowedUser();
     }
+
+    match /wishlistItems/{itemId} {
+      allow read, write: if isAllowedUser();
+    }
+
+    match /wishlistCategories/{catId} {
+      allow read, write: if isAllowedUser();
+    }
   }
 }

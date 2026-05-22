@@ -3,6 +3,7 @@ export * from "./account";
 export * from "./transaction";
 export * from "./transfer";
 export * from "./category";
+export * from "./wishlist";
 
 // Derived types
 export interface BudgetStatus {
