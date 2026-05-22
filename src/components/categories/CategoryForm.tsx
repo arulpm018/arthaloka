@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Sheet,
@@ -27,6 +27,7 @@ import { Category } from "@/types";
 import { useCategories } from "@/hooks/useCategories";
 import { useAppStore } from "@/store/useAppStore";
 import { categoryIconOptions } from "@/lib/utils/categoryIcons";
+import { AmountInput } from "@/components/shared/AmountInput";
 import { cn } from "@/lib/utils/cn";
 import { Trash2 } from "lucide-react";
 
@@ -52,6 +53,7 @@ export const CategoryForm = ({
     reset,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CategoryFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -201,11 +203,15 @@ export const CategoryForm = ({
 
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Budget Bulanan (IDR)</label>
-            <Input
-              type="number"
-              inputMode="numeric"
-              placeholder="0"
-              {...register("budgetAmount", { valueAsNumber: true })}
+            <Controller
+              name="budgetAmount"
+              control={control}
+              render={({ field }) => (
+                <AmountInput
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
           </div>
 

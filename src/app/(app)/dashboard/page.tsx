@@ -46,7 +46,7 @@ export default function DashboardPage() {
           <LoadingState variant="page" />
         ) : (
           <>
-            <SummaryCards totalBalance={totalBalance} income={income} expense={expense} net={net} />
+            <SummaryCards totalBalance={totalBalance} income={income} expense={expense} net={net} accounts={accounts} />
             <SpendingByCategory budgets={budgets} />
             <RecentTransactions transactions={transactions} onEdit={(tx) => openSheet(tx.type, tx)} />
           </>
