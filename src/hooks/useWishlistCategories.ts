@@ -7,6 +7,7 @@ import {
   where,
   orderBy,
   onSnapshot,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { WishlistCategory, CreateWishlistCategoryInput } from "@/types";
@@ -47,15 +48,53 @@ export function useWishlistCategories() {
   }, []);
 
   const create = async (input: CreateWishlistCategoryInput): Promise<string> => {
-    return wishlistCategoriesService.create(input);
+    // Optimistic update: langsung tampilkan di UI sebelum server merespons
+    const tempId = `temp_${Date.now()}`;
+    const optimisticCategory: WishlistCategory = {
+      ...input,
+      categoryId: tempId,
+      createdAt: Timestamp.now(),
+    };
+    setCategories((prev) => [...prev, optimisticCategory]);
+
+    try {
+      const id = await wishlistCategoriesService.create(input);
+      // Replace temp entry with real ID (onSnapshot akan sync juga)
+      setCategories((prev) =>
+        prev.map((c) => (c.categoryId === tempId ? { ...c, categoryId: id } : c))
+      );
+      return id;
+    } catch (err) {
+      // Rollback optimistic update jika gagal
+      setCategories((prev) => prev.filter((c) => c.categoryId !== tempId));
+      throw err;
+    }
   };
 
   const update = async (id: string, data: Partial<WishlistCategory>): Promise<void> => {
-    return wishlistCategoriesService.update(id, data);
+    // Optimistic update
+    setCategories((prev) =>
+      prev.map((c) => (c.categoryId === id ? { ...c, ...data } : c))
+    );
+    try {
+      await wishlistCategoriesService.update(id, data);
+    } catch (err) {
+      // onSnapshot akan revert ke state yang benar jika gagal
+      throw err;
+    }
   };
 
   const deactivate = async (id: string): Promise<void> => {
-    return wishlistCategoriesService.deactivate(id);
+    // Optimistic: langsung hapus dari list
+    const prev = categories;
+    setCategories((current) => current.filter((c) => c.categoryId !== id));
+    try {
+      await wishlistCategoriesService.deactivate(id);
+    } catch (err) {
+      // Rollback
+      setCategories(prev);
+      throw err;
+    }
   };
 
   const isDuplicateName = useCallback(
