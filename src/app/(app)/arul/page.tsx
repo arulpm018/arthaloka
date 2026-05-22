@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,12 +24,17 @@ import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { Account } from "@/types";
 
 export default function ArulPage() {
-  const { selectedMonth, setSelectedMonth, openSheet } = useAppStore();
+  const { selectedMonth, setSelectedMonth, openSheet, setDefaultOwner } = useAppStore();
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [accountFormOpen, setAccountFormOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+
+  useEffect(() => {
+    setDefaultOwner("arul");
+    return () => setDefaultOwner(null);
+  }, [setDefaultOwner]);
 
   const { accounts, isLoading: accountsLoading } = useAccounts("arul");
   const { income, expense, isLoading: summaryLoading } = useSummary(selectedMonth, "arul");

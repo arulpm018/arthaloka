@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -28,6 +28,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { useAppStore } from "@/store/useAppStore";
 import { categoryIconOptions } from "@/lib/utils/categoryIcons";
 import { cn } from "@/lib/utils/cn";
+import { Trash2 } from "lucide-react";
 
 interface CategoryFormProps {
   open: boolean;
@@ -40,8 +41,10 @@ export const CategoryForm = ({
   onClose,
   editingCategory,
 }: CategoryFormProps) => {
-  const { create, update } = useCategories();
+  const { create, update, deactivate } = useCategories();
   const currentUser = useAppStore((s) => s.currentUser);
+  const defaultOwner = useAppStore((s) => s.defaultOwner);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     register,
@@ -59,7 +62,7 @@ export const CategoryForm = ({
       color: "#64748b",
       type: "expense",
       budgetAmount: 0,
-      budgetScope: "each",
+      budgetScope: defaultOwner || "arul",
       isActive: true,
       order: 0,
       createdBy: currentUser?.uid ?? "",
@@ -86,13 +89,13 @@ export const CategoryForm = ({
         color: "#64748b",
         type: "expense",
         budgetAmount: 0,
-        budgetScope: "each",
+        budgetScope: defaultOwner || "arul",
         isActive: true,
         order: 0,
         createdBy: currentUser?.uid ?? "",
       });
     }
-  }, [editingCategory, open, reset, currentUser]);
+  }, [editingCategory, open, reset, currentUser, defaultOwner]);
 
   const onSubmit = async (data: CategoryFormValues) => {
     try {
@@ -104,6 +107,23 @@ export const CategoryForm = ({
       onClose();
     } catch (error) {
       console.error("Failed to save category:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingCategory) return;
+    const confirmed = window.confirm(
+      `Hapus kategori "${editingCategory.name}"? Kategori yang sudah dipakai di transaksi tidak akan terpengaruh.`
+    );
+    if (!confirmed) return;
+    try {
+      setIsDeleting(true);
+      await deactivate(editingCategory.categoryId);
+      onClose();
+    } catch (error) {
+      console.error("Failed to delete category:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -196,7 +216,7 @@ export const CategoryForm = ({
               onValueChange={(val) =>
                 setValue(
                   "budgetScope",
-                  val as "arul" | "fifi" | "shared" | "each"
+                  val as "arul" | "fifi" | "shared"
                 )
               }
             >
@@ -204,7 +224,6 @@ export const CategoryForm = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="each">Masing-masing</SelectItem>
                 <SelectItem value="arul">Arul</SelectItem>
                 <SelectItem value="fifi">Fifi</SelectItem>
                 <SelectItem value="shared">Together</SelectItem>
@@ -227,6 +246,19 @@ export const CategoryForm = ({
                 ? "Simpan"
                 : "Tambah Kategori"}
           </Button>
+
+          {editingCategory && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-4 w-4 mr-1.5" />
+              {isDeleting ? "Menghapus..." : "Hapus Kategori"}
+            </Button>
+          )}
         </form>
       </SheetContent>
     </Sheet>

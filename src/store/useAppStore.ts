@@ -15,6 +15,7 @@ interface AppStore {
   editingTransaction: Transaction | null;
   editingTransfer: Transfer | null;
   selectedMonth: Date;
+  defaultOwner: "arul" | "fifi" | "shared" | null;
 
   // Actions
   openSheet: (
@@ -23,6 +24,7 @@ interface AppStore {
   ) => void;
   closeSheet: () => void;
   setSelectedMonth: (date: Date) => void;
+  setDefaultOwner: (owner: "arul" | "fifi" | "shared" | null) => void;
 }
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -39,6 +41,7 @@ export const useAppStore = create<AppStore>((set) => ({
   editingTransaction: null,
   editingTransfer: null,
   selectedMonth: new Date(),
+  defaultOwner: null,
 
   // Actions
   openSheet: (type, item) =>
@@ -56,4 +59,5 @@ export const useAppStore = create<AppStore>((set) => ({
       editingTransfer: null,
     }),
   setSelectedMonth: (date) => set({ selectedMonth: date }),
+  setDefaultOwner: (owner) => set({ defaultOwner: owner }),
 }));

@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 
 export type CategoryType = "expense" | "income" | "both";
-export type BudgetScope = "arul" | "fifi" | "shared" | "each";
+export type BudgetScope = "arul" | "fifi" | "shared";
 
 export interface Category {
   categoryId: string;

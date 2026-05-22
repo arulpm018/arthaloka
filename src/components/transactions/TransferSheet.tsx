@@ -22,7 +22,7 @@ import { AmountInput } from "@/components/shared/AmountInput";
 import { CreateTransferInput } from "@/types";
 
 export const TransferSheet = () => {
-  const { activeSheet, closeSheet, currentUser } = useAppStore();
+  const { activeSheet, closeSheet, currentUser, defaultOwner } = useAppStore();
   const { accounts } = useAccounts();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -58,6 +58,7 @@ export const TransferSheet = () => {
     if (isOpen) {
       setSubmitError(null);
       setSubmitSuccess(false);
+      const ownerDefault = defaultOwner || currentUser?.role || "arul";
       reset({
         name: "",
         amount: 0,
@@ -65,13 +66,13 @@ export const TransferSheet = () => {
         fromAccountName: "",
         toAccountId: "",
         toAccountName: "",
-        owner: currentUser?.role || "arul",
+        owner: ownerDefault,
         ownerUid: currentUser?.uid || "",
         date: Timestamp.now(),
         note: "",
       });
     }
-  }, [isOpen, currentUser, reset]);
+  }, [isOpen, currentUser, defaultOwner, reset]);
 
   const onSubmit = async (data: TransferFormValues) => {
     try {

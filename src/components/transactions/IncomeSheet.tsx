@@ -35,7 +35,7 @@ import { CategoryForm } from "@/components/categories/CategoryForm";
 import { CreateTransactionInput } from "@/types";
 
 export const IncomeSheet = () => {
-  const { activeSheet, closeSheet, editingTransaction, currentUser } = useAppStore();
+  const { activeSheet, closeSheet, editingTransaction, currentUser, defaultOwner } = useAppStore();
   const { accounts } = useAccounts();
   const { categories } = useCategories();
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -100,6 +100,7 @@ export const IncomeSheet = () => {
           note: editingTransaction.note || "",
         });
       } else {
+        const ownerDefault = defaultOwner || currentUser?.role || "arul";
         const defaultAccount =
           accounts.find(
             (a) => a.accountId === currentUser?.preferences?.defaultAccountId
@@ -113,14 +114,14 @@ export const IncomeSheet = () => {
           categoryId: "",
           categoryName: "",
           categoryIcon: "",
-          owner: currentUser?.role || "arul",
+          owner: ownerDefault,
           ownerUid: currentUser?.uid || "",
           date: Timestamp.now(),
           note: "",
         });
       }
     }
-  }, [isOpen, isEditing, editingTransaction, accounts, currentUser, reset]);
+  }, [isOpen, isEditing, editingTransaction, accounts, currentUser, defaultOwner, reset]);
 
   const onSubmit = async (data: TransactionFormValues) => {
     try {

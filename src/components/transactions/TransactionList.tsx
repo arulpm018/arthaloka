@@ -2,7 +2,8 @@
 
 import { Transaction } from "@/types";
 import { TransactionItem } from "./TransactionItem";
-import { formatRelativeDate } from "@/lib/utils/formatDate";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
 import { Timestamp } from "firebase/firestore";
 
 interface TransactionListProps {
@@ -36,11 +37,13 @@ export const TransactionList = ({
   return (
     <div className="space-y-4">
       {sortedDates.map((dateKey) => (
-        <div key={dateKey}>
-          <p className="text-xs font-medium text-muted-foreground mb-1 px-1">
-            {formatRelativeDate(new Date(dateKey))}
-          </p>
-          <div className="space-y-0.5">
+        <div key={dateKey} className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="px-4 pt-3 pb-1.5">
+            <p className="text-xs font-medium text-muted-foreground">
+              {format(new Date(dateKey), "d MMMM", { locale: id })}
+            </p>
+          </div>
+          <div className="divide-y divide-border">
             {grouped[dateKey].map((tx) => (
               <TransactionItem
                 key={tx.transactionId}
