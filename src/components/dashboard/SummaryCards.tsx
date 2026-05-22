@@ -35,11 +35,7 @@ const ownerAccentColors: Record<string, string> = {
   shared: "border-l-purple-500",
 };
 
-const ownerBgColors: Record<string, string> = {
-  arul: "bg-blue-500/10",
-  fifi: "bg-pink-500/10",
-  shared: "bg-purple-500/10",
-};
+
 
 const ownerTextColors: Record<string, string> = {
   arul: "text-blue-600 dark:text-blue-400",
