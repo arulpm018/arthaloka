@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -207,11 +207,9 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
           {!editingAccount && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Saldo Awal</label>
-              <Input
-                type="number"
-                inputMode="numeric"
-                placeholder="0"
-                {...register("balance", { valueAsNumber: true })}
+              <BalanceInput
+                value={watch("balance")}
+                onChange={(val) => setValue("balance", val, { shouldValidate: true })}
               />
               {errors.balance && (
                 <p className="text-xs text-destructive">{errors.balance.message}</p>
@@ -268,5 +266,47 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
         </form>
       </SheetContent>
     </Sheet>
+  );
+};
+
+// Helper component for formatted balance input with thousand separators
+const BalanceInput = ({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (val: number) => void;
+}) => {
+  const formatWithDots = (num: number) => {
+    if (num === 0) return "";
+    return num.toLocaleString("id-ID");
+  };
+
+  const [display, setDisplay] = useState(formatWithDots(value));
+
+  useEffect(() => {
+    setDisplay(formatWithDots(value));
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\./g, "").replace(/[^0-9]/g, "");
+    if (raw === "") {
+      setDisplay("");
+      onChange(0);
+      return;
+    }
+    const num = parseInt(raw, 10);
+    setDisplay(num.toLocaleString("id-ID"));
+    onChange(num);
+  };
+
+  return (
+    <Input
+      type="text"
+      inputMode="numeric"
+      placeholder="0"
+      value={display}
+      onChange={handleChange}
+    />
   );
 };
