@@ -40,9 +40,16 @@ export const CategoryList = ({
       {/* Pengeluaran */}
       {expenseCategories.length > 0 && (
         <section className="space-y-1.5">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1">
-            Pengeluaran
-          </h3>
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Pengeluaran
+            </h3>
+            <span className="text-xs font-mono text-muted-foreground pr-2">
+              {formatCurrency(
+                expenseCategories.reduce((sum, c) => sum + (c.budgetAmount || 0), 0)
+              )}
+            </span>
+          </div>
           <div className="space-y-1">
             {expenseCategories.map((cat) => (
               <CategoryItem
