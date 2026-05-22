@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OwnerFilter } from "@/types/wishlist";
 
@@ -16,22 +15,25 @@ const filters: { value: OwnerFilter; label: string }[] = [
   { value: "shared", label: "Berdua" },
 ];
 
-export const WishlistFilterBar = ({ activeFilter, onChange }: WishlistFilterBarProps) => {
+export const WishlistFilterBar = ({
+  activeFilter,
+  onChange,
+}: WishlistFilterBarProps) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
       {filters.map((filter) => (
-        <Button
+        <button
           key={filter.value}
-          variant={activeFilter === filter.value ? "default" : "outline"}
-          size="sm"
-          className={cn(
-            "rounded-full",
-            activeFilter !== filter.value && "text-muted-foreground"
-          )}
           onClick={() => onChange(filter.value)}
+          className={cn(
+            "px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
+            activeFilter === filter.value
+              ? "bg-foreground text-background shadow-sm"
+              : "bg-muted text-muted-foreground hover:bg-muted/80"
+          )}
         >
           {filter.label}
-        </Button>
+        </button>
       ))}
     </div>
   );

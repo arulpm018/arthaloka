@@ -162,7 +162,7 @@ export default function WishlistPage() {
     <>
       <Header title="Wishlist" />
 
-      <div className="p-4 space-y-6 max-w-4xl mx-auto">
+      <div className="p-4 space-y-5 max-w-4xl mx-auto pb-32">
         {isLoading ? (
           <WishlistSkeleton />
         ) : (
@@ -176,26 +176,23 @@ export default function WishlistPage() {
               />
             )}
 
-            <WishlistFilterBar
-              activeFilter={ownerFilter}
-              onChange={setOwnerFilter}
-            />
-
-            {/* Tambah Kategori button */}
-            <div className="flex justify-end">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-xs text-muted-foreground"
+            {/* Filter + Add Category row */}
+            <div className="flex items-center justify-between gap-2">
+              <WishlistFilterBar
+                activeFilter={ownerFilter}
+                onChange={setOwnerFilter}
+              />
+              <button
                 onClick={handleAddCategory}
+                className="flex-shrink-0 p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                title="Tambah Kategori"
               >
-                <FolderPlus className="h-3.5 w-3.5 mr-1" />
-                Tambah Kategori
-              </Button>
+                <FolderPlus className="h-4 w-4" />
+              </button>
             </div>
 
             {groups.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {groups.map((group) => (
                   <WishlistCategorySection
                     key={group.category.categoryId}
