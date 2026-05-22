@@ -418,6 +418,7 @@ describe("wishlistItemSchema", () => {
   });
 
   it("accepts lokasi omitted (defaults to empty string)", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { lokasi: _lokasi, ...withoutLokasi } = validInput;
     const result = wishlistItemSchema.safeParse(withoutLokasi);
     expect(result.success).toBe(true);
@@ -522,6 +523,7 @@ describe("wishlistCategorySchema", () => {
   });
 
   it("defaults isActive to true when omitted", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { isActive: _isActive, ...withoutIsActive } = validInput;
     const result = wishlistCategorySchema.safeParse(withoutIsActive);
     expect(result.success).toBe(true);
