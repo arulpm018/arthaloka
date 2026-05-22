@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp, TrendingDown, Wallet, Eye, Building2, Smartphone, PiggyBank } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Eye, EyeOff, Building2, Smartphone, PiggyBank } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { cn } from "@/lib/utils/cn";
@@ -45,6 +45,7 @@ const ownerTextColors: Record<string, string> = {
 
 export const SummaryCards = ({ totalBalance, income, expense, net, accounts = [] }: SummaryCardsProps) => {
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [showBalance, setShowBalance] = useState(true);
 
   // Group accounts by owner
   const grouped = accounts.reduce<Record<string, Account[]>>((acc, account) => {
@@ -68,10 +69,24 @@ export const SummaryCards = ({ totalBalance, income, expense, net, accounts = []
             <Wallet className="h-4 w-4 text-primary" />
             <p className="text-xs text-muted-foreground font-medium">Total Kekayaan</p>
           </div>
-          <Eye className="h-4 w-4 text-muted-foreground" />
+          <span
+            role="button"
+            aria-label={showBalance ? "Sembunyikan saldo" : "Tampilkan saldo"}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowBalance((prev) => !prev);
+            }}
+            className="p-1 -m-1 rounded-full hover:bg-muted/50 transition-colors"
+          >
+            {showBalance ? (
+              <Eye className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <EyeOff className="h-4 w-4 text-muted-foreground" />
+            )}
+          </span>
         </div>
         <p className="text-3xl font-mono font-bold tabular-nums tracking-tight">
-          {formatCurrency(totalBalance)}
+          {showBalance ? formatCurrency(totalBalance) : "••••••••"}
         </p>
         <div className="flex items-center gap-1 mt-2">
           <span
@@ -82,7 +97,9 @@ export const SummaryCards = ({ totalBalance, income, expense, net, accounts = []
                 : "bg-expense/10 text-expense"
             )}
           >
-            {net >= 0 ? "+" : ""}{formatCurrency(net)} bulan ini
+            {showBalance
+              ? `${net >= 0 ? "+" : ""}${formatCurrency(net)} bulan ini`
+              : "•••• bulan ini"}
           </span>
         </div>
       </button>

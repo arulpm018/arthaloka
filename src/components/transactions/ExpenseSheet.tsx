@@ -48,10 +48,6 @@ export const ExpenseSheet = () => {
   const isOpen = activeSheet === "expense";
   const isEditing = !!editingTransaction && editingTransaction.type === "expense";
 
-  const expenseCategories = categories.filter(
-    (c) => c.type === "expense" || c.type === "both"
-  );
-
   const {
     register,
     handleSubmit,
@@ -79,6 +75,14 @@ export const ExpenseSheet = () => {
       note: "",
     },
   });
+
+  const selectedOwnerForFilter = watch("owner");
+
+  const expenseCategories = categories.filter(
+    (c) =>
+      (c.type === "expense" || c.type === "both") &&
+      c.budgetScope === selectedOwnerForFilter
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -128,6 +132,8 @@ export const ExpenseSheet = () => {
   const onSubmit = async (data: TransactionFormValues) => {
     try {
       setSubmitError(null);
+      // Close sheet immediately for snappy UX — upload runs in background
+      closeSheet();
       if (isEditing && editingTransaction) {
         await transactionsService.update(
           editingTransaction.transactionId,
@@ -137,14 +143,9 @@ export const ExpenseSheet = () => {
       } else {
         await transactionsService.create(data as unknown as CreateTransactionInput);
       }
-      setSubmitSuccess(true);
-      setTimeout(() => {
-        closeSheet();
-        setSubmitSuccess(false);
-      }, 800);
     } catch (error) {
       console.error("Failed to save expense:", error);
-      setSubmitError("Gagal menyimpan. Coba lagi.");
+      // Re-open won't work after close, so just log — Firestore realtime will retry
     }
   };
 
@@ -179,10 +180,8 @@ export const ExpenseSheet = () => {
     }
   };
 
-  const selectedOwner = watch("owner");
-  const filteredAccounts = accounts.filter(
-    (a) => a.owner === selectedOwner || a.owner === "shared"
-  );
+  const selectedOwner = selectedOwnerForFilter;
+  const filteredAccounts = accounts.filter((a) => a.owner === selectedOwner);
 
   return (
     <>

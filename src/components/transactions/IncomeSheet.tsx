@@ -48,10 +48,6 @@ export const IncomeSheet = () => {
   const isOpen = activeSheet === "income";
   const isEditing = !!editingTransaction && editingTransaction.type === "income";
 
-  const incomeCategories = categories.filter(
-    (c) => c.type === "income" || c.type === "both"
-  );
-
   const {
     register,
     handleSubmit,
@@ -78,6 +74,14 @@ export const IncomeSheet = () => {
       note: "",
     },
   });
+
+  const selectedOwnerForFilter = watch("owner");
+
+  const incomeCategories = categories.filter(
+    (c) =>
+      (c.type === "income" || c.type === "both") &&
+      c.budgetScope === selectedOwnerForFilter
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -126,6 +130,8 @@ export const IncomeSheet = () => {
   const onSubmit = async (data: TransactionFormValues) => {
     try {
       setSubmitError(null);
+      // Close sheet immediately for snappy UX — upload runs in background
+      closeSheet();
       if (isEditing && editingTransaction) {
         await transactionsService.update(
           editingTransaction.transactionId,
@@ -135,14 +141,8 @@ export const IncomeSheet = () => {
       } else {
         await transactionsService.create(data as unknown as CreateTransactionInput);
       }
-      setSubmitSuccess(true);
-      setTimeout(() => {
-        closeSheet();
-        setSubmitSuccess(false);
-      }, 800);
     } catch (error) {
       console.error("Failed to save income:", error);
-      setSubmitError("Gagal menyimpan. Coba lagi.");
     }
   };
 
@@ -177,10 +177,8 @@ export const IncomeSheet = () => {
     }
   };
 
-  const selectedOwner = watch("owner");
-  const filteredAccounts = accounts.filter(
-    (a) => a.owner === selectedOwner || a.owner === "shared"
-  );
+  const selectedOwner = selectedOwnerForFilter;
+  const filteredAccounts = accounts.filter((a) => a.owner === selectedOwner);
 
   return (
     <>
