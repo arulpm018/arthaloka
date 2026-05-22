@@ -418,7 +418,7 @@ describe("wishlistItemSchema", () => {
   });
 
   it("accepts lokasi omitted (defaults to empty string)", () => {
-    const { lokasi, ...withoutLokasi } = validInput;
+    const { lokasi: _lokasi, ...withoutLokasi } = validInput;
     const result = wishlistItemSchema.safeParse(withoutLokasi);
     expect(result.success).toBe(true);
   });
@@ -522,7 +522,7 @@ describe("wishlistCategorySchema", () => {
   });
 
   it("defaults isActive to true when omitted", () => {
-    const { isActive, ...withoutIsActive } = validInput;
+    const { isActive: _isActive, ...withoutIsActive } = validInput;
     const result = wishlistCategorySchema.safeParse(withoutIsActive);
     expect(result.success).toBe(true);
     if (result.success) {

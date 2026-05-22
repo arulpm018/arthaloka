@@ -4,7 +4,6 @@ import type {
   WishlistCategory,
   WishlistCategoryGroup,
   ProgressSummary,
-  CategoryProgress,
   OwnerFilter,
 } from "@/types/wishlist";
 
