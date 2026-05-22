@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp, TrendingDown, Wallet, ChevronDown, Building2, Smartphone, PiggyBank } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Eye, Building2, Smartphone, PiggyBank } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { cn } from "@/lib/utils/cn";
 import { Account } from "@/types";
@@ -34,8 +35,20 @@ const ownerAccentColors: Record<string, string> = {
   shared: "border-l-purple-500",
 };
 
+const ownerBgColors: Record<string, string> = {
+  arul: "bg-blue-500/10",
+  fifi: "bg-pink-500/10",
+  shared: "bg-purple-500/10",
+};
+
+const ownerTextColors: Record<string, string> = {
+  arul: "text-blue-600 dark:text-blue-400",
+  fifi: "text-pink-600 dark:text-pink-400",
+  shared: "text-purple-600 dark:text-purple-400",
+};
+
 export const SummaryCards = ({ totalBalance, income, expense, net, accounts = [] }: SummaryCardsProps) => {
-  const [expanded, setExpanded] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   // Group accounts by owner
   const grouped = accounts.reduce<Record<string, Account[]>>((acc, account) => {
@@ -51,7 +64,7 @@ export const SummaryCards = ({ totalBalance, income, expense, net, accounts = []
     <div className="space-y-3">
       {/* Hero Balance Card — Tappable */}
       <button
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => setSheetOpen(true)}
         className="w-full text-left rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-5 transition-all active:scale-[0.98]"
       >
         <div className="flex items-center justify-between">
@@ -59,12 +72,7 @@ export const SummaryCards = ({ totalBalance, income, expense, net, accounts = []
             <Wallet className="h-4 w-4 text-primary" />
             <p className="text-xs text-muted-foreground font-medium">Total Kekayaan</p>
           </div>
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform duration-200",
-              expanded && "rotate-180"
-            )}
-          />
+          <Eye className="h-4 w-4 text-muted-foreground" />
         </div>
         <p className="text-3xl font-mono font-bold tabular-nums tracking-tight">
           {formatCurrency(totalBalance)}
@@ -83,63 +91,91 @@ export const SummaryCards = ({ totalBalance, income, expense, net, accounts = []
         </div>
       </button>
 
-      {/* Expanded Account List */}
-      {expanded && (
-        <div className="space-y-4 animate-in slide-in-from-top-2 duration-200">
+      {/* Account Breakdown Sheet */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto pb-8">
+          <SheetHeader className="text-left pb-4">
+            <SheetTitle className="text-lg">Ringkasan Kekayaan</SheetTitle>
+            <SheetDescription className="sr-only">Detail akun berdasarkan pemilik</SheetDescription>
+          </SheetHeader>
+
+          {/* Total Balance Highlight */}
+          <div className="rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-4 mb-5">
+            <p className="text-xs text-muted-foreground font-medium mb-1">Total Semua Akun</p>
+            <p className="text-2xl font-mono font-bold tabular-nums tracking-tight">
+              {formatCurrency(totalBalance)}
+            </p>
+          </div>
+
+          {/* Accounts by Owner */}
           {accounts.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-4 text-center">
+            <div className="rounded-xl border border-border bg-card p-6 text-center">
+              <Wallet className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">Belum ada akun</p>
             </div>
           ) : (
-            ownerOrder.map((owner) => {
-              const ownerAccounts = grouped[owner];
-              if (!ownerAccounts || ownerAccounts.length === 0) return null;
-              const ownerTotal = ownerAccounts.reduce((sum, a) => sum + a.balance, 0);
+            <div className="space-y-5">
+              {ownerOrder.map((owner) => {
+                const ownerAccounts = grouped[owner];
+                if (!ownerAccounts || ownerAccounts.length === 0) return null;
+                const ownerTotal = ownerAccounts.reduce((sum, a) => sum + a.balance, 0);
 
-              return (
-                <div key={owner} className="space-y-1.5">
-                  <div className="flex items-center justify-between px-1">
-                    <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      {ownerLabels[owner]}
-                    </h4>
-                    <span className="text-xs font-mono text-muted-foreground tabular-nums">
-                      {formatCurrency(ownerTotal)}
-                    </span>
-                  </div>
-                  <div className="space-y-1">
-                    {ownerAccounts.map((account) => {
-                      const Icon = iconMap[account.type] || Wallet;
-                      return (
+                return (
+                  <div key={owner} className="space-y-2">
+                    {/* Owner Header — aligned with account items below */}
+                    <div className="flex items-center gap-3 px-3">
+                      <div className="flex h-9 w-9 items-center justify-center shrink-0">
                         <div
-                          key={account.accountId}
-                          className={cn(
-                            "flex items-center gap-3 rounded-xl border border-border bg-card p-3 border-l-[3px]",
-                            ownerAccentColors[owner]
-                          )}
-                        >
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: owner === "arul" ? "#3b82f6" : owner === "fifi" ? "#ec4899" : "#a855f7" }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className={cn("text-sm font-semibold", ownerTextColors[owner])}>
+                          {ownerLabels[owner]}
+                        </h4>
+                      </div>
+                      <span className="text-sm font-mono font-semibold tabular-nums">
+                        {formatCurrency(ownerTotal)}
+                      </span>
+                    </div>
+
+                    {/* Account Items */}
+                    <div className="space-y-1.5">
+                      {ownerAccounts.map((account) => {
+                        const Icon = iconMap[account.type] || Wallet;
+                        return (
                           <div
-                            className="flex h-8 w-8 items-center justify-center rounded-full shrink-0"
-                            style={{ backgroundColor: `${account.color}15` }}
+                            key={account.accountId}
+                            className={cn(
+                              "flex items-center gap-3 rounded-xl border border-border bg-card p-3 border-l-[3px]",
+                              ownerAccentColors[owner]
+                            )}
                           >
-                            <Icon className="h-3.5 w-3.5" style={{ color: account.color }} />
+                            <div
+                              className="flex h-9 w-9 items-center justify-center rounded-full shrink-0"
+                              style={{ backgroundColor: `${account.color}15` }}
+                            >
+                              <Icon className="h-4 w-4" style={{ color: account.color }} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{account.name}</p>
+                              <p className="text-[11px] text-muted-foreground capitalize">{account.type}</p>
+                            </div>
+                            <p className="text-sm font-mono font-medium tabular-nums">
+                              {formatCurrency(account.balance)}
+                            </p>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{account.name}</p>
-                            <p className="text-[10px] text-muted-foreground capitalize">{account.type}</p>
-                          </div>
-                          <p className="text-sm font-mono font-medium tabular-nums">
-                            {formatCurrency(account.balance)}
-                          </p>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })}
+            </div>
           )}
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
 
       {/* Income & Expense Grid */}
       <div className="grid grid-cols-2 gap-3">
