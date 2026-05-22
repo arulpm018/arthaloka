@@ -13,6 +13,7 @@ import { IncomeSheet } from "@/components/transactions/IncomeSheet";
 import { TransferSheet } from "@/components/transactions/TransferSheet";
 import { AccountCard } from "@/components/accounts/AccountCard";
 import { AccountForm } from "@/components/accounts/AccountForm";
+import { AccountDetailSheet } from "@/components/accounts/AccountDetailSheet";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { useSummary } from "@/hooks/useSummary";
@@ -20,11 +21,15 @@ import { useAccounts } from "@/hooks/useAccounts";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useAppStore } from "@/store/useAppStore";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
+import { Account } from "@/types";
 
 export default function ArulPage() {
   const { selectedMonth, setSelectedMonth, openSheet } = useAppStore();
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [accountFormOpen, setAccountFormOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [detailSheetOpen, setDetailSheetOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
 
   const { accounts, isLoading: accountsLoading } = useAccounts("arul");
   const { income, expense, isLoading: summaryLoading } = useSummary(selectedMonth, "arul");
@@ -36,6 +41,16 @@ export default function ArulPage() {
 
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
   const isLoading = accountsLoading || summaryLoading || txLoading;
+
+  const handleAccountTap = (account: Account) => {
+    setSelectedAccount(account);
+    setDetailSheetOpen(true);
+  };
+
+  const handleEditAccount = (account: Account) => {
+    setEditingAccount(account);
+    setAccountFormOpen(true);
+  };
 
   return (
     <>
@@ -64,13 +79,20 @@ export default function ArulPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium">Akun</h3>
-                <Button size="sm" variant="ghost" onClick={() => setAccountFormOpen(true)}>
+                <Button size="sm" variant="ghost" onClick={() => {
+                  setEditingAccount(null);
+                  setAccountFormOpen(true);
+                }}>
                   <Plus className="h-4 w-4 mr-1" />
                   Tambah
                 </Button>
               </div>
               {accounts.map((acc) => (
-                <AccountCard key={acc.accountId} account={acc} />
+                <AccountCard
+                  key={acc.accountId}
+                  account={acc}
+                  onTap={() => handleAccountTap(acc)}
+                />
               ))}
             </div>
 
@@ -94,7 +116,20 @@ export default function ArulPage() {
       <TransferSheet />
       <AccountForm
         open={accountFormOpen}
-        onClose={() => setAccountFormOpen(false)}
+        onClose={() => {
+          setAccountFormOpen(false);
+          setEditingAccount(null);
+        }}
+        editingAccount={editingAccount}
+      />
+      <AccountDetailSheet
+        open={detailSheetOpen}
+        onClose={() => {
+          setDetailSheetOpen(false);
+          setSelectedAccount(null);
+        }}
+        account={selectedAccount}
+        onEdit={handleEditAccount}
       />
     </>
   );

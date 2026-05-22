@@ -33,6 +33,8 @@ export function useTransactions(filters: TxFilters) {
     if (filters.type) constraints.push(where("type", "==", filters.type));
     if (filters.categoryId)
       constraints.push(where("categoryId", "==", filters.categoryId));
+    if (filters.accountId)
+      constraints.push(where("accountId", "==", filters.accountId));
 
     const q = query(collection(db, "transactions"), ...constraints);
 
@@ -59,6 +61,7 @@ export function useTransactions(filters: TxFilters) {
     filters.owner,
     filters.type,
     filters.categoryId,
+    filters.accountId,
   ]);
 
   const remove = async (tx: Transaction) => {

@@ -4,8 +4,16 @@ import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Timestamp } from "firebase/firestore";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +42,8 @@ export const ExpenseSheet = () => {
   const [categoryFormOpen, setCategoryFormOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const isOpen = activeSheet === "expense";
   const isEditing = !!editingTransaction && editingTransaction.type === "expense";
@@ -151,6 +161,20 @@ export const ExpenseSheet = () => {
     if (acc) {
       setValue("accountId", acc.accountId);
       setValue("accountName", acc.name);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingTransaction) return;
+    setIsDeleting(true);
+    try {
+      await transactionsService.delete(editingTransaction);
+      setDeleteDialogOpen(false);
+      closeSheet();
+    } catch (error) {
+      console.error("Failed to delete transaction:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -306,6 +330,18 @@ export const ExpenseSheet = () => {
                   ? "Simpan Perubahan"
                   : "Simpan Pengeluaran"}
             </Button>
+
+            {isEditing && (
+              <Button
+                type="button"
+                variant="destructive"
+                className="w-full"
+                onClick={() => setDeleteDialogOpen(true)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Hapus Transaksi
+              </Button>
+            )}
           </form>
         </SheetContent>
       </Sheet>
@@ -322,6 +358,34 @@ export const ExpenseSheet = () => {
         open={categoryFormOpen}
         onClose={() => setCategoryFormOpen(false)}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="max-w-sm mx-auto">
+          <DialogHeader>
+            <DialogTitle>Hapus Transaksi</DialogTitle>
+            <DialogDescription>
+              Yakin ingin menghapus transaksi <strong>{editingTransaction?.name}</strong>? 
+              Saldo akun akan dikembalikan. Aksi ini tidak bisa dibatalkan.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={isDeleting}
+              onClick={handleDelete}
+            >
+              {isDeleting ? "Menghapus..." : "Hapus"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
