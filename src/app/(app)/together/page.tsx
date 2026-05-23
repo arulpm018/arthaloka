@@ -8,9 +8,6 @@ import { Header } from "@/components/layout/Header";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { FAB } from "@/components/layout/FAB";
 import { ActionSheet } from "@/components/layout/ActionSheet";
-import { ExpenseSheet } from "@/components/transactions/ExpenseSheet";
-import { IncomeSheet } from "@/components/transactions/IncomeSheet";
-import { TransferSheet } from "@/components/transactions/TransferSheet";
 import { AccountCard } from "@/components/accounts/AccountCard";
 import { AccountForm } from "@/components/accounts/AccountForm";
 import { AccountDetailSheet } from "@/components/accounts/AccountDetailSheet";
@@ -139,9 +136,6 @@ export default function TogetherPage() {
         onClose={() => setActionSheetOpen(false)}
         onSelect={(type) => openSheet(type)}
       />
-      <ExpenseSheet />
-      <IncomeSheet />
-      <TransferSheet />
       <AccountForm
         open={accountFormOpen}
         onClose={() => {

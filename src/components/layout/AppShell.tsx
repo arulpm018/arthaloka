@@ -3,6 +3,9 @@
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
+import { ExpenseSheet } from "@/components/transactions/ExpenseSheet";
+import { IncomeSheet } from "@/components/transactions/IncomeSheet";
+import { TransferSheet } from "@/components/transactions/TransferSheet";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -27,6 +30,11 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Bottom nav - mobile only */}
       <BottomNav />
+
+      {/* Global transaction sheets — accessible from BottomNav, FAB, etc. */}
+      <ExpenseSheet />
+      <IncomeSheet />
+      <TransferSheet />
     </div>
   );
 }

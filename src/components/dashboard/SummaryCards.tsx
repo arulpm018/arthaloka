@@ -11,7 +11,6 @@ interface SummaryCardsProps {
   totalBalance: number;
   income: number;
   expense: number;
-  net: number;
   accounts?: Account[];
 }
 
@@ -43,7 +42,7 @@ const ownerTextColors: Record<string, string> = {
   shared: "text-purple-600 dark:text-purple-400",
 };
 
-export const SummaryCards = ({ totalBalance, income, expense, net, accounts = [] }: SummaryCardsProps) => {
+export const SummaryCards = ({ totalBalance, income, expense, accounts = [] }: SummaryCardsProps) => {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
 
@@ -88,20 +87,6 @@ export const SummaryCards = ({ totalBalance, income, expense, net, accounts = []
         <p className="text-3xl font-mono font-bold tabular-nums tracking-tight">
           {showBalance ? formatCurrency(totalBalance) : "••••••••"}
         </p>
-        <div className="flex items-center gap-1 mt-2">
-          <span
-            className={cn(
-              "text-xs font-medium px-2 py-0.5 rounded-full",
-              net >= 0
-                ? "bg-income/10 text-income"
-                : "bg-expense/10 text-expense"
-            )}
-          >
-            {showBalance
-              ? `${net >= 0 ? "+" : ""}${formatCurrency(net)} bulan ini`
-              : "•••• bulan ini"}
-          </span>
-        </div>
       </button>
 
       {/* Account Breakdown Sheet */}

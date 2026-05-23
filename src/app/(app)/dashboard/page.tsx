@@ -6,9 +6,6 @@ import { Header } from "@/components/layout/Header";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { FAB } from "@/components/layout/FAB";
 import { ActionSheet } from "@/components/layout/ActionSheet";
-import { ExpenseSheet } from "@/components/transactions/ExpenseSheet";
-import { IncomeSheet } from "@/components/transactions/IncomeSheet";
-import { TransferSheet } from "@/components/transactions/TransferSheet";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { SpendingByCategory } from "@/components/dashboard/SpendingByCategory";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
@@ -31,7 +28,7 @@ export default function DashboardPage() {
   const { accounts } = useAccounts();
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
 
-  const { income, expense, net, isLoading: summaryLoading } = useSummary(selectedMonth);
+  const { income, expense, isLoading: summaryLoading } = useSummary(selectedMonth);
   const { budgets, isLoading: budgetLoading } = useBudgetStatus(selectedMonth);
   const { transactions, isLoading: txLoading } = useTransactions({
     startDate: startOfMonth(selectedMonth),
@@ -66,7 +63,7 @@ export default function DashboardPage() {
           <LoadingState variant="page" />
         ) : (
           <>
-            <SummaryCards totalBalance={totalBalance} income={income} expense={expense} net={net} accounts={accounts} />
+            <SummaryCards totalBalance={totalBalance} income={income} expense={expense} accounts={accounts} />
             <SpendingByCategory budgets={budgets} />
             <RecentTransactions
               transactions={transactions}
@@ -81,9 +78,6 @@ export default function DashboardPage() {
 
       <FAB onClick={() => setActionSheetOpen(true)} />
       <ActionSheet open={actionSheetOpen} onClose={() => setActionSheetOpen(false)} onSelect={(type) => openSheet(type)} />
-      <ExpenseSheet />
-      <IncomeSheet />
-      <TransferSheet />
 
       <ConfirmDialog
         open={!!deleteTransferTarget}

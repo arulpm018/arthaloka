@@ -123,11 +123,31 @@ const config = {
   				to: {
   					height: '0'
   				}
+  			},
+  			'fade-in-up': {
+  				from: {
+  					opacity: '0',
+  					transform: 'translate(-50%, 4px)'
+  				},
+  				to: {
+  					opacity: '1',
+  					transform: 'translate(-50%, 0)'
+  				}
+  			},
+  			'bounce-soft': {
+  				'0%, 100%': {
+  					transform: 'translateY(-1px)'
+  				},
+  				'50%': {
+  					transform: 'translateY(-3px)'
+  				}
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			'fade-in-up': 'fade-in-up 200ms ease-out',
+  			'bounce-soft': 'bounce-soft 1.6s ease-in-out infinite'
   		}
   	}
   },
