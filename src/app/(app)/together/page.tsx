@@ -16,12 +16,14 @@ import { AccountForm } from "@/components/accounts/AccountForm";
 import { AccountDetailSheet } from "@/components/accounts/AccountDetailSheet";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { LoadingState } from "@/components/shared/LoadingState";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useSummary } from "@/hooks/useSummary";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useTransfers } from "@/hooks/useTransfers";
 import { useAppStore } from "@/store/useAppStore";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
-import { Account } from "@/types";
+import { Account, Transfer } from "@/types";
 
 export default function TogetherPage() {
   const { selectedMonth, setSelectedMonth, openSheet, setDefaultOwner } = useAppStore();
@@ -30,6 +32,8 @@ export default function TogetherPage() {
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [deleteTransferTarget, setDeleteTransferTarget] = useState<Transfer | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     setDefaultOwner("shared");
@@ -43,9 +47,14 @@ export default function TogetherPage() {
     endDate: endOfMonth(selectedMonth),
     owner: "shared",
   });
+  const { transfers, isLoading: tfLoading, remove: removeTransfer } = useTransfers({
+    startDate: startOfMonth(selectedMonth),
+    endDate: endOfMonth(selectedMonth),
+    owner: "shared",
+  });
 
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
-  const isLoading = accountsLoading || summaryLoading || txLoading;
+  const isLoading = accountsLoading || summaryLoading || txLoading || tfLoading;
 
   const handleAccountTap = (account: Account) => {
     setSelectedAccount(account);
@@ -55,6 +64,17 @@ export default function TogetherPage() {
   const handleEditAccount = (account: Account) => {
     setEditingAccount(account);
     setAccountFormOpen(true);
+  };
+
+  const handleDeleteTransfer = async () => {
+    if (!deleteTransferTarget) return;
+    setIsDeleting(true);
+    try {
+      await removeTransfer(deleteTransferTarget);
+    } finally {
+      setIsDeleting(false);
+      setDeleteTransferTarget(null);
+    }
   };
 
   return (
@@ -104,7 +124,10 @@ export default function TogetherPage() {
             {/* Recent Transactions */}
             <RecentTransactions
               transactions={transactions}
+              transfers={transfers}
               onEdit={(tx) => openSheet(tx.type, tx)}
+              onEditTransfer={(tf) => openSheet("transfer", tf)}
+              onDeleteTransfer={(tf) => setDeleteTransferTarget(tf)}
             />
           </>
         )}
@@ -135,6 +158,15 @@ export default function TogetherPage() {
         }}
         account={selectedAccount}
         onEdit={handleEditAccount}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTransferTarget}
+        onClose={() => setDeleteTransferTarget(null)}
+        onConfirm={handleDeleteTransfer}
+        title="Hapus Transfer?"
+        description="Saldo kedua akun akan dikembalikan. Tindakan ini tidak bisa dibatalkan."
+        isLoading={isDeleting}
       />
     </>
   );

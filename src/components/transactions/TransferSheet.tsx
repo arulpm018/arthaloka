@@ -45,8 +45,10 @@ export const TransferSheet = () => {
       amount: 0,
       fromAccountId: "",
       fromAccountName: "",
+      fromAccountOwner: currentUser?.role || "arul",
       toAccountId: "",
       toAccountName: "",
+      toAccountOwner: currentUser?.role || "arul",
       owner: currentUser?.role || "arul",
       ownerUid: currentUser?.uid || "",
       date: Timestamp.now(),
@@ -64,8 +66,10 @@ export const TransferSheet = () => {
         amount: 0,
         fromAccountId: "",
         fromAccountName: "",
+        fromAccountOwner: ownerDefault,
         toAccountId: "",
         toAccountName: "",
+        toAccountOwner: ownerDefault,
         owner: ownerDefault,
         ownerUid: currentUser?.uid || "",
         date: Timestamp.now(),
@@ -94,6 +98,7 @@ export const TransferSheet = () => {
     if (acc) {
       setValue("fromAccountId", id);
       setValue("fromAccountName", acc.name);
+      setValue("fromAccountOwner", acc.owner);
     }
   };
 
@@ -102,6 +107,16 @@ export const TransferSheet = () => {
     if (acc) {
       setValue("toAccountId", id);
       setValue("toAccountName", acc.name);
+      setValue("toAccountOwner", acc.owner);
+    }
+  };
+
+  const getOwnerLabel = (owner: string) => {
+    switch (owner) {
+      case "arul": return "Arul";
+      case "fifi": return "Fifi";
+      case "shared": return "Bersama";
+      default: return "";
     }
   };
 
@@ -148,7 +163,12 @@ export const TransferSheet = () => {
               <SelectContent>
                 {accounts.map((acc) => (
                   <SelectItem key={acc.accountId} value={acc.accountId}>
-                    {acc.name}
+                    <span className="flex items-center gap-2">
+                      {acc.name}
+                      <span className="text-xs text-muted-foreground">
+                        ({getOwnerLabel(acc.owner)})
+                      </span>
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -170,7 +190,12 @@ export const TransferSheet = () => {
                   .filter((a) => a.accountId !== fromId)
                   .map((acc) => (
                     <SelectItem key={acc.accountId} value={acc.accountId}>
-                      {acc.name}
+                      <span className="flex items-center gap-2">
+                        {acc.name}
+                        <span className="text-xs text-muted-foreground">
+                          ({getOwnerLabel(acc.owner)})
+                        </span>
+                      </span>
                     </SelectItem>
                   ))}
               </SelectContent>

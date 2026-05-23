@@ -7,8 +7,10 @@ export interface Transfer {
   amount: number;
   fromAccountId: string;
   fromAccountName: string;
+  fromAccountOwner: Owner;
   toAccountId: string;
   toAccountName: string;
+  toAccountOwner: Owner;
   owner: Owner;
   ownerUid: string;
   date: Timestamp;
