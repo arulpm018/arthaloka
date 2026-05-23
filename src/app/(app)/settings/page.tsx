@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { LogOut, Moon, Sun, Monitor, Link2, User } from "lucide-react";
+import { LogOut, Moon, Sun, Monitor, User } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default function SettingsPage() {
-  const { partner, logout, firebaseUser } = useAuth();
+  const { logout, firebaseUser } = useAuth();
   const { currentUser } = useAppStore();
   const { accounts } = useAccounts();
   const { theme, setTheme } = useTheme();
@@ -65,33 +65,6 @@ export default function SettingsPage() {
                 {currentUser?.email}
               </p>
             </div>
-          </div>
-        </section>
-
-        {/* Partner */}
-        <section className="space-y-3">
-          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-            Partner
-          </h3>
-          <div className="flex items-center gap-3 p-3 rounded-lg border border-border">
-            <Link2 className="h-4 w-4 text-muted-foreground" />
-            {partner ? (
-              <div>
-                <p className="text-sm font-medium">{partner.displayName}</p>
-                <p className="text-xs text-income">Terhubung</p>
-              </div>
-            ) : (
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Belum terhubung
-                </p>
-                {currentUser?.inviteCode && (
-                  <p className="text-xs font-mono">
-                    Kode: {currentUser.inviteCode}
-                  </p>
-                )}
-              </div>
-            )}
           </div>
         </section>
 
