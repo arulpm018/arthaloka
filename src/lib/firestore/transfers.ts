@@ -42,6 +42,50 @@ export const transfersService = {
   },
 
   /**
+   * Update transfer + adjust both account balances (reverse old, apply new)
+   * Net deltas are merged per accountId to avoid Firestore batch overwriting
+   * multiple updates to the same document.
+   */
+  update: async (
+    id: string,
+    oldTransfer: Transfer,
+    newInput: CreateTransferInput
+  ): Promise<void> => {
+    const batch = writeBatch(db);
+    const transferRef = doc(db, COLLECTION, id);
+
+    batch.update(transferRef, {
+      ...newInput,
+      updatedAt: serverTimestamp(),
+    });
+
+    // Compute net delta per accountId
+    const deltas = new Map<string, number>();
+    const addDelta = (accountId: string, delta: number) => {
+      deltas.set(accountId, (deltas.get(accountId) ?? 0) + delta);
+    };
+
+    // Reverse old: credit back fromAccount, debit toAccount
+    addDelta(oldTransfer.fromAccountId, oldTransfer.amount);
+    addDelta(oldTransfer.toAccountId, -oldTransfer.amount);
+
+    // Apply new: debit fromAccount, credit toAccount
+    addDelta(newInput.fromAccountId, -newInput.amount);
+    addDelta(newInput.toAccountId, newInput.amount);
+
+    deltas.forEach((delta, accountId) => {
+      if (delta === 0) return;
+      const accountRef = doc(db, "accounts", accountId);
+      batch.update(accountRef, {
+        balance: increment(delta),
+        updatedAt: serverTimestamp(),
+      });
+    });
+
+    await batch.commit();
+  },
+
+  /**
    * Delete transfer + reverse both account balances (atomic batch write)
    */
   delete: async (transfer: Transfer): Promise<void> => {

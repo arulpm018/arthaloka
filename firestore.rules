@@ -9,11 +9,6 @@ service cloud.firestore {
         && request.auth.token.email in ['fifi.work27@gmail.com', 'arulpm010@gmail.com'];
     }
 
-    function isOwnerOrPartner(ownerUid) {
-      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
-      return request.auth.uid == ownerUid || userDoc.data.partnerUid == ownerUid;
-    }
-
     function isValidTransaction() {
       let data = request.resource.data;
       return data.amount > 0
@@ -23,27 +18,28 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isAllowedUser() && (request.auth.uid == userId ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.partnerUid == userId);
+      // Both whitelisted users can read each other's profile (needed for shared finance app)
+      allow read: if isAllowedUser();
       allow write: if isAllowedUser() && request.auth.uid == userId;
     }
 
     match /accounts/{accountId} {
       allow read: if isAllowedUser();
       allow create: if isAllowedUser();
-      allow update, delete: if isAllowedUser() && isOwnerOrPartner(resource.data.ownerUid);
+      // Both partners can manage each other's accounts (shared finance app for 2 whitelisted users)
+      allow update, delete: if isAllowedUser();
     }
 
     match /transactions/{txId} {
       allow read: if isAllowedUser();
       allow create: if isAllowedUser() && isValidTransaction();
-      allow update, delete: if isAllowedUser() && isOwnerOrPartner(resource.data.ownerUid);
+      allow update, delete: if isAllowedUser();
     }
 
     match /transfers/{transferId} {
       allow read: if isAllowedUser();
       allow create: if isAllowedUser();
-      allow update, delete: if isAllowedUser() && isOwnerOrPartner(resource.data.ownerUid);
+      allow update, delete: if isAllowedUser();
     }
 
     match /categories/{catId} {
