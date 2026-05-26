@@ -80,6 +80,19 @@ export const WishlistItemCard = ({
     e.stopPropagation();
   };
 
+  // Radix renders DropdownMenuContent inside a Portal, but React events still
+  // bubble through the component tree. Without this, a tap on a menu item
+  // would bubble back up to the card's `useLongPress` handlers and fire
+  // `onTap` (= edit form), in addition to running the menu's `onSelect`.
+  // Stopping pointer + click propagation on the content boundary keeps the
+  // gesture detection isolated.
+  const stopMenuEvents = {
+    onPointerDown: stopInner,
+    onPointerUp: stopInner,
+    onPointerMove: stopInner,
+    onClick: stopInner,
+  };
+
   // Checkbox button. When wrapped in the inner DropdownMenuTrigger (via
   // `showPurchaseOptions`), Radix handles opening the menu on click — we only
   // need to stop propagation so the outer long-press card never sees the tap.
@@ -130,7 +143,12 @@ export const WishlistItemCard = ({
   const checkbox = showPurchaseOptions ? (
     <DropdownMenu open={purchaseMenuOpen} onOpenChange={setPurchaseMenuOpen}>
       <DropdownMenuTrigger asChild>{checkboxButton}</DropdownMenuTrigger>
-      <DropdownMenuContent align="start" side="bottom" className="w-64">
+      <DropdownMenuContent
+        align="start"
+        side="bottom"
+        className="w-64"
+        {...stopMenuEvents}
+      >
         <DropdownMenuItem
           onSelect={(e) => {
             e.preventDefault();
@@ -227,7 +245,7 @@ export const WishlistItemCard = ({
   return (
     <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
       <DropdownMenuTrigger asChild>{card}</DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
+      <DropdownMenuContent align="end" className="w-44" {...stopMenuEvents}>
         {onEdit && (
           <DropdownMenuItem
             onSelect={(e) => {
