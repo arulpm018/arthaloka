@@ -3,11 +3,14 @@
 import { cn } from "@/lib/utils/cn";
 import { Account } from "@/types";
 import { Wallet, Building2, Smartphone, PiggyBank, TrendingUp } from "lucide-react";
+import { useAppStore } from "@/store/useAppStore";
 
 interface AccountCardProps {
   account: Account;
   onTap?: () => void;
 }
+
+const HIDDEN_PLACEHOLDER = "••••••••";
 
 const iconMap: Record<string, React.ElementType> = {
   bank: Building2,
@@ -34,6 +37,7 @@ function formatCurrency(amount: number): string {
 
 export const AccountCard = ({ account, onTap }: AccountCardProps) => {
   const Icon = iconMap[account.type] || Wallet;
+  const hideBalance = useAppStore((s) => s.hideBalance);
 
   return (
     <button
@@ -53,7 +57,7 @@ export const AccountCard = ({ account, onTap }: AccountCardProps) => {
         </p>
       </div>
       <p className="text-sm font-mono font-medium tabular-nums">
-        {formatCurrency(account.balance)}
+        {hideBalance ? HIDDEN_PLACEHOLDER : formatCurrency(account.balance)}
       </p>
     </button>
   );

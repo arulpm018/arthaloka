@@ -203,7 +203,7 @@ export const SummaryCards = ({ totalBalance, income, expense, accounts = [] }: S
             <p className="text-xs text-muted-foreground">Pemasukan</p>
           </div>
           <p className="text-base font-mono font-semibold tabular-nums text-income">
-            +{formatCurrency(income)}
+            {showBalance ? `+${formatCurrency(income)}` : HIDDEN_PLACEHOLDER}
           </p>
         </div>
 
@@ -215,7 +215,7 @@ export const SummaryCards = ({ totalBalance, income, expense, accounts = [] }: S
             <p className="text-xs text-muted-foreground">Pengeluaran</p>
           </div>
           <p className="text-base font-mono font-semibold tabular-nums text-expense">
-            -{formatCurrency(expense)}
+            {showBalance ? `-${formatCurrency(expense)}` : HIDDEN_PLACEHOLDER}
           </p>
         </div>
       </div>

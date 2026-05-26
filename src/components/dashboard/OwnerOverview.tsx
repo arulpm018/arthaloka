@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { startOfMonth, endOfMonth } from "date-fns";
-import { Plus } from "lucide-react";
+import { Plus, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { OwnerSwitcherTitle } from "@/components/layout/OwnerSwitcherTitle";
@@ -23,6 +23,8 @@ import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { getMoodForBalance, getMoodForNet } from "@/lib/utils/memeMood";
 import { OWNER_COLORS } from "@/lib/constants/labels";
 import { Account, Owner } from "@/types";
+
+const HIDDEN_PLACEHOLDER = "••••••••";
 
 interface OwnerOverviewProps {
   owner: Owner;
@@ -57,6 +59,8 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
   const isLoading = accountsLoading || summaryLoading || txLoading || tfLoading;
 
   const hideBalance = useAppStore((s) => s.hideBalance);
+  const setHideBalance = useAppStore((s) => s.setHideBalance);
+  const showBalance = !hideBalance;
   const currentUser = useAppStore((s) => s.currentUser);
   const partner = useAppStore((s) => s.partner);
 
@@ -112,26 +116,41 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
 
             {/* Balance hero card — gradient tinted by owner color, meme 96px */}
             <div
-              className="rounded-2xl border p-5 transition-colors"
+              className="relative rounded-2xl border p-5 transition-colors"
               style={{
                 borderColor: `${OWNER_COLORS[owner]}33`,
                 background: `linear-gradient(135deg, ${OWNER_COLORS[owner]}14 0%, ${OWNER_COLORS[owner]}05 50%, transparent 100%)`,
               }}
             >
+              {/* Eye toggle — absolute top-right, biar tidak makan vertikal space dan tidak tabrakan dengan meme. */}
+              <button
+                type="button"
+                aria-label={showBalance ? "Sembunyikan saldo" : "Tampilkan saldo"}
+                onClick={() => setHideBalance(!hideBalance)}
+                className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-muted/50 transition-colors z-10"
+              >
+                {showBalance ? (
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                )}
+              </button>
+
               {/* Balance + meme — meme self-center aligns with balance block */}
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs text-muted-foreground">Total Balance</p>
+                  {/* Padding-right kecil supaya label nggak ke-overlap eye toggle. */}
+                  <p className="text-xs text-muted-foreground pr-8">Total Balance</p>
                   <p className="text-3xl font-mono font-bold tabular-nums tracking-tight">
-                    {hideBalance ? "••••••••" : formatCurrency(totalBalance)}
+                    {showBalance ? formatCurrency(totalBalance) : HIDDEN_PLACEHOLDER}
                   </p>
                 </div>
-                {!hideBalance && (
+                {showBalance && (
                   <MemeReaction
                     mood={heroMood}
                     size="lg"
                     seed={`${owner}-${heroMood}`}
-                    className="h-24 w-24 text-4xl shrink-0"
+                    className="h-24 w-24 text-4xl shrink-0 mr-6"
                   />
                 )}
               </div>
@@ -143,7 +162,7 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
                     Pemasukan
                   </p>
                   <p className="text-sm font-mono font-semibold text-income tabular-nums">
-                    +{formatCurrency(income)}
+                    {showBalance ? `+${formatCurrency(income)}` : HIDDEN_PLACEHOLDER}
                   </p>
                 </div>
                 <div className="rounded-lg bg-expense/10 px-3 py-2">
@@ -151,7 +170,7 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
                     Pengeluaran
                   </p>
                   <p className="text-sm font-mono font-semibold text-expense tabular-nums">
-                    -{formatCurrency(expense)}
+                    {showBalance ? `-${formatCurrency(expense)}` : HIDDEN_PLACEHOLDER}
                   </p>
                 </div>
               </div>
