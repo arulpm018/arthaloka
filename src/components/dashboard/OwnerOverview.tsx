@@ -145,7 +145,7 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
                 <div className="min-w-0">
                   {/* Padding-right kecil supaya label nggak ke-overlap eye toggle. */}
                   <p className="text-xs text-muted-foreground pr-8">Total Balance</p>
-                  <p className="text-3xl font-mono font-bold tabular-nums tracking-tight truncate">
+                  <p className="text-2xl sm:text-3xl font-mono font-bold tabular-nums tracking-tight truncate">
                     {showBalance ? formatCurrency(totalBalance) : HIDDEN_PLACEHOLDER}
                   </p>
                 </div>
