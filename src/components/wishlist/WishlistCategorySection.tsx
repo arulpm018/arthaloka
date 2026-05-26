@@ -20,6 +20,13 @@ interface WishlistCategorySectionProps {
   onTogglePurchased: (item: WishlistItem) => void;
   onEditItem: (item: WishlistItem) => void;
   onEditCategory: (category: WishlistCategory) => void;
+  onDeleteItem?: (item: WishlistItem) => void;
+  /**
+   * Optional — forwarded to `WishlistItemCard` so the checkbox dropdown can
+   * offer "Tandai dibeli + catat pengeluaran" for unpurchased items. The page
+   * owns the marking state and triggers the TransactionSheet pre-fill flow.
+   */
+  onMarkPurchasedWithExpense?: (item: WishlistItem) => void;
 }
 
 export const WishlistCategorySection = ({
@@ -29,6 +36,8 @@ export const WishlistCategorySection = ({
   onTogglePurchased,
   onEditItem,
   onEditCategory,
+  onDeleteItem,
+  onMarkPurchasedWithExpense,
 }: WishlistCategorySectionProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const Icon = getCategoryIcon(category.icon);
@@ -76,6 +85,7 @@ export const WishlistCategorySection = ({
         <button
           onClick={() => onEditCategory(category)}
           className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+          aria-label={`Edit kategori ${category.name}`}
         >
           <Pencil className="h-3.5 w-3.5" />
         </button>
@@ -93,6 +103,15 @@ export const WishlistCategorySection = ({
                   item={item}
                   onTogglePurchased={() => onTogglePurchased(item)}
                   onTap={() => onEditItem(item)}
+                  onEdit={() => onEditItem(item)}
+                  onDelete={
+                    onDeleteItem ? () => onDeleteItem(item) : undefined
+                  }
+                  onMarkPurchasedWithExpense={
+                    onMarkPurchasedWithExpense
+                      ? () => onMarkPurchasedWithExpense(item)
+                      : undefined
+                  }
                 />
               ))}
             </div>
@@ -118,6 +137,10 @@ export const WishlistCategorySection = ({
                   item={item}
                   onTogglePurchased={() => onTogglePurchased(item)}
                   onTap={() => onEditItem(item)}
+                  onEdit={() => onEditItem(item)}
+                  onDelete={
+                    onDeleteItem ? () => onDeleteItem(item) : undefined
+                  }
                 />
               ))}
             </div>

@@ -53,5 +53,14 @@ service cloud.firestore {
     match /wishlistCategories/{catId} {
       allow read, write: if isAllowedUser();
     }
+
+    match /memes/{memeId} {
+      allow read, write: if isAllowedUser();
+    }
+
+    // Single shared slot untuk foto couple (data URL inline).
+    match /appConfig/{docId} {
+      allow read, write: if isAllowedUser();
+    }
   }
 }

@@ -19,6 +19,8 @@ export interface Account {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   note?: string;
+  savingTarget?: number;
+  targetDate?: Timestamp;
 }
 
 export type CreateAccountInput = Omit<Account, "accountId" | "createdAt" | "updatedAt">;

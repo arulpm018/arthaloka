@@ -1,19 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Timestamp } from "firebase/firestore";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,13 +21,13 @@ import { transfersService } from "@/lib/firestore/transfers";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useAppStore } from "@/store/useAppStore";
 import { AmountInput } from "@/components/shared/AmountInput";
+import { DeleteTransferDialog } from "@/components/transactions/DeleteTransferDialog";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { CreateTransferInput } from "@/types";
 
 export const TransferSheet = () => {
   const { activeSheet, closeSheet, currentUser, defaultOwner, editingTransfer } = useAppStore();
   const { accounts } = useAccounts();
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -50,8 +43,7 @@ export const TransferSheet = () => {
     control,
     formState: { errors, isSubmitting },
   } = useForm<TransferFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(transferSchema) as any,
+    resolver: zodResolver(transferSchema),
     defaultValues: {
       name: "",
       amount: 0,
@@ -70,9 +62,6 @@ export const TransferSheet = () => {
 
   useEffect(() => {
     if (isOpen) {
-      setSubmitError(null);
-      setSubmitSuccess(false);
-
       if (isEditing && editingTransfer) {
         reset({
           name: editingTransfer.name,
@@ -110,24 +99,22 @@ export const TransferSheet = () => {
 
   const onSubmit = async (data: TransferFormValues) => {
     try {
-      setSubmitError(null);
       if (isEditing && editingTransfer) {
         await transfersService.update(
           editingTransfer.transferId,
           editingTransfer,
           data as unknown as CreateTransferInput
         );
+        toast.success("Perubahan tersimpan");
       } else {
         await transfersService.create(data as unknown as CreateTransferInput);
+        toast.success("Transfer tersimpan");
       }
-      setSubmitSuccess(true);
-      setTimeout(() => {
-        closeSheet();
-        setSubmitSuccess(false);
-      }, 800);
+      closeSheet();
     } catch (error) {
       console.error("Failed to save transfer:", error);
-      setSubmitError("Gagal menyimpan. Coba lagi.");
+      toast.error("Gagal menyimpan. Coba lagi.");
+      // Sheet stays open with form data preserved
     }
   };
 
@@ -136,10 +123,12 @@ export const TransferSheet = () => {
     setIsDeleting(true);
     try {
       await transfersService.delete(editingTransfer);
+      toast.success("Transfer dihapus");
       setDeleteDialogOpen(false);
       closeSheet();
     } catch (error) {
       console.error("Failed to delete transfer:", error);
+      toast.error("Gagal menghapus. Coba lagi.");
     } finally {
       setIsDeleting(false);
     }
@@ -165,9 +154,9 @@ export const TransferSheet = () => {
 
   const getOwnerLabel = (owner: string) => {
     switch (owner) {
-      case "arul": return "Arul";
-      case "fifi": return "Fifi";
-      case "shared": return "Bersama";
+      case "arul": return OWNER_LABELS["arul"];
+      case "fifi": return OWNER_LABELS["fifi"];
+      case "shared": return OWNER_LABELS["shared"];
       default: return "";
     }
   };
@@ -282,25 +271,13 @@ export const TransferSheet = () => {
               <Input placeholder="Catatan" {...register("note")} />
             </div>
 
-            {/* Error message */}
-            {submitError && (
-              <p className="text-sm text-destructive text-center">{submitError}</p>
-            )}
-
-            {/* Success message */}
-            {submitSuccess && (
-              <p className="text-sm text-transfer text-center">
-                {isEditing ? "Perubahan tersimpan ✓" : "Transfer berhasil ✓"}
-              </p>
-            )}
-
             <Button
               type="submit"
               className="w-full bg-transfer hover:bg-transfer/90 text-white"
               disabled={isSubmitting}
             >
               {isSubmitting
-                ? "Memproses..."
+                ? "Menyimpan..."
                 : isEditing
                   ? "Simpan Perubahan"
                   : "Transfer"}
@@ -321,33 +298,13 @@ export const TransferSheet = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="max-w-sm mx-auto">
-          <DialogHeader>
-            <DialogTitle>Hapus Transfer</DialogTitle>
-            <DialogDescription>
-              Yakin ingin menghapus transfer <strong>{editingTransfer?.name}</strong>?
-              Saldo kedua akun akan dikembalikan. Aksi ini tidak bisa dibatalkan.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              Batal
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={isDeleting}
-              onClick={handleDelete}
-            >
-              {isDeleting ? "Menghapus..." : "Hapus"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteTransferDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        transferName={editingTransfer?.name || ""}
+        isLoading={isDeleting}
+      />
     </>
   );
 };

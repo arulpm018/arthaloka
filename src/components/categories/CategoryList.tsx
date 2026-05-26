@@ -3,13 +3,14 @@
 import { Category, BudgetScope } from "@/types";
 import { BudgetProgressBar } from "./BudgetProgressBar";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { cn } from "@/lib/utils/cn";
 
 const scopeLabels: Record<BudgetScope, string> = {
-  arul: "Arul",
-  fifi: "Fifi",
-  shared: "Together",
+  arul: OWNER_LABELS["arul"],
+  fifi: OWNER_LABELS["fifi"],
+  shared: OWNER_LABELS["shared"],
 };
 
 const scopeColors: Record<BudgetScope, string> = {

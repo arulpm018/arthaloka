@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Plus, FolderPlus } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "@/components/layout/Header";
@@ -13,13 +13,18 @@ import { WishlistSkeleton } from "@/components/wishlist/WishlistSkeleton";
 import { WishlistItemForm } from "@/components/wishlist/WishlistItemForm";
 import { WishlistCategoryForm } from "@/components/wishlist/WishlistCategoryForm";
 import { WishlistDeleteCategoryDialog } from "@/components/wishlist/WishlistDeleteCategoryDialog";
+import { WishlistDeleteItemDialog } from "@/components/wishlist/WishlistDeleteItemDialog";
+import { WishlistCelebrationDialog } from "@/components/wishlist/WishlistCelebrationDialog";
 import { useWishlistItems } from "@/hooks/useWishlistItems";
 import { useWishlistCategories } from "@/hooks/useWishlistCategories";
 import { useWishlistProgress } from "@/hooks/useWishlistProgress";
+import { useAppStore } from "@/store/useAppStore";
 import { filterByOwner, groupItemsByCategory } from "@/lib/utils/wishlist";
 import type { OwnerFilter, WishlistItem, WishlistCategory } from "@/types/wishlist";
 import type { WishlistItemFormValues } from "@/lib/validations/wishlistItem.schema";
 import type { WishlistCategoryFormValues } from "@/lib/validations/wishlistCategory.schema";
+
+const CELEBRATION_KEY_PREFIX = "arthafiloka.wishlistCelebrated:";
 
 export default function WishlistPage() {
   // Filter state
@@ -35,6 +40,21 @@ export default function WishlistPage() {
   // Delete category dialog state
   const [showDeleteCategoryDialog, setShowDeleteCategoryDialog] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<WishlistCategory | null>(null);
+
+  // Delete item dialog state — wired by long-press menu on WishlistItemCard
+  const [itemToDelete, setItemToDelete] = useState<WishlistItem | null>(null);
+
+  // Celebration modal — muncul sekali saat progress transisi ke 100%.
+  // Per-session via sessionStorage, namespaced by ownerFilter biar:
+  //   - rayakan "all=100%" tetep ke-trigger meskipun dulu pernah rayain "arul=100%"
+  //   - reload dengan progress sama tidak men-spam dialog
+  const [celebrationOpen, setCelebrationOpen] = useState(false);
+  const prevPercentageRef = useRef<number | null>(null);
+
+  // Zustand action to open the global TransactionSheet with prefill +
+  // wishlist source. The sheet handles the back-link (mark item purchased +
+  // store linkedTransactionId) on submit success.
+  const openSheetWithPrefill = useAppStore((s) => s.openSheetWithPrefill);
 
   // Data hooks
   const { items, isLoading: itemsLoading, create, update, remove, togglePurchased } = useWishlistItems();
@@ -53,6 +73,42 @@ export default function WishlistPage() {
   const { overall } = useWishlistProgress(filteredItems);
 
   const isLoading = itemsLoading || categoriesLoading;
+
+  // Trigger celebration modal sekali per session saat percentage hit 100%.
+  // Dipake `useEffect` (bukan inline) supaya nggak race dengan state update.
+  const overallPercentage =
+    overall.totalCount > 0
+      ? Math.round((overall.purchasedCount / overall.totalCount) * 100)
+      : 0;
+
+  useEffect(() => {
+    if (isLoading || overall.totalCount === 0) return;
+
+    const sessionKey = `${CELEBRATION_KEY_PREFIX}${ownerFilter}`;
+    let celebratedThisSession = false;
+    try {
+      celebratedThisSession =
+        typeof window !== "undefined" &&
+        window.sessionStorage.getItem(sessionKey) === "1";
+    } catch {
+      /* ignore storage errors */
+    }
+
+    const prev = prevPercentageRef.current;
+    const justHit100 = prev !== null && prev < 100 && overallPercentage === 100;
+    const initialAt100 = prev === null && overallPercentage === 100;
+
+    if ((justHit100 || initialAt100) && !celebratedThisSession) {
+      setCelebrationOpen(true);
+      try {
+        window.sessionStorage.setItem(sessionKey, "1");
+      } catch {
+        /* ignore */
+      }
+    }
+
+    prevPercentageRef.current = overallPercentage;
+  }, [overallPercentage, overall.totalCount, isLoading, ownerFilter]);
 
   // Optimistic toggle for purchase status
   const handleTogglePurchased = useCallback(
@@ -137,6 +193,25 @@ export default function WishlistPage() {
     setShowCategoryForm(true);
   };
 
+  // Mark wishlist item as purchased AND record an expense in one flow.
+  // We open the global expense TransactionSheet pre-filled with the item's
+  // name/price/owner and tag the source so the sheet can mark the item
+  // purchased + store `linkedTransactionId` after a successful save.
+  const handleMarkWithExpense = useCallback(
+    (item: WishlistItem) => {
+      openSheetWithPrefill(
+        "expense",
+        {
+          name: item.nama,
+          amount: item.harga,
+          owner: item.owner,
+        },
+        { type: "wishlist", itemId: item.itemId }
+      );
+    },
+    [openSheetWithPrefill]
+  );
+
   // Delete category handler — opens confirmation dialog
   const handleDeleteCategory = (category: WishlistCategory) => {
     setCategoryToDelete(category);
@@ -157,6 +232,19 @@ export default function WishlistPage() {
   const deleteCategoryItemCount = categoryToDelete
     ? items.filter((item) => item.categoryId === categoryToDelete.categoryId).length
     : 0;
+
+  // Confirm delete from long-press menu (separate from delete-while-editing flow)
+  const handleConfirmDeleteItem = async () => {
+    if (!itemToDelete) return;
+    try {
+      await remove(itemToDelete.itemId);
+      toast.success("Item berhasil dihapus");
+      setItemToDelete(null);
+    } catch {
+      toast.error("Gagal menghapus. Coba lagi.");
+      throw new Error("Delete failed");
+    }
+  };
 
   return (
     <>
@@ -186,6 +274,7 @@ export default function WishlistPage() {
                 onClick={handleAddCategory}
                 className="flex-shrink-0 p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
                 title="Tambah Kategori"
+                aria-label="Tambah kategori"
               >
                 <FolderPlus className="h-4 w-4" />
               </button>
@@ -202,6 +291,8 @@ export default function WishlistPage() {
                     onTogglePurchased={handleTogglePurchased}
                     onEditItem={handleEditItem}
                     onEditCategory={handleEditCategory}
+                    onDeleteItem={(item) => setItemToDelete(item)}
+                    onMarkPurchasedWithExpense={handleMarkWithExpense}
                   />
                 ))}
               </div>
@@ -259,6 +350,23 @@ export default function WishlistPage() {
         category={categoryToDelete}
         itemCount={deleteCategoryItemCount}
         onConfirm={handleConfirmDeleteCategory}
+      />
+
+      {/* Delete Item Confirmation Dialog (long-press menu) */}
+      <WishlistDeleteItemDialog
+        open={!!itemToDelete}
+        onOpenChange={(open) => {
+          if (!open) setItemToDelete(null);
+        }}
+        item={itemToDelete}
+        onConfirm={handleConfirmDeleteItem}
+      />
+
+      {/* 100% celebration modal */}
+      <WishlistCelebrationDialog
+        open={celebrationOpen}
+        onClose={() => setCelebrationOpen(false)}
+        totalCount={overall.totalCount}
       />
     </>
   );

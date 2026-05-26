@@ -1,6 +1,7 @@
 "use client";
 
 import { Account, Owner } from "@/types";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { AccountCard } from "./AccountCard";
 
 interface AccountListProps {
@@ -9,9 +10,9 @@ interface AccountListProps {
 }
 
 const ownerSections: { key: Owner; label: string }[] = [
-  { key: "arul", label: "Arul" },
-  { key: "fifi", label: "Fifi" },
-  { key: "shared", label: "Together" },
+  { key: "arul", label: OWNER_LABELS["arul"] },
+  { key: "fifi", label: OWNER_LABELS["fifi"] },
+  { key: "shared", label: OWNER_LABELS["shared"] },
 ];
 
 export const AccountList = ({ accounts, onAccountTap }: AccountListProps) => {

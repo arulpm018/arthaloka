@@ -38,17 +38,7 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Arthafiloka custom tokens */
-    --bg-primary: #FFFFFF;
-    --bg-secondary: #F7F6F3;
-    --bg-tertiary: #EFEEEB;
-    --bg-hover: #F1F1EF;
-    --text-primary: #1A1A1A;
-    --text-secondary: #6B6B6B;
-    --text-muted: #9B9B9B;
-    --text-inverse: #FFFFFF;
-    --border-default: #E8E8E6;
-    --border-strong: #D4D4D2;
+    /* Arthafiloka semantic color tokens (kept for parity with tailwind.config.ts) */
     --color-income: #0F9B58;
     --color-expense: #E03E3E;
     --color-transfer: #2383E2;
@@ -57,9 +47,6 @@
     --color-arul: #2383E2;
     --color-fifi: #E255A1;
     --color-shared: #9B59B6;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-sheet: 0 -4px 24px rgba(0,0,0,0.12);
   }
 
   .dark {
@@ -95,18 +82,6 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* Arthafiloka dark mode tokens */
-    --bg-primary: #191919;
-    --bg-secondary: #202020;
-    --bg-tertiary: #272727;
-    --bg-hover: #2C2C2C;
-    --text-primary: #FFFFFFDE;
-    --text-secondary: #FFFFFF99;
-    --text-muted: #FFFFFF61;
-    --text-inverse: #191919;
-    --border-default: #2F2F2F;
-    --border-strong: #3D3D3D;
   }
 }
 

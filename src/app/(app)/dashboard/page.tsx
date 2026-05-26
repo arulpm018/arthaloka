@@ -7,6 +7,7 @@ import { MonthPicker } from "@/components/shared/MonthPicker";
 import { FAB } from "@/components/layout/FAB";
 import { ActionSheet } from "@/components/layout/ActionSheet";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
+import { BudgetAlerts } from "@/components/dashboard/BudgetAlerts";
 import { SpendingByCategory } from "@/components/dashboard/SpendingByCategory";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -64,6 +65,7 @@ export default function DashboardPage() {
         ) : (
           <>
             <SummaryCards totalBalance={totalBalance} income={income} expense={expense} accounts={accounts} />
+            <BudgetAlerts budgets={budgets} />
             <SpendingByCategory budgets={budgets} />
             <RecentTransactions
               transactions={transactions}

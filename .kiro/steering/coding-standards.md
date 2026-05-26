@@ -24,8 +24,10 @@ inclusion: auto
 - Gunakan `cn()` helper untuk conditional classes
 - Mobile-first: tulis base styles dulu, lalu `md:` dan `lg:` untuk larger screens
 - Spacing: gunakan Tailwind scale (p-2, p-4, gap-3, etc.)
-- Colors: gunakan CSS variables via Tailwind (bg-primary, text-secondary, etc.)
-- Jangan hardcode hex colors di components
+- Colors: pakai shadcn standard tokens — `bg-card`, `bg-muted`, `text-muted-foreground`, `border-border`, `bg-primary`, `hover:bg-accent`. JANGAN pakai ghost tokens `bg-secondary` / `text-secondary` / `bg-tertiary` / `text-muted` / `bg-hover` / `border-default` (tidak ter-wire di Tailwind config).
+- Semantic colors: `text-income`, `text-expense`, `text-transfer`, `bg-income/10`, dst (sudah di-extend di `tailwind.config.ts`).
+- Jangan hardcode hex colors di components — kecuali untuk owner color (import `OWNER_COLORS` dari `@/lib/constants/labels`) atau user-pickable colors yang stored di Firestore (`account.color`, `category.color`) via inline `style`.
+- Detail pattern lihat `.kiro/steering/component-patterns.md`.
 
 ## State & Data Rules
 - Firestore operations HARUS melalui service functions di `src/lib/firestore/`

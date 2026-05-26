@@ -18,10 +18,16 @@ export function useSummary(month: Date, owner?: string) {
   const [expense, setExpense] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Depend on a primitive (timestamp ms) instead of the Date object so that
+  // call-sites passing `new Date(...)` each render don't trigger an infinite
+  // effect re-run loop.
+  const monthMs = month.getTime();
+
   useEffect(() => {
+    const monthDate = new Date(monthMs);
     const constraints = [
-      where("date", ">=", Timestamp.fromDate(startOfMonth(month))),
-      where("date", "<=", Timestamp.fromDate(endOfMonth(month))),
+      where("date", ">=", Timestamp.fromDate(startOfMonth(monthDate))),
+      where("date", "<=", Timestamp.fromDate(endOfMonth(monthDate))),
       orderBy("date", "desc"),
     ];
     if (owner) constraints.push(where("owner", "==", owner));
@@ -49,7 +55,7 @@ export function useSummary(month: Date, owner?: string) {
     );
 
     return () => unsubscribe();
-  }, [month, owner]);
+  }, [monthMs, owner]);
 
   return { income, expense, net: income - expense, isLoading };
 }

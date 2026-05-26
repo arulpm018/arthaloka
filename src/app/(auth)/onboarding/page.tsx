@@ -12,6 +12,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { OwnerAvatar } from "@/components/shared/OwnerAvatar";
 import { useAuth } from "@/hooks/useAuth";
 import { db } from "@/lib/firebase";
 
@@ -97,17 +98,19 @@ export default function OnboardingPage() {
               type="button"
               variant={role === "arul" ? "default" : "outline"}
               onClick={() => setRole("arul")}
-              className="h-12"
+              className="h-14 gap-2"
             >
-              👨 Arul
+              <OwnerAvatar owner="arul" size="sm" />
+              Arul
             </Button>
             <Button
               type="button"
               variant={role === "fifi" ? "default" : "outline"}
               onClick={() => setRole("fifi")}
-              className="h-12"
+              className="h-14 gap-2"
             >
-              👩 Fifi
+              <OwnerAvatar owner="fifi" size="sm" />
+              Fifi
             </Button>
           </div>
         </div>

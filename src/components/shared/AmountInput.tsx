@@ -9,9 +9,21 @@ interface AmountInputProps {
   onChange: (value: number) => void;
   autoFocus?: boolean;
   className?: string;
+  /**
+   * Optional currency prefix label rendered inside the input.
+   * Defaults to "Rp" for backward compatibility. Pass `""` to hide it
+   * (input padding collapses to `pl-3`).
+   */
+  prefix?: string;
 }
 
-export const AmountInput = ({ value, onChange, autoFocus, className }: AmountInputProps) => {
+export const AmountInput = ({
+  value,
+  onChange,
+  autoFocus,
+  className,
+  prefix = "Rp",
+}: AmountInputProps) => {
   const [displayValue, setDisplayValue] = useState(value > 0 ? formatNumber(value) : "");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -34,11 +46,15 @@ export const AmountInput = ({ value, onChange, autoFocus, className }: AmountInp
     onChange(num);
   };
 
+  const hasPrefix = prefix !== "";
+
   return (
     <div className={cn("relative", className)}>
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-        Rp
-      </span>
+      {hasPrefix && (
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+          {prefix}
+        </span>
+      )}
       <input
         ref={inputRef}
         type="text"
@@ -46,7 +62,10 @@ export const AmountInput = ({ value, onChange, autoFocus, className }: AmountInp
         value={displayValue}
         onChange={handleChange}
         placeholder="0"
-        className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm font-mono tabular-nums ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className={cn(
+          "flex h-10 w-full rounded-md border border-input bg-background pr-3 py-2 text-sm font-mono tabular-nums ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          hasPrefix ? "pl-10" : "pl-3"
+        )}
       />
     </div>
   );

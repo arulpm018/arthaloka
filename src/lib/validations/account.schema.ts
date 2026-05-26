@@ -13,6 +13,9 @@ export const accountSchema = z.object({
   isActive: z.boolean().default(true),
   order: z.number().int().min(0).default(0),
   note: z.string().optional(),
+  savingTarget: z.number().int().min(0).optional(),
+  targetDate: z.any().optional(),
 });
 
 export type AccountFormValues = z.infer<typeof accountSchema>;
+export type AccountFormInput = z.input<typeof accountSchema>;

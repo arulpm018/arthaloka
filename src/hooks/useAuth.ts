@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import {
   doc,
-  getDoc,
+  onSnapshot,
   query,
   where,
   collection,
@@ -27,41 +27,60 @@ export function useAuth() {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Listen to auth state changes
+  // Auth state — only sets firebaseUser. Doc subscriptions punya effect sendiri.
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+    const unsub = onAuthStateChanged(auth, (fbUser) => {
       setFirebaseUser(fbUser);
-      if (fbUser) {
-        // Fetch user document from Firestore
-        const userDoc = await getDoc(doc(db, "users", fbUser.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data() as User;
-          setUser(userData);
-
-          // Fetch partner if linked
-          if (userData.partnerUid) {
-            const partnerDoc = await getDoc(
-              doc(db, "users", userData.partnerUid)
-            );
-            if (partnerDoc.exists()) {
-              setPartner(partnerDoc.data() as User);
-            }
-          } else {
-            setPartner(null);
-          }
-        } else {
-          setUser(null);
-          setPartner(null);
-        }
-      } else {
+      if (!fbUser) {
         setUser(null);
         setPartner(null);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
-
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
+
+  // Subscribe ke user doc — realtime update saat preferences/relationship berubah.
+  useEffect(() => {
+    if (!firebaseUser) return;
+    const ref = doc(db, "users", firebaseUser.uid);
+    const unsub = onSnapshot(
+      ref,
+      (snap) => {
+        if (snap.exists()) {
+          setUser(snap.data() as User);
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
+      },
+      (err) => {
+        console.error("Error subscribing to user doc:", err);
+        setIsLoading(false);
+      }
+    );
+    return () => unsub();
+  }, [firebaseUser]);
+
+  // Subscribe ke partner doc kalau linked. Re-attach saat partnerUid berubah.
+  useEffect(() => {
+    const partnerUid = user?.partnerUid;
+    if (!partnerUid) {
+      setPartner(null);
+      return;
+    }
+    const ref = doc(db, "users", partnerUid);
+    const unsub = onSnapshot(
+      ref,
+      (snap) => {
+        setPartner(snap.exists() ? (snap.data() as User) : null);
+      },
+      (err) => {
+        console.error("Error subscribing to partner doc:", err);
+      }
+    );
+    return () => unsub();
+  }, [user?.partnerUid]);
 
   const loginWithGoogle = async (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
@@ -91,15 +110,14 @@ export function useAuth() {
       throw new Error("Cannot link to yourself");
     if (partnerData.partnerUid) throw new Error("Partner already linked");
 
-    // Update both users — bidirectional linking
+    // Update both users — bidirectional linking. Listener akan auto-refresh
+    // local state setelah doc berubah.
     await updateDoc(doc(db, "users", firebaseUser.uid), {
       partnerUid: partnerData.uid,
     });
     await updateDoc(doc(db, "users", partnerData.uid), {
       partnerUid: firebaseUser.uid,
     });
-
-    setPartner(partnerData);
   };
 
   return {

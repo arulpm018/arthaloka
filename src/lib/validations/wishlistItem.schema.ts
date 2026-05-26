@@ -14,7 +14,9 @@ export const wishlistItemSchema = z.object({
     .default(""),
   categoryId: z.string().min(1, "Kategori harus dipilih"),
   owner: z.enum(["arul", "fifi", "shared"]),
+  linkedTransactionId: z.string().optional(),
   createdBy: z.string().min(1),
 });
 
 export type WishlistItemFormValues = z.infer<typeof wishlistItemSchema>;
+export type WishlistItemFormInput = z.input<typeof wishlistItemSchema>;

@@ -12,3 +12,4 @@ export const wishlistCategorySchema = z.object({
 });
 
 export type WishlistCategoryFormValues = z.infer<typeof wishlistCategorySchema>;
+export type WishlistCategoryFormInput = z.input<typeof wishlistCategorySchema>;

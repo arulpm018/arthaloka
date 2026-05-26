@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Timestamp } from "firebase/firestore";
 import {
   Sheet,
   SheetContent,
@@ -19,10 +20,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { accountSchema, AccountFormValues } from "@/lib/validations/account.schema";
+import { AmountInput } from "@/components/shared/AmountInput";
+import { accountSchema, AccountFormValues, AccountFormInput } from "@/lib/validations/account.schema";
 import { Account } from "@/types";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useAppStore } from "@/store/useAppStore";
+import { OWNER_LABELS } from "@/lib/constants/labels";
+
+const timestampToDateInputValue = (ts: Timestamp | undefined): string | undefined => {
+  if (!ts) return undefined;
+  const date = ts.toDate();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 interface AccountFormProps {
   open: boolean;
@@ -39,15 +51,16 @@ const accountTypes = [
 ];
 
 const ownerOptions = [
-  { value: "arul", label: "Arul" },
-  { value: "fifi", label: "Fifi" },
-  { value: "shared", label: "Together" },
+  { value: "arul", label: OWNER_LABELS["arul"] },
+  { value: "fifi", label: OWNER_LABELS["fifi"] },
+  { value: "shared", label: OWNER_LABELS["shared"] },
 ];
 
 const colors = [
-  "#64748b", "#475569", "#6366f1", "#4f46e5",
-  "#0f766e", "#0d9488", "#1d4ed8", "#2563eb",
-  "#7c3aed", "#9333ea",
+  "#64748b", "#3b82f6", "#6366f1", "#a855f7",
+  "#ec4899", "#f43f5e", "#ef4444", "#f97316",
+  "#f59e0b", "#eab308", "#84cc16", "#22c55e",
+  "#10b981", "#14b8a6", "#06b6d4", "#0ea5e9",
 ];
 
 export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps) => {
@@ -61,9 +74,8 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<AccountFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(accountSchema) as any,
+  } = useForm<AccountFormInput, unknown, AccountFormValues>({
+    resolver: zodResolver(accountSchema),
     defaultValues: {
       name: "",
       type: "bank",
@@ -77,6 +89,8 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
       isActive: true,
       order: 0,
       note: "",
+      savingTarget: undefined,
+      targetDate: undefined,
     },
   });
 
@@ -95,6 +109,8 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
         isActive: editingAccount.isActive,
         order: editingAccount.order,
         note: editingAccount.note ?? "",
+        savingTarget: editingAccount.savingTarget,
+        targetDate: editingAccount.targetDate,
       });
     } else {
       reset({
@@ -110,6 +126,8 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
         isActive: true,
         order: 0,
         note: "",
+        savingTarget: undefined,
+        targetDate: undefined,
       });
     }
   }, [editingAccount, open, reset, currentUser]);
@@ -132,6 +150,14 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
   const selectedType = watch("type");
   const selectedOwner = watch("owner");
   const selectedColor = watch("color");
+
+  // Reset savings-only fields when type changes away from "savings"
+  useEffect(() => {
+    if (selectedType !== "savings") {
+      setValue("savingTarget", undefined);
+      setValue("targetDate", undefined);
+    }
+  }, [selectedType, setValue]);
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -207,9 +233,10 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
           {!editingAccount && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Saldo Awal</label>
-              <BalanceInput
+              <AmountInput
                 value={watch("balance")}
                 onChange={(val) => setValue("balance", val, { shouldValidate: true })}
+                prefix=""
               />
               {errors.balance && (
                 <p className="text-xs text-destructive">{errors.balance.message}</p>
@@ -217,10 +244,53 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
             </div>
           )}
 
+          {/* Savings-only fields */}
+          {selectedType === "savings" && (
+            <>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Target Tabungan (opsional)</label>
+                <AmountInput
+                  value={watch("savingTarget") ?? 0}
+                  onChange={(val) =>
+                    setValue("savingTarget", val > 0 ? val : undefined, {
+                      shouldValidate: true,
+                    })
+                  }
+                  prefix="Rp"
+                />
+                {errors.savingTarget && (
+                  <p className="text-xs text-destructive">
+                    {errors.savingTarget.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Target Tanggal (opsional)</label>
+                <Input
+                  type="date"
+                  value={timestampToDateInputValue(watch("targetDate")) ?? ""}
+                  onChange={(e) => {
+                    const dateStr = e.target.value;
+                    if (!dateStr) {
+                      setValue("targetDate", undefined, { shouldValidate: true });
+                      return;
+                    }
+                    const [year, month, day] = dateStr.split("-").map(Number);
+                    const date = new Date(year, month - 1, day);
+                    setValue("targetDate", Timestamp.fromDate(date), {
+                      shouldValidate: true,
+                    });
+                  }}
+                />
+              </div>
+            </>
+          )}
+
           {/* Color Picker */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Warna</label>
-            <div className="flex gap-2 flex-wrap">
+            <div className="grid grid-cols-8 gap-2">
               {colors.map((c) => (
                 <button
                   key={c}
@@ -266,47 +336,5 @@ export const AccountForm = ({ open, onClose, editingAccount }: AccountFormProps)
         </form>
       </SheetContent>
     </Sheet>
-  );
-};
-
-// Helper component for formatted balance input with thousand separators
-const BalanceInput = ({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (val: number) => void;
-}) => {
-  const formatWithDots = (num: number) => {
-    if (num === 0) return "";
-    return num.toLocaleString("id-ID");
-  };
-
-  const [display, setDisplay] = useState(formatWithDots(value));
-
-  useEffect(() => {
-    setDisplay(formatWithDots(value));
-  }, [value]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\./g, "").replace(/[^0-9]/g, "");
-    if (raw === "") {
-      setDisplay("");
-      onChange(0);
-      return;
-    }
-    const num = parseInt(raw, 10);
-    setDisplay(num.toLocaleString("id-ID"));
-    onChange(num);
-  };
-
-  return (
-    <Input
-      type="text"
-      inputMode="numeric"
-      placeholder="0"
-      value={display}
-      onChange={handleChange}
-    />
   );
 };

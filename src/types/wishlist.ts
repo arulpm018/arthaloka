@@ -22,6 +22,7 @@ export interface WishlistItem {
   owner: Owner;
   isPurchased: boolean;
   purchasedAt: Timestamp | null;
+  linkedTransactionId?: string;
   createdBy: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;

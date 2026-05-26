@@ -3,8 +3,7 @@
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
-import { ExpenseSheet } from "@/components/transactions/ExpenseSheet";
-import { IncomeSheet } from "@/components/transactions/IncomeSheet";
+import { TransactionSheet } from "@/components/transactions/TransactionSheet";
 import { TransferSheet } from "@/components/transactions/TransferSheet";
 
 interface AppShellProps {
@@ -32,8 +31,8 @@ export function AppShell({ children }: AppShellProps) {
       <BottomNav />
 
       {/* Global transaction sheets — accessible from BottomNav, FAB, etc. */}
-      <ExpenseSheet />
-      <IncomeSheet />
+      <TransactionSheet mode="expense" />
+      <TransactionSheet mode="income" />
       <TransferSheet />
     </div>
   );

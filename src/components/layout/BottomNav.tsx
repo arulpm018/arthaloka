@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
   Home,
   User,
   Users,
-  Heart,
   Sparkles,
   Receipt,
   MoreHorizontal,
@@ -22,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils/cn";
 import { useAppStore } from "@/store/useAppStore";
+import { OWNER_LABELS } from "@/lib/constants/labels";
+import { useLongPress } from "@/hooks/useLongPress";
 
 type OwnerKey = "arul" | "fifi" | "together";
 
@@ -31,9 +32,9 @@ const ownerOptions: {
   label: string;
   icon: typeof User;
 }[] = [
-  { key: "arul", href: "/arul", label: "Arul", icon: User },
-  { key: "together", href: "/together", label: "Together", icon: Users },
-  { key: "fifi", href: "/fifi", label: "Fifi", icon: Heart },
+  { key: "arul", href: "/arul", label: OWNER_LABELS.arul, icon: User },
+  { key: "together", href: "/together", label: OWNER_LABELS.shared, icon: Users },
+  { key: "fifi", href: "/fifi", label: OWNER_LABELS.fifi, icon: User },
 ];
 
 const ownerByPath: Record<string, OwnerKey> = {
@@ -130,13 +131,7 @@ const OwnerSwitcher = ({
   onNavigate,
 }: OwnerSwitcherProps) => {
   const [open, setOpen] = useState(false);
-  const [pressing, setPressing] = useState(false);
   const [showHint, setShowHint] = useState(false);
-
-  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const longPressFiredRef = useRef(false);
-  const movedRef = useRef(false);
-  const startPosRef = useRef<{ x: number; y: number } | null>(null);
 
   // First-visit coach mark — shown once, then dismissed permanently
   useEffect(() => {
@@ -169,69 +164,29 @@ const OwnerSwitcher = ({
     }
   };
 
-  const clearLongPressTimer = () => {
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = null;
-    }
-  };
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    longPressFiredRef.current = false;
-    movedRef.current = false;
-    startPosRef.current = { x: e.clientX, y: e.clientY };
-    setPressing(true);
-
-    clearLongPressTimer();
-    longPressTimerRef.current = setTimeout(() => {
-      longPressFiredRef.current = true;
-      longPressTimerRef.current = null;
+  const longPressHandlers = useLongPress({
+    onLongPress: () => {
       setOpen(true);
       dismissHint();
-      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-        navigator.vibrate?.(8);
+    },
+    onTap: () => {
+      if (open) {
+        setOpen(false);
+      } else {
+        onNavigate(activeOwner.href);
       }
-    }, LONG_PRESS_MS);
-  };
+    },
+    durationMs: LONG_PRESS_MS,
+    moveThresholdPx: MOVE_THRESHOLD_PX,
+  });
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (!startPosRef.current || !longPressTimerRef.current) return;
-    const dx = e.clientX - startPosRef.current.x;
-    const dy = e.clientY - startPosRef.current.y;
-    if (Math.hypot(dx, dy) > MOVE_THRESHOLD_PX) {
-      movedRef.current = true;
-      clearLongPressTimer();
-      setPressing(false);
-    }
-  };
+  const { pressing, onPointerDown, ...restHandlers } = longPressHandlers;
 
-  const handlePointerUp = () => {
-    setPressing(false);
-
-    if (longPressFiredRef.current) return;
-
-    clearLongPressTimer();
-
-    if (movedRef.current) return;
-
-    if (open) {
-      setOpen(false);
-    } else {
-      onNavigate(activeOwner.href);
-    }
-  };
-
-  const handlePointerCancel = () => {
-    setPressing(false);
-    clearLongPressTimer();
-  };
-
-  const handleContextMenu = (e: React.MouseEvent) => {
+  // Wrap pointer down to also preventDefault (preserves prior behaviour that
+  // suppressed the synthetic click + native context-menu on long-press).
+  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setOpen(true);
-    dismissHint();
+    onPointerDown(e);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -261,11 +216,7 @@ const OwnerSwitcher = ({
         <button
           type="button"
           onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerCancel}
-          onPointerLeave={handlePointerCancel}
-          onContextMenu={handleContextMenu}
+          {...restHandlers}
           onKeyDown={handleKeyDown}
           className={cn(
             "relative flex h-12 w-14 flex-col items-center justify-center gap-0.5 px-2 py-1",

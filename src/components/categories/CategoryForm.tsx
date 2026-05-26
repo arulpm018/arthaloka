@@ -22,12 +22,14 @@ import {
 import {
   categorySchema,
   CategoryFormValues,
+  CategoryFormInput,
 } from "@/lib/validations/category.schema";
 import { Category } from "@/types";
 import { useCategories } from "@/hooks/useCategories";
 import { useAppStore } from "@/store/useAppStore";
 import { categoryIconOptions } from "@/lib/utils/categoryIcons";
 import { AmountInput } from "@/components/shared/AmountInput";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { cn } from "@/lib/utils/cn";
 import { Trash2 } from "lucide-react";
 
@@ -55,9 +57,8 @@ export const CategoryForm = ({
     watch,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<CategoryFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(categorySchema) as any,
+  } = useForm<CategoryFormInput, unknown, CategoryFormValues>({
+    resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
       icon: "package",
@@ -208,7 +209,7 @@ export const CategoryForm = ({
               control={control}
               render={({ field }) => (
                 <AmountInput
-                  value={field.value}
+                  value={field.value ?? 0}
                   onChange={field.onChange}
                 />
               )}
@@ -230,9 +231,9 @@ export const CategoryForm = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="arul">Arul</SelectItem>
-                <SelectItem value="fifi">Fifi</SelectItem>
-                <SelectItem value="shared">Together</SelectItem>
+                <SelectItem value="arul">{OWNER_LABELS["arul"]}</SelectItem>
+                <SelectItem value="fifi">{OWNER_LABELS["fifi"]}</SelectItem>
+                <SelectItem value="shared">{OWNER_LABELS["shared"]}</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -18,6 +18,7 @@ export const MonthPicker = ({ value, onChange }: MonthPickerProps) => {
         size="icon"
         className="h-8 w-8"
         onClick={() => onChange(subMonths(value, 1))}
+        aria-label="Bulan sebelumnya"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -29,6 +30,7 @@ export const MonthPicker = ({ value, onChange }: MonthPickerProps) => {
         size="icon"
         className="h-8 w-8"
         onClick={() => onChange(addMonths(value, 1))}
+        aria-label="Bulan berikutnya"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>

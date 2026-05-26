@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { Receipt } from "lucide-react";
 import { Header } from "@/components/layout/Header";
@@ -30,11 +30,21 @@ export default function TransactionsPage() {
     ...partialFilters,
   };
 
-  const { transactions, isLoading, remove } = useTransactions(filters);
+  const { transactions, isLoading, hasMore, loadMore, remove } = useTransactions(filters);
   const { transfers, isLoading: transfersLoading, remove: removeTransfer } = useTransfers({
     startDate: startOfMonth(selectedMonth),
     endDate: endOfMonth(selectedMonth),
   });
+
+  const filteredTransactions = useMemo(
+    () =>
+      partialFilters.search
+        ? transactions.filter((t) =>
+            t.name.toLowerCase().includes(partialFilters.search!.toLowerCase())
+          )
+        : transactions,
+    [transactions, partialFilters.search]
+  );
 
   const handleEdit = (tx: Transaction) => {
     openSheet(tx.type, tx);
@@ -105,17 +115,23 @@ export default function TransactionsPage() {
 
             {isLoading ? (
               <LoadingState variant="transaction-list" count={8} />
-            ) : transactions.length === 0 ? (
+            ) : filteredTransactions.length === 0 ? (
               <EmptyState
                 icon={Receipt}
                 title="Belum ada transaksi"
-                description="Transaksi bulan ini akan muncul di sini"
+                description={
+                  partialFilters.search
+                    ? `Tidak ada transaksi cocok dengan "${partialFilters.search}"`
+                    : "Transaksi bulan ini akan muncul di sini"
+                }
               />
             ) : (
               <TransactionList
-                transactions={transactions}
+                transactions={filteredTransactions}
                 onEdit={handleEdit}
                 onDelete={(tx) => setDeleteTarget(tx)}
+                hasMore={hasMore}
+                onLoadMore={loadMore}
               />
             )}
           </>

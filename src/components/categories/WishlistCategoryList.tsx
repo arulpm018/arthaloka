@@ -2,12 +2,13 @@
 
 import { WishlistCategory } from "@/types/wishlist";
 import { getCategoryIcon } from "@/lib/utils/categoryIcons";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { cn } from "@/lib/utils/cn";
 
 const ownerLabels: Record<string, string> = {
-  arul: "Arul",
-  fifi: "Fifi",
-  shared: "Berdua",
+  arul: OWNER_LABELS["arul"],
+  fifi: OWNER_LABELS["fifi"],
+  shared: OWNER_LABELS["shared"],
 };
 
 const ownerColors: Record<string, string> = {

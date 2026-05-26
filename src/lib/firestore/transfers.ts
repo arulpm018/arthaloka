@@ -7,6 +7,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Transfer, CreateTransferInput } from "@/types";
+import { computeTransferDeltas } from "./helpers";
 
 const COLLECTION = "transfers";
 
@@ -59,19 +60,8 @@ export const transfersService = {
       updatedAt: serverTimestamp(),
     });
 
-    // Compute net delta per accountId
-    const deltas = new Map<string, number>();
-    const addDelta = (accountId: string, delta: number) => {
-      deltas.set(accountId, (deltas.get(accountId) ?? 0) + delta);
-    };
-
-    // Reverse old: credit back fromAccount, debit toAccount
-    addDelta(oldTransfer.fromAccountId, oldTransfer.amount);
-    addDelta(oldTransfer.toAccountId, -oldTransfer.amount);
-
-    // Apply new: debit fromAccount, credit toAccount
-    addDelta(newInput.fromAccountId, -newInput.amount);
-    addDelta(newInput.toAccountId, newInput.amount);
+    // Compute net delta per accountId via pure helper
+    const { deltas } = computeTransferDeltas(oldTransfer, newInput);
 
     deltas.forEach((delta, accountId) => {
       if (delta === 0) return;

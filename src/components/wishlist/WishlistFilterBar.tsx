@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { OwnerFilter } from "@/types/wishlist";
 
 interface WishlistFilterBarProps {
@@ -10,9 +11,9 @@ interface WishlistFilterBarProps {
 
 const filters: { value: OwnerFilter; label: string }[] = [
   { value: "all", label: "Semua" },
-  { value: "arul", label: "Arul" },
-  { value: "fifi", label: "Fifi" },
-  { value: "shared", label: "Berdua" },
+  { value: "arul", label: OWNER_LABELS["arul"] },
+  { value: "fifi", label: OWNER_LABELS["fifi"] },
+  { value: "shared", label: OWNER_LABELS["shared"] },
 ];
 
 export const WishlistFilterBar = ({

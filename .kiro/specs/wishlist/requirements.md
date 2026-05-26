@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Fitur Wishlist untuk Arthaloka — memungkinkan Arul & Fifi mencatat barang-barang yang ingin dibeli, baik untuk keperluan hantaran nikah maupun keinginan pribadi lainnya (motor, mobil, gadget, dll). Setiap item memiliki nama, harga, lokasi/link pembelian, dan status pembelian (checklist). Item dikelompokkan dalam kategori wishlist untuk memudahkan organisasi.
+Fitur Wishlist untuk Arthafiloka — memungkinkan Arul & Fifi mencatat barang-barang yang ingin dibeli, baik untuk keperluan hantaran nikah maupun keinginan pribadi lainnya (motor, mobil, gadget, dll). Setiap item memiliki nama, harga, lokasi/link pembelian, dan status pembelian (checklist). Item dikelompokkan dalam kategori wishlist untuk memudahkan organisasi.
 
 ## Glossary
 
-- **Wishlist_System**: Modul dalam Arthaloka yang mengelola daftar barang yang ingin dibeli
+- **Wishlist_System**: Modul dalam Arthafiloka yang mengelola daftar barang yang ingin dibeli
 - **Wishlist_Item**: Satu entri barang dalam wishlist, berisi nama, harga, lokasi/link, dan status pembelian
 - **Wishlist_Category**: Pengelompokan wishlist item berdasarkan tujuan (contoh: "Hantaran Nikah", "Kendaraan", "Gadget", "Rumah Tangga")
 - **Purchase_Status**: Status boolean yang menandakan apakah item sudah dibeli atau belum

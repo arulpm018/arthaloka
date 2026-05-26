@@ -4,6 +4,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -46,15 +47,23 @@ export const wishlistItemsService = {
   },
 
   /**
-   * Toggle isPurchased status and set/clear purchasedAt accordingly
+   * Toggle isPurchased status and set/clear purchasedAt accordingly.
+   * When un-purchasing (true → false), also reset linkedTransactionId so the
+   * item is no longer associated with a transaction. The transaction itself
+   * is NOT auto-deleted — user manage manually di transactions page.
    */
   togglePurchased: async (item: WishlistItem): Promise<void> => {
     const docRef = doc(db, COLLECTION, item.itemId);
     const newIsPurchased = !item.isPurchased;
-    await updateDoc(docRef, {
+    const updates: Record<string, unknown> = {
       isPurchased: newIsPurchased,
       purchasedAt: newIsPurchased ? serverTimestamp() : null,
       updatedAt: serverTimestamp(),
-    });
+    };
+    if (!newIsPurchased) {
+      // Un-purchase → drop the linked transaction reference (if any).
+      updates.linkedTransactionId = deleteField();
+    }
+    await updateDoc(docRef, updates);
   },
 };

@@ -1,6 +1,6 @@
-# 🏛️ Arthaloka — Personal Finance Tracker
+# 🏛️ Arthafiloka — Personal Finance Tracker
 ### System Design Document v2.0
-> *"Artha" (harta/kekayaan) + "Loka" (tempat/dunia) — Dunia keuangan Arul & Fifi*
+> *"Artha" (harta/kekayaan) + "Filo" (cinta) + "Loka" (tempat/dunia) — Dunia keuangan Arul & Fifi*
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## 1. Overview
 
-**Arthaloka** adalah web app keuangan pribadi untuk pasangan — Arul & Fifi.
+**Arthafiloka** adalah web app keuangan pribadi untuk pasangan — Arul & Fifi.
 
 ### Prinsip Utama
 - ✅ **Mobile-first**: Catat pengeluaran dari HP dalam < 5 tap
@@ -495,7 +495,7 @@ app/
 **Layout:**
 ```
 ┌─────────────────────────────────┐
-│  Arthaloka          [month ▼]   │  ← Header + month picker
+│  Arthafiloka        [month ▼]   │  ← Header + month picker
 ├─────────────────────────────────┤
 │  ┌───────┐ ┌───────┐           │
 │  │Total  │ │ Net   │           │  ← Summary cards (scroll horizontal)
@@ -980,8 +980,8 @@ User action → Hook mutation → Firestore write → onSnapshot fires → re-re
 ### PWA Configuration (Phase 2)
 ```json
 {
-  "name": "Arthaloka",
-  "short_name": "Arthaloka",
+  "name": "Arthafiloka",
+  "short_name": "Arthafiloka",
   "start_url": "/dashboard",
   "display": "standalone",
   "theme_color": "#FFFFFF",
@@ -1229,7 +1229,7 @@ Layer 3: React component state (derived)
 ## 20. Folder Structure
 
 ```
-arthaloka/
+arthafiloka/
 ├── src/
 │   ├── app/
 │   │   ├── (auth)/
@@ -1313,10 +1313,11 @@ arthaloka/
 
 ## 💡 Design Decisions & Tradeoffs
 
-### Kenapa "Arthaloka"?
+### Kenapa "Arthafiloka"?
 - "Artha" = harta/kekayaan (Sanskrit/Jawa)
+- "Filo" = cinta (kasih sayang antar pasangan)
 - "Loka" = dunia/tempat
-- Bermakna: "Dunia keuangan kita" — personal, bermakna, unik
+- Bermakna: "Dunia keuangan kita berdua" — personal, bermakna, unik
 
 ### Kenapa Client-Side Only (No API Routes)?
 - 2 users only → no need for server-side logic
@@ -1359,6 +1360,6 @@ Transaction deleted → batch write:
 
 ---
 
-*Arthaloka — System Design Document v2.0*
+*Arthafiloka — System Design Document v2.0*
 *Last updated: Mei 2026*
 *Author: Arul*

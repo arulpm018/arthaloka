@@ -2,7 +2,7 @@
 
 ## Overview
 
-Implement the Wishlist module for Arthaloka — a feature that allows Arul & Fifi to track items they want to buy, organized by categories with progress tracking. The implementation follows the existing app architecture: TypeScript types → Zod validation → Firestore service layer → custom hooks → UI components → navigation integration.
+Implement the Wishlist module for Arthafiloka — a feature that allows Arul & Fifi to track items they want to buy, organized by categories with progress tracking. The implementation follows the existing app architecture: TypeScript types → Zod validation → Firestore service layer → custom hooks → UI components → navigation integration.
 
 ## Tasks
 

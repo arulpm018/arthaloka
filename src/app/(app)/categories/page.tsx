@@ -19,6 +19,7 @@ import { useBudgetStatus } from "@/hooks/useBudgetStatus";
 import { useAppStore } from "@/store/useAppStore";
 import { Category, BudgetScope } from "@/types";
 import { WishlistCategory } from "@/types/wishlist";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { cn } from "@/lib/utils/cn";
 import type { WishlistCategoryFormValues } from "@/lib/validations/wishlistCategory.schema";
 
@@ -26,9 +27,9 @@ type CategoryTab = "transaksi" | "wishlist";
 
 const scopeTabs: { value: BudgetScope | "all"; label: string }[] = [
   { value: "all", label: "Semua" },
-  { value: "arul", label: "Arul" },
-  { value: "fifi", label: "Fifi" },
-  { value: "shared", label: "Together" },
+  { value: "arul", label: OWNER_LABELS["arul"] },
+  { value: "fifi", label: OWNER_LABELS["fifi"] },
+  { value: "shared", label: OWNER_LABELS["shared"] },
 ];
 
 export default function CategoriesPage() {

@@ -15,12 +15,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Logo } from "@/components/shared/Logo";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/arul", label: "Arul", icon: User },
-  { href: "/together", label: "Together", icon: Users },
-  { href: "/fifi", label: "Fifi", icon: Heart },
+  { href: "/arul", label: OWNER_LABELS["arul"], icon: User },
+  { href: "/together", label: OWNER_LABELS["shared"], icon: Users },
+  { href: "/fifi", label: OWNER_LABELS["fifi"], icon: Heart },
   { href: "/wishlist", label: "Wishlist", icon: Sparkles },
   { href: "/transactions", label: "Transaksi", icon: Receipt },
   { href: "/accounts", label: "Akun", icon: Wallet },

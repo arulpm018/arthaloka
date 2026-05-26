@@ -2,14 +2,14 @@
 
 ## Overview
 
-Fitur Wishlist menambahkan modul baru ke Arthaloka yang memungkinkan Arul & Fifi mencatat dan melacak barang-barang yang ingin dibeli. Item dikelompokkan dalam kategori wishlist (Hantaran Nikah, Kendaraan, Gadget, dll), masing-masing memiliki nama, harga, lokasi/link pembelian, dan status pembelian (checkbox). Progress pembelian ditampilkan per kategori dan secara keseluruhan.
+Fitur Wishlist menambahkan modul baru ke Arthafiloka yang memungkinkan Arul & Fifi mencatat dan melacak barang-barang yang ingin dibeli. Item dikelompokkan dalam kategori wishlist (Hantaran Nikah, Kendaraan, Gadget, dll), masing-masing memiliki nama, harga, lokasi/link pembelian, dan status pembelian (checkbox). Progress pembelian ditampilkan per kategori dan secara keseluruhan.
 
 ### Goals
 - Catat wishlist item dengan cepat via bottom sheet form
 - Lihat progress pembelian per kategori dan total
 - Filter berdasarkan owner (Arul/Fifi/Shared)
 - Realtime sync antara kedua user
-- Konsisten dengan pattern UI dan arsitektur yang sudah ada di Arthaloka
+- Konsisten dengan pattern UI dan arsitektur yang sudah ada di Arthafiloka
 
 ### Non-Goals (Phase 1)
 - Prioritas/ranking item
@@ -22,7 +22,7 @@ Fitur Wishlist menambahkan modul baru ke Arthaloka yang memungkinkan Arul & Fifi
 
 ### High-Level Architecture
 
-Wishlist mengikuti arsitektur yang sama dengan fitur existing di Arthaloka — client-side only, Firebase SDK langsung dari browser, realtime listeners untuk sync.
+Wishlist mengikuti arsitektur yang sama dengan fitur existing di Arthafiloka — client-side only, Firebase SDK langsung dari browser, realtime listeners untuk sync.
 
 ```
 Browser (Next.js CSR) → Firebase SDK → Cloud Firestore (wishlistItems + wishlistCategories)

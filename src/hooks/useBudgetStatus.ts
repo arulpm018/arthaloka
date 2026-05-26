@@ -19,12 +19,17 @@ export function useBudgetStatus(month: Date) {
   const [budgets, setBudgets] = useState<BudgetStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Use primitive timestamp as dep to avoid re-running on every render when
+  // call sites pass a fresh `Date` instance.
+  const monthMs = month.getTime();
+
   useEffect(() => {
+    const monthDate = new Date(monthMs);
     const q = query(
       collection(db, "transactions"),
       where("type", "==", "expense"),
-      where("date", ">=", Timestamp.fromDate(startOfMonth(month))),
-      where("date", "<=", Timestamp.fromDate(endOfMonth(month))),
+      where("date", ">=", Timestamp.fromDate(startOfMonth(monthDate))),
+      where("date", "<=", Timestamp.fromDate(endOfMonth(monthDate))),
       orderBy("date", "desc")
     );
 
@@ -64,7 +69,7 @@ export function useBudgetStatus(month: Date) {
     );
 
     return () => unsubscribe();
-  }, [month, categories]);
+  }, [monthMs, categories]);
 
   return { budgets, isLoading };
 }

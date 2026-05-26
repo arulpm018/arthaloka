@@ -32,11 +32,13 @@ import {
 import {
   wishlistItemSchema,
   WishlistItemFormValues,
+  WishlistItemFormInput,
 } from "@/lib/validations/wishlistItem.schema";
 import { WishlistCategory, WishlistItem } from "@/types/wishlist";
 import { useAppStore } from "@/store/useAppStore";
 import { AmountInput } from "@/components/shared/AmountInput";
 import { getCategoryIcon } from "@/lib/utils/categoryIcons";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { Trash2 } from "lucide-react";
 
 interface WishlistItemFormProps {
@@ -50,9 +52,9 @@ interface WishlistItemFormProps {
 }
 
 const ownerOptions = [
-  { value: "arul", label: "Arul" },
-  { value: "fifi", label: "Fifi" },
-  { value: "shared", label: "Berdua" },
+  { value: "arul", label: OWNER_LABELS["arul"] },
+  { value: "fifi", label: OWNER_LABELS["fifi"] },
+  { value: "shared", label: OWNER_LABELS["shared"] },
 ];
 
 export const WishlistItemForm = ({
@@ -77,9 +79,8 @@ export const WishlistItemForm = ({
     watch,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<WishlistItemFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(wishlistItemSchema) as any,
+  } = useForm<WishlistItemFormInput, unknown, WishlistItemFormValues>({
+    resolver: zodResolver(wishlistItemSchema),
     defaultValues: {
       nama: "",
       harga: 0,

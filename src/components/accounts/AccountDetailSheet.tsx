@@ -25,6 +25,7 @@ import { useAccounts } from "@/hooks/useAccounts";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useAppStore } from "@/store/useAppStore";
 import { TransactionItem } from "@/components/transactions/TransactionItem";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { cn } from "@/lib/utils/cn";
 
@@ -132,7 +133,7 @@ export const AccountDetailSheet = ({
                 <div>
                   <p className="text-xs text-muted-foreground">Pemilik</p>
                   <p className="font-medium capitalize">
-                    {account.owner === "shared" ? "Together" : account.owner}
+                    {account.owner === "shared" ? OWNER_LABELS["shared"] : account.owner}
                   </p>
                 </div>
               </div>

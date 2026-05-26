@@ -7,6 +7,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Transaction, CreateTransactionInput, UpdateTransactionInput } from "@/types";
+import { computeBalanceDelta } from "./helpers";
 
 const COLLECTION = "transactions";
 
@@ -26,7 +27,7 @@ export const transactionsService = {
 
     // Update account balance
     const accountRef = doc(db, "accounts", input.accountId);
-    const delta = input.type === "expense" ? -input.amount : input.amount;
+    const delta = computeBalanceDelta(input.type, input.amount);
     batch.update(accountRef, { balance: increment(delta), updatedAt: serverTimestamp() });
 
     await batch.commit();
@@ -42,8 +43,8 @@ export const transactionsService = {
 
     batch.update(txRef, { ...newInput, updatedAt: serverTimestamp() });
 
-    // Reverse old balance
-    const oldDelta = oldTx.type === "expense" ? oldTx.amount : -oldTx.amount;
+    // Reverse old balance: negate the original delta
+    const oldDelta = -computeBalanceDelta(oldTx.type, oldTx.amount);
     const oldAccountRef = doc(db, "accounts", oldTx.accountId);
     batch.update(oldAccountRef, { balance: increment(oldDelta), updatedAt: serverTimestamp() });
 
@@ -51,7 +52,7 @@ export const transactionsService = {
     const newAccountId = newInput.accountId || oldTx.accountId;
     const newAmount = newInput.amount || oldTx.amount;
     const newType = newInput.type || oldTx.type;
-    const newDelta = newType === "expense" ? -newAmount : newAmount;
+    const newDelta = computeBalanceDelta(newType, newAmount);
     const newAccountRef = doc(db, "accounts", newAccountId);
     batch.update(newAccountRef, { balance: increment(newDelta), updatedAt: serverTimestamp() });
 
@@ -66,8 +67,8 @@ export const transactionsService = {
     const txRef = doc(db, COLLECTION, tx.transactionId);
     batch.delete(txRef);
 
-    // Reverse balance
-    const delta = tx.type === "expense" ? tx.amount : -tx.amount;
+    // Reverse balance: negate the original delta
+    const delta = -computeBalanceDelta(tx.type, tx.amount);
     const accountRef = doc(db, "accounts", tx.accountId);
     batch.update(accountRef, { balance: increment(delta), updatedAt: serverTimestamp() });
 

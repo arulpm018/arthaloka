@@ -21,10 +21,12 @@ import {
 import {
   wishlistCategorySchema,
   WishlistCategoryFormValues,
+  WishlistCategoryFormInput,
 } from "@/lib/validations/wishlistCategory.schema";
 import { WishlistCategory } from "@/types/wishlist";
 import { useAppStore } from "@/store/useAppStore";
 import { categoryIconOptions } from "@/lib/utils/categoryIcons";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 import { cn } from "@/lib/utils/cn";
 import { Trash2 } from "lucide-react";
 
@@ -55,9 +57,8 @@ export const WishlistCategoryForm = ({
     watch,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<WishlistCategoryFormValues>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(wishlistCategorySchema) as any,
+  } = useForm<WishlistCategoryFormInput, unknown, WishlistCategoryFormValues>({
+    resolver: zodResolver(wishlistCategorySchema),
     defaultValues: {
       name: "",
       icon: "heart",
@@ -190,9 +191,9 @@ export const WishlistCategoryForm = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="arul">Arul</SelectItem>
-                <SelectItem value="fifi">Fifi</SelectItem>
-                <SelectItem value="shared">Berdua</SelectItem>
+                <SelectItem value="arul">{OWNER_LABELS["arul"]}</SelectItem>
+                <SelectItem value="fifi">{OWNER_LABELS["fifi"]}</SelectItem>
+                <SelectItem value="shared">{OWNER_LABELS["shared"]}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -211,6 +212,7 @@ export const WishlistCategoryForm = ({
                   onDelete(editingCategory);
                   onClose();
                 }}
+                aria-label="Hapus kategori"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
