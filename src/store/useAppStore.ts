@@ -33,6 +33,12 @@ interface AppStore {
   // Privacy State (persisted)
   hideBalance: boolean;
 
+  // Wishlist add trigger — flipped by global FAB action; consumed (auto-reset)
+  // oleh halaman wishlist saat membuka form. Pakai counter (bukan boolean)
+  // supaya klik beruntun selalu trigger ulang efek.
+  wishlistAddRequest: number;
+  requestWishlistAdd: () => void;
+
   // Actions
   openSheet: (
     type: "expense" | "income" | "transfer",
@@ -79,6 +85,11 @@ export const useAppStore = create<AppStore>()(
 
       // Privacy State
       hideBalance: false,
+
+      // Wishlist add trigger
+      wishlistAddRequest: 0,
+      requestWishlistAdd: () =>
+        set((s) => ({ wishlistAddRequest: s.wishlistAddRequest + 1 })),
 
       // Actions
       openSheet: (type, item) =>

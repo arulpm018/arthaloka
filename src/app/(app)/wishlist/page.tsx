@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Plus, FolderPlus } from "lucide-react";
+import { FolderPlus } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "@/components/layout/Header";
-import { Button } from "@/components/ui/button";
 import { WishlistProgressSummary } from "@/components/wishlist/WishlistProgressSummary";
 import { WishlistFilterBar } from "@/components/wishlist/WishlistFilterBar";
 import { WishlistCategorySection } from "@/components/wishlist/WishlistCategorySection";
@@ -302,16 +301,6 @@ export default function WishlistPage() {
           </>
         )}
       </div>
-
-      {/* FAB — floating action button */}
-      <Button
-        onClick={handleAddItem}
-        className="fixed bottom-24 right-4 z-50 rounded-full h-14 w-14 shadow-lg"
-        size="icon"
-        aria-label="Tambah item wishlist"
-      >
-        <Plus className="h-6 w-6" />
-      </Button>
 
       {/* Item Form (bottom sheet) */}
       <WishlistItemForm

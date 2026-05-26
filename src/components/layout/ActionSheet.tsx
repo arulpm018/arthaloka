@@ -6,13 +6,20 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeftRight } from "lucide-react";
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  ArrowLeftRight,
+  Sparkles,
+} from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+
+export type ActionType = "expense" | "income" | "transfer" | "wishlist";
 
 interface ActionSheetProps {
   open: boolean;
   onClose: () => void;
-  onSelect: (type: "expense" | "income" | "transfer") => void;
+  onSelect: (type: ActionType) => void;
 }
 
 const actions = [
@@ -40,6 +47,14 @@ const actions = [
     color: "text-transfer",
     bg: "bg-transfer/10",
   },
+  {
+    type: "wishlist" as const,
+    label: "Wishlist",
+    description: "Tambah barang inceran",
+    icon: Sparkles,
+    color: "text-primary",
+    bg: "bg-primary/10",
+  },
 ];
 
 export const ActionSheet = ({ open, onClose, onSelect }: ActionSheetProps) => {
@@ -47,7 +62,7 @@ export const ActionSheet = ({ open, onClose, onSelect }: ActionSheetProps) => {
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent side="bottom" className="rounded-t-sheet">
         <SheetHeader>
-          <SheetTitle>Tambah Transaksi</SheetTitle>
+          <SheetTitle>Tambah</SheetTitle>
         </SheetHeader>
         <div className="grid gap-2 py-4">
           {actions.map((action) => (

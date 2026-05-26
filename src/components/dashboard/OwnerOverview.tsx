@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { OwnerSwitcherTitle } from "@/components/layout/OwnerSwitcherTitle";
 import { MonthPicker } from "@/components/shared/MonthPicker";
-import { FAB } from "@/components/layout/FAB";
-import { ActionSheet } from "@/components/layout/ActionSheet";
 import { AccountCard } from "@/components/accounts/AccountCard";
 import { AccountForm } from "@/components/accounts/AccountForm";
 import { AccountDetailSheet } from "@/components/accounts/AccountDetailSheet";
@@ -32,7 +30,6 @@ interface OwnerOverviewProps {
 
 export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
   const { selectedMonth, setSelectedMonth, openSheet, setDefaultOwner } = useAppStore();
-  const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [accountFormOpen, setAccountFormOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
@@ -196,12 +193,6 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
         )}
       </div>
 
-      <FAB onClick={() => setActionSheetOpen(true)} />
-      <ActionSheet
-        open={actionSheetOpen}
-        onClose={() => setActionSheetOpen(false)}
-        onSelect={(type) => openSheet(type)}
-      />
       <AccountForm
         open={accountFormOpen}
         onClose={() => {

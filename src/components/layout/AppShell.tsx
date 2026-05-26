@@ -2,9 +2,11 @@
 
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
+import { GlobalFAB } from "./GlobalFAB";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
 import { TransactionSheet } from "@/components/transactions/TransactionSheet";
 import { TransferSheet } from "@/components/transactions/TransferSheet";
+import { GlobalWishlistAddSheet } from "@/components/wishlist/GlobalWishlistAddSheet";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -30,10 +32,16 @@ export function AppShell({ children }: AppShellProps) {
       {/* Bottom nav - mobile only */}
       <BottomNav />
 
+      {/* Global FAB — auto-render di route yang relevan, single instance */}
+      <GlobalFAB />
+
       {/* Global transaction sheets — accessible from BottomNav, FAB, etc. */}
       <TransactionSheet mode="expense" />
       <TransactionSheet mode="income" />
       <TransferSheet />
+
+      {/* Global wishlist add sheet — di-trigger oleh FAB dari halaman manapun */}
+      <GlobalWishlistAddSheet />
     </div>
   );
 }

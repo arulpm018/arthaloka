@@ -4,8 +4,6 @@ import { useState } from "react";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { Header } from "@/components/layout/Header";
 import { MonthPicker } from "@/components/shared/MonthPicker";
-import { FAB } from "@/components/layout/FAB";
-import { ActionSheet } from "@/components/layout/ActionSheet";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { BudgetAlerts } from "@/components/dashboard/BudgetAlerts";
 import { SpendingByCategory } from "@/components/dashboard/SpendingByCategory";
@@ -22,7 +20,6 @@ import { Transfer } from "@/types";
 
 export default function DashboardPage() {
   const { selectedMonth, setSelectedMonth, openSheet } = useAppStore();
-  const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [deleteTransferTarget, setDeleteTransferTarget] = useState<Transfer | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -77,9 +74,6 @@ export default function DashboardPage() {
           </>
         )}
       </div>
-
-      <FAB onClick={() => setActionSheetOpen(true)} />
-      <ActionSheet open={actionSheetOpen} onClose={() => setActionSheetOpen(false)} onSelect={(type) => openSheet(type)} />
 
       <ConfirmDialog
         open={!!deleteTransferTarget}
