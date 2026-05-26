@@ -107,7 +107,7 @@ export const CoupleHero = ({
               <span className="font-semibold tabular-nums">
                 {days!.toLocaleString("id-ID")}
               </span>{" "}
-              <span className="text-white/80">hari bareng</span>
+              <span className="text-white/80">hari pacaran</span>
             </p>
             <p className="text-xs text-white/75 tabular-nums drop-shadow-sm">
               sejak {formatDate(anniversaryDate!)}
