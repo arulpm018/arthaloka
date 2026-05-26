@@ -102,12 +102,15 @@ export const WishlistItemForm = ({
         createdBy: editingItem.createdBy,
       });
     } else {
+      // Untuk item baru: kalau ada kategori, owner item ikut owner kategori default.
+      // Fallback ke defaultOwner (dari context owner page) atau "arul".
+      const defaultCategory = categories.length > 0 ? categories[0] : null;
       reset({
         nama: "",
         harga: 0,
         lokasi: "",
-        categoryId: categories.length > 0 ? categories[0].categoryId : "",
-        owner: defaultOwner || "arul",
+        categoryId: defaultCategory?.categoryId ?? "",
+        owner: defaultCategory?.owner ?? defaultOwner ?? "arul",
         createdBy: currentUser?.uid ?? "",
       });
     }
@@ -226,7 +229,15 @@ export const WishlistItemForm = ({
               {categories.length > 0 ? (
                 <Select
                   value={selectedCategoryId}
-                  onValueChange={(val) => setValue("categoryId", val)}
+                  onValueChange={(val) => {
+                    setValue("categoryId", val, { shouldValidate: true });
+                    // Auto-sync owner item ke owner kategori — kategori adalah
+                    // sumber kebenaran (kategori "bareng" → item bareng, dst).
+                    const picked = categories.find((c) => c.categoryId === val);
+                    if (picked) {
+                      setValue("owner", picked.owner, { shouldValidate: true });
+                    }
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih kategori" />

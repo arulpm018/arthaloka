@@ -62,25 +62,70 @@ export function useAuth() {
     return () => unsub();
   }, [firebaseUser]);
 
-  // Subscribe ke partner doc kalau linked. Re-attach saat partnerUid berubah.
+  // Subscribe ke partner doc.
+  //
+  // Strategi 2-tier:
+  //   1. Kalau `partnerUid` sudah ter-set (linked manual via invite), pakai itu.
+  //   2. Kalau belum, auto-detect: app ini whitelist khusus 2 user (arul + fifi),
+  //      jadi partner = user dengan role opposite. Query first, lalu subscribe
+  //      ke doc-nya. Bypass kebutuhan flow "link partner" untuk pengguna pasti.
   useEffect(() => {
-    const partnerUid = user?.partnerUid;
-    if (!partnerUid) {
+    if (!user) {
       setPartner(null);
       return;
     }
-    const ref = doc(db, "users", partnerUid);
-    const unsub = onSnapshot(
-      ref,
-      (snap) => {
-        setPartner(snap.exists() ? (snap.data() as User) : null);
-      },
-      (err) => {
-        console.error("Error subscribing to partner doc:", err);
+
+    const partnerUid = user.partnerUid;
+    if (partnerUid) {
+      const ref = doc(db, "users", partnerUid);
+      const unsub = onSnapshot(
+        ref,
+        (snap) => {
+          setPartner(snap.exists() ? (snap.data() as User) : null);
+        },
+        (err) => {
+          console.error("Error subscribing to partner doc:", err);
+        }
+      );
+      return () => unsub();
+    }
+
+    // Auto-detect berdasarkan opposite role. Query sekali, terus subscribe.
+    const oppositeRole = user.role === "arul" ? "fifi" : "arul";
+    let unsubDoc: (() => void) | null = null;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("role", "==", oppositeRole));
+        const snap = await getDocs(q);
+        if (cancelled) return;
+        const partnerDoc = snap.docs.find((d) => d.id !== user.uid);
+        if (!partnerDoc) {
+          setPartner(null);
+          return;
+        }
+        const ref = doc(db, "users", partnerDoc.id);
+        unsubDoc = onSnapshot(
+          ref,
+          (s) => {
+            setPartner(s.exists() ? (s.data() as User) : null);
+          },
+          (err) => {
+            console.error("Error subscribing to auto-detected partner doc:", err);
+          }
+        );
+      } catch (err) {
+        console.error("Error auto-detecting partner:", err);
       }
-    );
-    return () => unsub();
-  }, [user?.partnerUid]);
+    })();
+
+    return () => {
+      cancelled = true;
+      unsubDoc?.();
+    };
+  }, [user]);
 
   const loginWithGoogle = async (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
