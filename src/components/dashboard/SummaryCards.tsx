@@ -57,43 +57,47 @@ export const SummaryCards = ({ totalBalance, income, expense, accounts = [] }: S
       {/* Hero Balance Card — Tappable */}
       <button
         onClick={() => setSheetOpen(true)}
-        className="w-full text-left rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-5 transition-all active:scale-[0.98]"
+        className="relative w-full text-left rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-5 transition-all active:scale-[0.98]"
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 mb-1">
-            <Wallet className="h-4 w-4 text-primary" />
-            <p className="text-xs text-muted-foreground font-medium">Total Kekayaan</p>
+        {/* Eye toggle — absolute top-right, biar label+angka bisa stack rapat
+            tanpa kebagian space row sendiri buat eye button. */}
+        <span
+          role="button"
+          aria-label={showBalance ? "Sembunyikan saldo" : "Tampilkan saldo"}
+          onClick={(e) => {
+            e.stopPropagation();
+            setHideBalance(!hideBalance);
+          }}
+          className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-muted/50 transition-colors z-10"
+        >
+          {showBalance ? (
+            <Eye className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <EyeOff className="h-4 w-4 text-muted-foreground" />
+          )}
+        </span>
+
+        {/* Label + angka stack di kiri, meme di kanan — single flex row biar
+            spacing antar label-angka tetap rapat (gak ke-stretch oleh meme). */}
+        <div className="flex items-center gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 pr-8 mb-1">
+              <Wallet className="h-4 w-4 text-primary shrink-0" />
+              <p className="text-xs text-muted-foreground font-medium">Total Kekayaan</p>
+            </div>
+            <p className="text-3xl font-mono font-bold tabular-nums tracking-tight truncate">
+              {showBalance ? formatCurrency(totalBalance) : HIDDEN_PLACEHOLDER}
+            </p>
           </div>
-          <span
-            role="button"
-            aria-label={showBalance ? "Sembunyikan saldo" : "Tampilkan saldo"}
-            onClick={(e) => {
-              e.stopPropagation();
-              setHideBalance(!hideBalance);
-            }}
-            className="p-1 -m-1 rounded-full hover:bg-muted/50 transition-colors"
-          >
-            {showBalance ? (
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <EyeOff className="h-4 w-4 text-muted-foreground" />
-            )}
-          </span>
-        </div>
-        <div className="flex items-end gap-3">
-          <p className="min-w-0 flex-1 truncate text-2xl sm:text-3xl font-mono font-bold tabular-nums tracking-tight">
-            {showBalance ? formatCurrency(totalBalance) : HIDDEN_PLACEHOLDER}
-          </p>
           {/* Mood reaction — hanya muncul kalau saldo ditampilkan, biar
               kondisi finansial nggak ke-leak via emoji saat hideBalance ON.
-              Mobile-first sizing (Samsung A55-class): meme lebih kecil di
-              mobile supaya gak nutupin angka 8-9 digit, scale up di sm+. */}
+              Width-nya intrinsic ke konten kiri → meme nempel dekat angka. */}
           {showBalance && (
             <MemeReaction
               mood={getMoodForBalance(totalBalance)}
               size="md"
               seed={`balance-${getMoodForBalance(totalBalance)}`}
-              className="h-12 w-12 sm:h-16 sm:w-16 text-2xl sm:text-3xl shrink-0 ml-auto mr-2 sm:mr-6"
+              className="h-20 w-20 sm:h-24 sm:w-24 text-3xl sm:text-4xl shrink-0"
             />
           )}
         </div>
