@@ -16,7 +16,37 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Arthafiloka",
-  description: "Personal Finance Tracker",
+  description: "Dunia keuangan Arul & Fifi — personal finance tracker untuk berdua.",
+  applicationName: "Arthafiloka",
+  appleWebApp: {
+    capable: true,
+    title: "Arthafiloka",
+    statusBarStyle: "default",
+  },
+  icons: {
+    // src/app/icon.svg auto-detected by Next.js (modern browsers)
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "Arthafiloka",
+    description: "Dunia keuangan Arul & Fifi.",
+    siteName: "Arthafiloka",
+    images: [
+      {
+        url: "/logo-512.png",
+        width: 512,
+        height: 512,
+        alt: "Arthafiloka logo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Arthafiloka",
+    description: "Dunia keuangan Arul & Fifi.",
+    images: ["/logo-512.png"],
+  },
 };
 
 export const viewport: Viewport = {
