@@ -81,19 +81,19 @@ export const SummaryCards = ({ totalBalance, income, expense, accounts = [] }: S
           </span>
         </div>
         <div className="flex items-end gap-3">
-          <p className="text-3xl font-mono font-bold tabular-nums tracking-tight">
+          <p className="min-w-0 flex-1 truncate text-2xl sm:text-3xl font-mono font-bold tabular-nums tracking-tight">
             {showBalance ? formatCurrency(totalBalance) : HIDDEN_PLACEHOLDER}
           </p>
           {/* Mood reaction — hanya muncul kalau saldo ditampilkan, biar
               kondisi finansial nggak ke-leak via emoji saat hideBalance ON.
-              `ml-auto mr-6` → push ke tengah-tengah antara angka dan tepi
-              card (bukan flush kanan, bukan nempel angka). */}
+              Mobile-first sizing (Samsung A55-class): meme lebih kecil di
+              mobile supaya gak nutupin angka 8-9 digit, scale up di sm+. */}
           {showBalance && (
             <MemeReaction
               mood={getMoodForBalance(totalBalance)}
               size="md"
               seed={`balance-${getMoodForBalance(totalBalance)}`}
-              className="ml-auto mr-6"
+              className="h-12 w-12 sm:h-16 sm:w-16 text-2xl sm:text-3xl shrink-0 ml-auto mr-2 sm:mr-6"
             />
           )}
         </div>

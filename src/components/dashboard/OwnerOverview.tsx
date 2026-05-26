@@ -136,12 +136,14 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
                 )}
               </button>
 
-              {/* Balance + meme — meme self-center aligns with balance block */}
+              {/* Balance + meme — meme self-center aligns with balance block.
+                  Mobile (Samsung A55, ~360-411px): font 2xl + meme 80px supaya
+                  angka 8-9 digit gak ke-overlap meme. Tablet+: scale up. */}
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   {/* Padding-right kecil supaya label nggak ke-overlap eye toggle. */}
                   <p className="text-xs text-muted-foreground pr-8">Total Balance</p>
-                  <p className="text-3xl font-mono font-bold tabular-nums tracking-tight">
+                  <p className="text-2xl sm:text-3xl font-mono font-bold tabular-nums tracking-tight truncate">
                     {showBalance ? formatCurrency(totalBalance) : HIDDEN_PLACEHOLDER}
                   </p>
                 </div>
@@ -150,7 +152,7 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
                     mood={heroMood}
                     size="lg"
                     seed={`${owner}-${heroMood}`}
-                    className="h-24 w-24 text-4xl shrink-0 mr-6"
+                    className="h-20 w-20 sm:h-24 sm:w-24 text-3xl sm:text-4xl shrink-0 mr-2 sm:mr-6"
                   />
                 )}
               </div>
