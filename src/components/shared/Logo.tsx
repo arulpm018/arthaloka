@@ -8,6 +8,13 @@ interface LogoProps {
   className?: string;
 }
 
+/**
+ * Arthafiloka logo mark — vesica piscis.
+ * Two overlapping circles symbolize Arul & Fifi as whole individuals;
+ * the center dot represents the shared wealth growing between them.
+ *
+ * Single-color, uses currentColor so it adapts to theme + owner accents.
+ */
 export const Logo = ({ size = "md", showText = true, className }: LogoProps) => {
   const sizeMap = {
     sm: "h-5 w-5",
@@ -30,19 +37,27 @@ export const Logo = ({ size = "md", showText = true, className }: LogoProps) => 
         className={cn(sizeMap[size], "shrink-0")}
         aria-hidden="true"
       >
-        {/* Coin circle */}
-        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-        <circle cx="12" cy="12" r="7.5" stroke="currentColor" strokeWidth="1" opacity="0.5" />
-        {/* Dollar/currency symbol stylized */}
-        <path
-          d="M12 6.5V7.5M12 16.5V17.5M9.5 15.5C9.5 16.328 10.619 17 12 17C13.381 17 14.5 16.328 14.5 15.5C14.5 14.672 13.381 14 12 14C10.619 14 9.5 13.328 9.5 12.5C9.5 11.672 10.619 11 12 11C13.381 11 14.5 11.672 14.5 12.5M9.5 9.5C9.5 10.328 10.619 11 12 11M12 7.5C10.619 7.5 9.5 8.172 9.5 9C9.5 9.828 10.619 10.5 12 10.5C13.381 10.5 14.5 9.828 14.5 9C14.5 8.172 13.381 7.5 12 7.5Z"
+        {/* Left circle — Arul */}
+        <circle
+          cx="8.5"
+          cy="12"
+          r="6.5"
           stroke="currentColor"
           strokeWidth="1.5"
-          strokeLinecap="round"
         />
+        {/* Right circle — Fifi */}
+        <circle
+          cx="15.5"
+          cy="12"
+          r="6.5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        {/* Center dot — shared wealth */}
+        <circle cx="12" cy="12" r="0.9" fill="currentColor" />
       </svg>
       {showText && (
-        <span className={cn("font-semibold", textSizeMap[size])}>
+        <span className={cn("font-semibold tracking-tight", textSizeMap[size])}>
           Arthafiloka
         </span>
       )}
