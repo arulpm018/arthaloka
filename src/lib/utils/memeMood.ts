@@ -7,7 +7,6 @@
 
 import { MoodKey } from "@/lib/constants/memes";
 import { BALANCE_THRESHOLDS } from "@/lib/constants/memeThresholds";
-import type { BudgetStatus } from "@/types";
 
 /**
  * Total balance → mood tier untuk dashboard hero indicator.
@@ -20,26 +19,6 @@ export const getMoodForBalance = (balance: number): MoodKey => {
   if (balance >= BALANCE_THRESHOLDS.normal) return "normal";
   if (balance >= BALANCE_THRESHOLDS.warning) return "warning";
   return "broke";
-};
-
-/**
- * Daftar budget per kategori → mood tier untuk BudgetAlerts header.
- *
- * Aturan escalation:
- * - Ada kategori `over`        → `panic`  (paling parah menang)
- * - 2+ kategori `warning`      → `stress`
- * - 1 kategori `warning`       → `thinking`
- * - Tidak ada warning/over     → `normal` (caller umumnya nggak render meme)
- */
-export const getMoodForBudgets = (budgets: BudgetStatus[]): MoodKey => {
-  const overCount = budgets.filter((b) => b.status === "over").length;
-  if (overCount > 0) return "panic";
-
-  const warningCount = budgets.filter((b) => b.status === "warning").length;
-  if (warningCount >= 2) return "stress";
-  if (warningCount === 1) return "thinking";
-
-  return "normal";
 };
 
 /**

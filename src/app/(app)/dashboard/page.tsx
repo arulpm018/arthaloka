@@ -5,7 +5,6 @@ import { startOfMonth, endOfMonth } from "date-fns";
 import { Header } from "@/components/layout/Header";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
-import { BudgetAlerts } from "@/components/dashboard/BudgetAlerts";
 import { SpendingByCategory } from "@/components/dashboard/SpendingByCategory";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -62,7 +61,6 @@ export default function DashboardPage() {
         ) : (
           <>
             <SummaryCards totalBalance={totalBalance} income={income} expense={expense} accounts={accounts} />
-            <BudgetAlerts budgets={budgets} />
             <SpendingByCategory budgets={budgets} />
             <RecentTransactions
               transactions={transactions}
