@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { startOfMonth, endOfMonth } from "date-fns";
+import { CalendarRange, ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
@@ -61,6 +63,23 @@ export default function DashboardPage() {
         ) : (
           <>
             <SummaryCards totalBalance={totalBalance} income={income} expense={expense} accounts={accounts} />
+
+            <Link
+              href="/recap"
+              className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent/50 active:bg-accent"
+            >
+              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <CalendarRange className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">Rekap Bulanan</p>
+                <p className="text-xs text-muted-foreground">
+                  Ringkasan lengkap arus kas, kategori & insight bulan ini
+                </p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            </Link>
+
             <SpendingByCategory budgets={budgets} />
             <RecentTransactions
               transactions={transactions}

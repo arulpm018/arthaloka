@@ -1,10 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Wallet, Tag, Settings, ChevronRight } from "lucide-react";
+import { Wallet, Tag, Settings, CalendarRange, ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 
 const menuItems = [
+  {
+    href: "/recap",
+    label: "Rekap Bulanan",
+    description: "Ringkasan lengkap arus kas bulanan",
+    icon: CalendarRange,
+    color: "bg-primary/10 text-primary",
+  },
   {
     href: "/accounts",
     label: "Akun",
