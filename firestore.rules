@@ -58,6 +58,21 @@ service cloud.firestore {
       allow read, write: if isAllowedUser();
     }
 
+    // Modul Produktivitas — to-do, jadwal, habit.
+    // Scoping (owner/uid) ditegakkan di level query app, sama seperti
+    // pola koleksi finance lainnya.
+    match /tasks/{taskId} {
+      allow read, write: if isAllowedUser();
+    }
+
+    match /events/{eventId} {
+      allow read, write: if isAllowedUser();
+    }
+
+    match /habits/{habitId} {
+      allow read, write: if isAllowedUser();
+    }
+
     // Single shared slot untuk foto couple (data URL inline).
     match /appConfig/{docId} {
       allow read, write: if isAllowedUser();

@@ -66,7 +66,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/");
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Gagal login dengan Google";

@@ -1,8 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Wallet, Tag, Settings, CalendarRange, ChevronRight } from "lucide-react";
+import { Wallet, Tag, Settings, CalendarRange, ChevronRight, LayoutGrid } from "lucide-react";
 import { Header } from "@/components/layout/Header";
+
+const moduleItems = [
+  {
+    href: "/",
+    label: "Ganti Modul",
+    description: "Pilih Keuangan atau Produktivitas",
+    icon: LayoutGrid,
+    color: "bg-muted text-muted-foreground",
+  },
+];
 
 const menuItems = [
   {
@@ -41,7 +51,7 @@ export default function MorePage() {
       <Header title="More" />
       <div className="p-4 max-w-4xl mx-auto">
         <div className="space-y-2">
-          {menuItems.map((item) => (
+          {[...moduleItems, ...menuItems].map((item) => (
             <Link
               key={item.href}
               href={item.href}

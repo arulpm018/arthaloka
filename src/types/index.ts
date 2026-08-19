@@ -5,6 +5,7 @@ export * from "./transfer";
 export * from "./category";
 export * from "./wishlist";
 export * from "./meme";
+export * from "./productivity";
 
 // Derived types
 export interface BudgetStatus {

@@ -76,6 +76,8 @@ const config = {
   			arul: '#2383E2',
   			fifi: '#E255A1',
   			shared: '#9B59B6',
+  			// Brand: coklat capybara (aksen modul produktivitas)
+  			capybara: 'hsl(var(--capybara))',
   		},
   		fontFamily: {
   			sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],

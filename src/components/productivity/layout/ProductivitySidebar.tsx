@@ -2,39 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  User,
-  Users,
-  Heart,
-  Sparkles,
-  Settings,
-  Receipt,
-  Wallet,
-  Tag,
-} from "lucide-react";
+import { Sun, ListTodo, CalendarDays, Flame } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Logo } from "@/components/shared/Logo";
-import { OWNER_LABELS } from "@/lib/constants/labels";
 
 const navItems = [
-  { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/arul", label: OWNER_LABELS["arul"], icon: User },
-  { href: "/together", label: OWNER_LABELS["shared"], icon: Users },
-  { href: "/fifi", label: OWNER_LABELS["fifi"], icon: Heart },
-  { href: "/wishlist", label: "Wishlist", icon: Sparkles },
-  { href: "/transactions", label: "Transaksi", icon: Receipt },
-  { href: "/accounts", label: "Akun", icon: Wallet },
-  { href: "/categories", label: "Kategori", icon: Tag },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/productivity", label: "Hari Ini", icon: Sun, exact: true },
+  { href: "/productivity/tasks", label: "Tugas", icon: ListTodo },
+  { href: "/productivity/schedule", label: "Jadwal", icon: CalendarDays },
+  { href: "/productivity/habits", label: "Habit", icon: Flame },
 ];
 
-export const Sidebar = () => {
+export const ProductivitySidebar = () => {
   const pathname = usePathname();
 
   return (
     <div className="flex h-full flex-col">
-      {/* App name — klik untuk kembali ke pemilihan modul */}
+      {/* Klik logo untuk kembali ke pemilihan modul */}
       <div className="flex h-14 items-center px-6">
         <Link
           href="/"
@@ -45,10 +29,17 @@ export const Sidebar = () => {
         </Link>
       </div>
 
-      {/* Navigation */}
+      <div className="px-6 pb-2">
+        <p className="text-xs font-medium uppercase tracking-wider text-capybara">
+          Produktivitas
+        </p>
+      </div>
+
       <nav className="flex-1 space-y-1 px-3 py-2">
         {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
