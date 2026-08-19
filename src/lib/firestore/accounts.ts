@@ -5,11 +5,18 @@ import {
   updateDoc,
   writeBatch,
   serverTimestamp,
+  deleteField,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Account, CreateAccountInput } from "@/types";
 
 const COLLECTION = "accounts";
+
+// Firestore rejects documents containing `undefined` values
+const stripUndefined = (data: object): Record<string, unknown> =>
+  Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined)
+  );
 
 export const accountsService = {
   /**
@@ -17,7 +24,7 @@ export const accountsService = {
    */
   create: async (input: CreateAccountInput): Promise<string> => {
     const docRef = await addDoc(collection(db, COLLECTION), {
-      ...input,
+      ...stripUndefined(input),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -25,12 +32,17 @@ export const accountsService = {
   },
 
   /**
-   * Update an existing account
+   * Update an existing account.
+   * Fields explicitly set to undefined are removed from the document.
    */
   update: async (id: string, data: Partial<Account>): Promise<void> => {
     const ref = doc(db, COLLECTION, id);
+    const payload: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(data)) {
+      payload[key] = value === undefined ? deleteField() : value;
+    }
     await updateDoc(ref, {
-      ...data,
+      ...payload,
       updatedAt: serverTimestamp(),
     });
   },
