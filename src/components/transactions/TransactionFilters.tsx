@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { OWNER_LABELS } from "@/lib/constants/labels";
+import { useAccounts } from "@/hooks/useAccounts";
+import { useCategories } from "@/hooks/useCategories";
 import { TxFilters } from "@/types";
 
 interface TransactionFiltersProps {
@@ -22,6 +24,8 @@ export const TransactionFilters = ({
   filters,
   onChange,
 }: TransactionFiltersProps) => {
+  const { accounts } = useAccounts();
+  const { categories } = useCategories();
   const [searchValue, setSearchValue] = useState(filters.search ?? "");
   const debouncedSearch = useDebouncedValue(searchValue, 300);
 
@@ -98,6 +102,50 @@ export const TransactionFilters = ({
             <SelectItem value="all">Semua</SelectItem>
             <SelectItem value="expense">Pengeluaran</SelectItem>
             <SelectItem value="income">Pemasukan</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={filters.categoryId || "all"}
+          onValueChange={(val) =>
+            onChange({
+              ...filters,
+              categoryId: val === "all" ? undefined : val,
+            })
+          }
+        >
+          <SelectTrigger className="w-[130px] h-8 text-xs">
+            <SelectValue placeholder="Kategori" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua Kategori</SelectItem>
+            {categories.map((c) => (
+              <SelectItem key={c.categoryId} value={c.categoryId}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={filters.accountId || "all"}
+          onValueChange={(val) =>
+            onChange({
+              ...filters,
+              accountId: val === "all" ? undefined : val,
+            })
+          }
+        >
+          <SelectTrigger className="w-[130px] h-8 text-xs">
+            <SelectValue placeholder="Akun" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua Akun</SelectItem>
+            {accounts.map((a) => (
+              <SelectItem key={a.accountId} value={a.accountId}>
+                {a.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
