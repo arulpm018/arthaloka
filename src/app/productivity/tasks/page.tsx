@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Plus, ListTodo, ChevronDown } from "lucide-react";
 import { Header } from "@/components/layout/Header";
+import { FAB } from "@/components/layout/FAB";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingState } from "@/components/shared/LoadingState";
 import { TaskItem } from "@/components/productivity/tasks/TaskItem";
 import { TaskSheet } from "@/components/productivity/tasks/TaskSheet";
 import { useTasks } from "@/hooks/useTasks";
@@ -14,7 +17,16 @@ import { Task } from "@/types";
 import { dateKey, groupTasks } from "@/lib/utils/productivity";
 import { cn } from "@/lib/utils/cn";
 
+/** Suspense wajib untuk useSearchParams pada prerender statis (pola halaman transactions). */
 export default function TasksPage() {
+  return (
+    <Suspense fallback={<LoadingState variant="page" />}>
+      <TasksPageContent />
+    </Suspense>
+  );
+}
+
+function TasksPageContent() {
   const { tasks, isLoading, error, create, update, setCompleted, remove } =
     useTasks();
   const role = useAppStore((s) => s.currentUser?.role);
@@ -84,6 +96,19 @@ export default function TasksPage() {
     setSheetOpen(true);
   };
 
+  // Deep-link ?add=1 dari FAB halaman "Hari Ini" — buka sheet lalu bersihkan URL
+  // supaya refresh tidak membuka sheet lagi.
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  useEffect(() => {
+    if (searchParams.get("add") === "1") {
+      openCreate();
+      router.replace(pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const sections: { key: string; label: string; items: Task[] }[] = [
     { key: "overdue", label: "Terlambat", items: groups.overdue },
     { key: "today", label: "Hari Ini", items: groups.today },
@@ -93,14 +118,10 @@ export default function TasksPage() {
 
   return (
     <>
-      <Header title="Tugas">
-        <Button size="sm" onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          Tambah
-        </Button>
-      </Header>
+      {/* Tambah via FAB kanan bawah — tombol header dihapus biar tidak redundan */}
+      <Header title="Tugas" />
 
-      <div className="mx-auto max-w-2xl p-4">
+      <div className="mx-auto w-full max-w-2xl p-4 md:max-w-3xl md:p-6">
         {/* Quick add */}
         <form onSubmit={handleQuickAdd} className="flex gap-2">
           <Input
@@ -194,6 +215,9 @@ export default function TasksPage() {
         onSubmit={handleSheetSubmit}
         onDelete={handleDelete}
       />
+
+      {/* FAB tambah — konsisten dengan modul keuangan */}
+      <FAB showOnDesktop ariaLabel="Tambah tugas" onClick={openCreate} />
     </>
   );
 }

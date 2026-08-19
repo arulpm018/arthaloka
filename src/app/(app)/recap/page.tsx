@@ -161,7 +161,7 @@ export default function RecapPage() {
         )}
         <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
       </Header>
-      <div className="p-4 space-y-4 max-w-4xl mx-auto">
+      <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
         {isLoading ? (
           <LoadingState variant="page" />
         ) : hasNoActivity ? (
@@ -180,7 +180,7 @@ export default function RecapPage() {
               prevExpense={prevExpense}
             />
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               <InsightTile
                 icon={CalendarDays}
                 label="Rata-rata / hari"
@@ -219,12 +219,14 @@ export default function RecapPage() {
 
             <DailySpendingChart transactions={transactions} month={selectedMonth} />
 
-            <RecapCategoryBreakdown
-              transactions={transactions}
-              categories={categories}
-            />
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4 lg:space-y-0">
+              <RecapCategoryBreakdown
+                transactions={transactions}
+                categories={categories}
+              />
 
-            <TopExpenses transactions={transactions} />
+              <TopExpenses transactions={transactions} />
+            </div>
           </>
         )}
       </div>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ChevronRight,
   Clock,
@@ -10,6 +11,11 @@ import {
   Flame,
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
+import { FAB } from "@/components/layout/FAB";
+import {
+  ProductivityActionSheet,
+  type ProductivityActionType,
+} from "@/components/productivity/layout/ProductivityActionSheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils/cn";
@@ -17,11 +23,13 @@ import { useTasks } from "@/hooks/useTasks";
 import { useEvents } from "@/hooks/useEvents";
 import { useHabits } from "@/hooks/useHabits";
 import { useAppStore } from "@/store/useAppStore";
+import { OWNER_COLORS } from "@/lib/constants/labels";
 import {
   addDays,
   dateKey,
   formatDateID,
   formatDueLabel,
+  getEventOwner,
   getHabitProgress,
   getHabitStreak,
   isHabitDueOn,
@@ -40,16 +48,35 @@ const SectionLink = ({ href }: { href: string }) => (
 );
 
 export default function TodayPage() {
+  const router = useRouter();
   const { tasks, setCompleted } = useTasks();
   const { events } = useEvents();
-  const uid = useAppStore((s) => s.currentUser?.uid);
+  const currentUser = useAppStore((s) => s.currentUser);
+  const partner = useAppStore((s) => s.partner);
+  const uid = currentUser?.uid;
   const { habits } = useHabits(uid);
 
   const today = useMemo(() => new Date(), []);
   const todayKey = dateKey(today);
   const weekAheadKey = dateKey(addDays(today, 7));
 
+  // uid → Owner — untuk warna pemilik acara (event lama diturunkan dari createdBy).
+  const uidToOwner = useMemo(() => {
+    const map: Record<string, "arul" | "fifi"> = {};
+    if (currentUser?.uid) map[currentUser.uid] = currentUser.role === "fifi" ? "fifi" : "arul";
+    if (partner?.uid) map[partner.uid] = partner.role === "fifi" ? "fifi" : "arul";
+    return map;
+  }, [currentUser, partner]);
+
   const openTasks = tasks.filter((t) => !t.completed);
+  const [actionSheetOpen, setActionSheetOpen] = useState(false);
+
+  // FAB → pilih jenis item → halaman terkait dengan ?add=1 (auto-open form).
+  const handleQuickAddSelect = (type: ProductivityActionType) => {
+    if (type === "task") router.push("/productivity/tasks?add=1");
+    else if (type === "event") router.push("/productivity/schedule?add=1");
+    else router.push("/productivity/habits?add=1");
+  };
   const focusTasks = openTasks
     .filter((t) => !t.dueDate || t.dueDate <= todayKey)
     .slice(0, 3);
@@ -72,9 +99,10 @@ export default function TodayPage() {
     <>
       <Header title="Hari Ini" />
 
-      <div className="mx-auto max-w-2xl space-y-6 p-4">
+      <div className="mx-auto w-full max-w-2xl space-y-6 p-4 md:max-w-5xl md:p-6">
         <p className="text-sm text-muted-foreground">{formatDateID(today)}</p>
 
+        <div className="space-y-6 lg:grid lg:grid-cols-3 lg:items-start lg:gap-6 lg:space-y-0">
         {/* Tugas */}
         <section className="rounded-xl border border-border bg-card p-4">
           <div className="mb-3 flex items-center justify-between">
@@ -145,24 +173,35 @@ export default function TodayPage() {
             </p>
           ) : (
             <div className="space-y-2.5">
-              {[...todayEvents, ...upcomingEvents].slice(0, 3).map((event) => (
-                <div key={event.eventId} className="flex items-start gap-2.5">
-                  <Clock
-                    className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm">{event.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {event.date === todayKey
-                        ? "Hari ini"
-                        : formatDueLabel(event.date, today)}
-                      {event.startTime ? ` · ${event.startTime}` : ""}
-                      {event.location ? ` · ${event.location}` : ""}
-                    </p>
+              {[...todayEvents, ...upcomingEvents].slice(0, 3).map((event) => {
+                const owner = getEventOwner(event, uidToOwner);
+                return (
+                  <div key={event.eventId} className="flex items-start gap-2.5">
+                    <Clock
+                      className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="flex items-center gap-1.5 truncate text-sm">
+                        <span
+                          className="h-1.5 w-1.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: OWNER_COLORS[owner] }}
+                          aria-label={`Acara ${owner === "shared" ? "bersama" : owner}`}
+                          role="img"
+                        />
+                        <span className="truncate">{event.title}</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {event.date === todayKey
+                          ? "Hari ini"
+                          : formatDueLabel(event.date, today)}
+                        {event.startTime ? ` · ${event.startTime}` : ""}
+                        {event.location ? ` · ${event.location}` : ""}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
@@ -222,7 +261,20 @@ export default function TodayPage() {
             </>
           )}
         </section>
+        </div>
       </div>
+
+      {/* FAB tambah cepat — pola sama dengan modul keuangan */}
+      <FAB
+        showOnDesktop
+        ariaLabel="Tambah item produktivitas"
+        onClick={() => setActionSheetOpen(true)}
+      />
+      <ProductivityActionSheet
+        open={actionSheetOpen}
+        onClose={() => setActionSheetOpen(false)}
+        onSelect={handleQuickAddSelect}
+      />
     </>
   );
 }

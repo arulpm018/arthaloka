@@ -1,8 +1,26 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
 import { ProductivitySidebar } from "./ProductivitySidebar";
 import { ProductivityBottomNav } from "./ProductivityBottomNav";
+import { DesktopTopbar, type Crumb } from "@/components/layout/DesktopTopbar";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { useSidebarState } from "@/hooks/useSidebarState";
+import { cn } from "@/lib/utils/cn";
+
+const SIDEBAR_STORAGE_KEY = "arthafiloka.sidebarCollapsed.productivity";
+
+const crumbsFor = (pathname: string): Crumb[] => {
+  const page = pathname.startsWith("/productivity/tasks")
+    ? "Tugas"
+    : pathname.startsWith("/productivity/schedule")
+      ? "Jadwal"
+      : pathname.startsWith("/productivity/habits")
+        ? "Habit"
+        : "Hari Ini";
+  return [{ label: "Produktivitas" }, { label: page }];
+};
 
 interface ProductivityShellProps {
   children: React.ReactNode;
@@ -11,23 +29,38 @@ interface ProductivityShellProps {
 /**
  * Shell modul Produktivitas — sengaja terpisah dari AppShell finance:
  * nav sendiri, tanpa FAB/sheet transaksi, tanpa provider couple.
+ * Desktop: sidebar collapsible + topbar (tanpa quick-add keuangan).
  */
 export function ProductivityShell({ children }: ProductivityShellProps) {
+  const pathname = usePathname();
+  const { collapsed, toggle } = useSidebarState(SIDEBAR_STORAGE_KEY);
+
   return (
     <div className="flex h-dvh flex-col md:flex-row">
       <OfflineBadge />
 
-      {/* Sidebar - desktop only */}
-      <aside className="hidden md:flex md:w-64 md:flex-col md:border-r md:border-border">
-        <ProductivitySidebar />
+      {/* Sidebar — desktop only, collapsible w-64 ⇄ rail */}
+      <aside
+        className={cn(
+          "hidden shrink-0 border-r border-sidebar-border transition-[width] duration-200 ease-in-out md:block",
+          collapsed ? "md:w-[60px]" : "md:w-64"
+        )}
+      >
+        <ProductivitySidebar collapsed={collapsed} onToggle={toggle} />
       </aside>
 
-      {/* Main content area */}
-      <main className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto pb-nav-height md:pb-0">
-          {children}
-        </div>
-      </main>
+      {/* Kolom konten: topbar desktop + area scroll utama */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <DesktopTopbar onToggleSidebar={toggle} crumbs={crumbsFor(pathname)}>
+          <ThemeToggle />
+        </DesktopTopbar>
+
+        <main className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto pb-nav-height md:pb-0">
+            {children}
+          </div>
+        </main>
+      </div>
 
       {/* Bottom nav - mobile only */}
       <ProductivityBottomNav />

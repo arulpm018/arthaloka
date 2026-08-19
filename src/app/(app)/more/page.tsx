@@ -49,7 +49,7 @@ export default function MorePage() {
   return (
     <>
       <Header title="More" />
-      <div className="p-4 max-w-4xl mx-auto">
+      <div className="mx-auto w-full max-w-4xl p-4 md:max-w-5xl md:p-6">
         <div className="space-y-2">
           {[...moduleItems, ...menuItems].map((item) => (
             <Link

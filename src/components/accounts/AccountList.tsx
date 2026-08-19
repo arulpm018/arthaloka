@@ -30,7 +30,7 @@ export const AccountList = ({ accounts, onAccountTap }: AccountListProps) => {
           <h3 className="mb-2 px-1 text-sm-label font-medium uppercase tracking-wide text-muted-foreground">
             {section.label}
           </h3>
-          <div className="space-y-2">
+          <div className="grid gap-2 sm:grid-cols-2">
             {section.accounts.map((account) => (
               <AccountCard
                 key={account.accountId}

@@ -30,6 +30,7 @@ export const eventSchema = z
       .transform((val) => val.trim())
       .nullable()
       .default(null),
+    owner: z.enum(["arul", "fifi", "shared"]),
   })
   .refine(
     (val) =>

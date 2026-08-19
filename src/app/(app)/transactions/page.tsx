@@ -128,7 +128,7 @@ function TransactionsPageContent() {
       <Header title="Transaksi">
         <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
       </Header>
-      <div className="p-4 space-y-4 max-w-4xl mx-auto">
+      <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
         {/* Tabs */}
         <div className="flex rounded-lg border border-border bg-muted p-1">
           <button
@@ -164,17 +164,19 @@ function TransactionsPageContent() {
         </div>
 
         {activeTab === "transactions" && (
-          <>
+          <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-4 lg:space-y-0">
             {/* Ringkasan bulan ini */}
-            <TransactionSummaryCard
-              summary={summary}
-              isLoading={summaryLoading}
-              showExpense={filters.type !== "income"}
-              showIncome={filters.type !== "expense"}
-            />
+            <div className="lg:col-start-2 lg:row-start-1">
+              <TransactionSummaryCard
+                summary={summary}
+                isLoading={summaryLoading}
+                showExpense={filters.type !== "income"}
+                showIncome={filters.type !== "expense"}
+              />
+            </div>
 
             {partialFilters.categoryId && (
-              <div className="flex items-center gap-2 w-fit rounded-full border border-border bg-muted/50 pl-2 pr-1 py-1">
+              <div className="flex items-center gap-2 w-fit rounded-full border border-border bg-muted/50 pl-2 pr-1 py-1 lg:col-start-2">
                 {activeCategory ? (
                   <CategoryIcon
                     icon={activeCategory.icon}
@@ -199,33 +201,37 @@ function TransactionsPageContent() {
               </div>
             )}
 
-            <TransactionFilters
-              filters={partialFilters}
-              onChange={setPartialFilters}
-            />
+            <div className="lg:col-start-2">
+              <TransactionFilters
+                filters={partialFilters}
+                onChange={setPartialFilters}
+              />
+            </div>
 
-            {isLoading ? (
-              <LoadingState variant="transaction-list" count={8} />
-            ) : filteredTransactions.length === 0 ? (
-              <EmptyState
-                icon={Receipt}
-                title="Belum ada transaksi"
-                description={
-                  partialFilters.search
-                    ? `Tidak ada transaksi cocok dengan "${partialFilters.search}"`
-                    : "Transaksi bulan ini akan muncul di sini"
-                }
-              />
-            ) : (
-              <TransactionList
-                transactions={filteredTransactions}
-                onEdit={handleEdit}
-                onDelete={(tx) => setDeleteTarget(tx)}
-                hasMore={hasMore}
-                onLoadMore={loadMore}
-              />
-            )}
-          </>
+            <div className="lg:col-start-1 lg:row-start-1 lg:row-span-3 lg:self-start">
+              {isLoading ? (
+                <LoadingState variant="transaction-list" count={8} />
+              ) : filteredTransactions.length === 0 ? (
+                <EmptyState
+                  icon={Receipt}
+                  title="Belum ada transaksi"
+                  description={
+                    partialFilters.search
+                      ? `Tidak ada transaksi cocok dengan "${partialFilters.search}"`
+                      : "Transaksi bulan ini akan muncul di sini"
+                  }
+                />
+              ) : (
+                <TransactionList
+                  transactions={filteredTransactions}
+                  onEdit={handleEdit}
+                  onDelete={(tx) => setDeleteTarget(tx)}
+                  hasMore={hasMore}
+                  onLoadMore={loadMore}
+                />
+              )}
+            </div>
+          </div>
         )}
 
         {activeTab === "calendar" && (

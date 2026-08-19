@@ -36,7 +36,7 @@ const ModuleChooser = () => {
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center p-6">
-      <div className="mb-10 flex flex-col items-center gap-2 text-center">
+      <div className="mb-10 flex flex-col items-center gap-2 text-center md:mb-14">
         <Logo size="lg" />
         <p className="text-sm text-muted-foreground">
           {getGreeting()}
@@ -44,12 +44,12 @@ const ModuleChooser = () => {
         </p>
       </div>
 
-      <div className="grid w-full max-w-md gap-3 sm:grid-cols-2">
+      <div className="grid w-full max-w-md gap-3 sm:grid-cols-2 md:max-w-2xl md:gap-4">
         {modules.map((module) => (
           <Link
             key={module.href}
             href={module.href}
-            className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:bg-accent/50 active:bg-accent"
+            className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:bg-accent/50 active:bg-accent md:gap-5 md:p-6 md:transition-all md:hover:-translate-y-0.5 md:hover:bg-card md:hover:shadow-md-custom"
           >
             <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${module.chipClass}`}>
               <module.icon className="h-6 w-6" />

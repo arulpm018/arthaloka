@@ -6,7 +6,9 @@ import { Owner } from "./account";
  *
  * Scope data:
  * - Task: owner pribadi (role pembuat) atau "shared" (berdua).
- * - ScheduleEvent: shared flat — satu kalender bareng.
+ * - ScheduleEvent: shared flat — satu kalender bareng, dibedakan per pemilik
+ *   lewat warna (ala Google Calendar). Event lama tanpa `owner` di-resolve
+ *   dari `createdBy` (lihat getEventOwner di lib/utils/productivity).
  * - Habit: per-uid, streak personal (pasangan bisa lihat, read-only).
  *
  * Tanggal tanggal-only disimpan sebagai string "YYYY-MM-DD" (local)
@@ -41,6 +43,9 @@ export interface ScheduleEvent {
   endTime: string | null;
   location: string | null;
   notes: string | null;
+  /** Pemilik acara — menentukan warna di kalender. Opsional untuk
+   *  kompatibilitas event lama; resolve via getEventOwner(). */
+  owner?: Owner;
   createdBy: string;
   createdAt: Timestamp;
 }

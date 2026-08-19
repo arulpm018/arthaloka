@@ -249,7 +249,7 @@ export default function WishlistPage() {
     <>
       <Header title="Wishlist" />
 
-      <div className="p-4 space-y-5 max-w-4xl mx-auto pb-32">
+      <div className="mx-auto w-full max-w-4xl space-y-5 p-4 pb-32 md:max-w-5xl md:p-6">
         {isLoading ? (
           <WishlistSkeleton />
         ) : (
@@ -280,7 +280,7 @@ export default function WishlistPage() {
             </div>
 
             {groups.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-3 lg:grid lg:grid-cols-2 lg:items-start lg:gap-3 lg:space-y-0">
                 {groups.map((group) => (
                   <WishlistCategorySection
                     key={group.category.categoryId}

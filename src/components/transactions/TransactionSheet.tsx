@@ -34,7 +34,6 @@ import { useAppStore } from "@/store/useAppStore";
 import { OWNER_LABELS } from "@/lib/constants/labels";
 import { AmountInput } from "@/components/shared/AmountInput";
 import { CategoryGrid } from "@/components/categories/CategoryGrid";
-import { CategoryFullGrid } from "@/components/categories/CategoryFullGrid";
 import { CategoryForm } from "@/components/categories/CategoryForm";
 import { DeleteTransactionDialog } from "@/components/transactions/DeleteTransactionDialog";
 import { CreateTransactionInput, Category } from "@/types";
@@ -114,7 +113,6 @@ export const TransactionSheet = ({ mode }: TransactionSheetProps) => {
   } = useAppStore();
   const { accounts } = useAccounts();
   const { categories } = useCategories();
-  const [showAllCategories, setShowAllCategories] = useState(false);
   const [categoryFormOpen, setCategoryFormOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -369,15 +367,7 @@ export const TransactionSheet = ({ mode }: TransactionSheetProps) => {
                 categories={filteredCategories}
                 selected={watch("categoryId") || null}
                 onSelect={handleCategorySelect}
-                quickOnly
               />
-              <button
-                type="button"
-                onClick={() => setShowAllCategories(true)}
-                className="text-xs text-muted-foreground underline"
-              >
-                Lihat semua kategori →
-              </button>
               {errors.categoryId && (
                 <p className="text-xs text-destructive">
                   {errors.categoryId.message}
@@ -451,16 +441,8 @@ export const TransactionSheet = ({ mode }: TransactionSheetProps) => {
               />
             </div>
 
-            {/* Note */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">
-                Catatan (opsional)
-              </label>
-              <Input
-                placeholder="Catatan tambahan"
-                {...register("note")}
-              />
-            </div>
+            {/* Note dihapus dari form — field tetap ada di data model agar
+                catatan lama tidak hilang saat edit transaksi. */}
 
             <Button
               type="submit"
@@ -488,14 +470,6 @@ export const TransactionSheet = ({ mode }: TransactionSheetProps) => {
           </form>
         </SheetContent>
       </Sheet>
-
-      <CategoryFullGrid
-        open={showAllCategories}
-        onClose={() => setShowAllCategories(false)}
-        categories={filteredCategories}
-        selected={watch("categoryId") || null}
-        onSelect={handleCategorySelect}
-      />
 
       <CategoryForm
         open={categoryFormOpen}

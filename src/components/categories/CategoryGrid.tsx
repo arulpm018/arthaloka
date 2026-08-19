@@ -8,20 +8,16 @@ interface CategoryGridProps {
   categories: Category[];
   selected: string | null;
   onSelect: (categoryId: string) => void;
-  quickOnly?: boolean;
 }
 
 export const CategoryGrid = ({
   categories,
   selected,
   onSelect,
-  quickOnly,
 }: CategoryGridProps) => {
-  const items = quickOnly ? categories.slice(0, 6) : categories;
-
   return (
     <div className="grid grid-cols-3 gap-2">
-      {items.map((cat) => {
+      {categories.map((cat) => {
         const Icon = getCategoryIcon(cat.icon);
         return (
           <button

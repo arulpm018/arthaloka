@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Plus, Flame } from "lucide-react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Flame } from "lucide-react";
 import { Header } from "@/components/layout/Header";
-import { Button } from "@/components/ui/button";
+import { FAB } from "@/components/layout/FAB";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingState } from "@/components/shared/LoadingState";
 import { HabitRow } from "@/components/productivity/habits/HabitRow";
 import { HabitSheet } from "@/components/productivity/habits/HabitSheet";
 import { useHabits } from "@/hooks/useHabits";
@@ -14,7 +16,16 @@ import { useAppStore } from "@/store/useAppStore";
 import { Habit } from "@/types";
 import { dateKey, getHabitProgress } from "@/lib/utils/productivity";
 
+/** Suspense wajib untuk useSearchParams pada prerender statis (pola halaman transactions). */
 export default function HabitsPage() {
+  return (
+    <Suspense fallback={<LoadingState variant="page" />}>
+      <HabitsPageContent />
+    </Suspense>
+  );
+}
+
+function HabitsPageContent() {
   const currentUser = useAppStore((s) => s.currentUser);
   const partner = useAppStore((s) => s.partner);
 
@@ -41,6 +52,19 @@ export default function HabitsPage() {
     setSheetOpen(true);
   };
 
+  // Deep-link ?add=1 dari FAB halaman "Hari Ini" — buka sheet lalu bersihkan URL
+  // supaya refresh tidak membuka sheet lagi.
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  useEffect(() => {
+    if (searchParams.get("add") === "1") {
+      openCreate();
+      router.replace(pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const handleToggleToday = async (habit: Habit, done: boolean) => {
     try {
       await toggleDate(habit.habitId, todayKey, done);
@@ -63,16 +87,10 @@ export default function HabitsPage() {
 
   return (
     <>
-      <Header title="Habit">
-        {!viewingPartner && (
-          <Button size="sm" onClick={openCreate}>
-            <Plus className="h-4 w-4" />
-            Tambah
-          </Button>
-        )}
-      </Header>
+      {/* Tambah via FAB kanan bawah (hanya untuk habit sendiri) — tombol header dihapus */}
+      <Header title="Habit" />
 
-      <div className="mx-auto max-w-2xl p-4">
+      <div className="mx-auto w-full max-w-2xl p-4 md:max-w-3xl md:p-6">
         {partner && (
           <Tabs
             value={viewingPartner ? "partner" : "me"}
@@ -142,6 +160,11 @@ export default function HabitsPage() {
         onSubmit={handleSheetSubmit}
         onDelete={(habit) => remove(habit.habitId)}
       />
+
+      {/* FAB tambah — hanya untuk habit sendiri (sama seperti tombol header) */}
+      {!viewingPartner && (
+        <FAB showOnDesktop ariaLabel="Tambah habit" onClick={openCreate} />
+      )}
     </>
   );
 }

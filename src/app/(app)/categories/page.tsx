@@ -149,7 +149,7 @@ export default function CategoriesPage() {
           <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
         )}
       </Header>
-      <div className="p-4 max-w-4xl mx-auto space-y-4">
+      <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
         {/* Main Tabs: Transaksi / Wishlist */}
         <div className="flex gap-1 bg-accent/50 rounded-lg p-1">
           <button

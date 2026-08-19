@@ -18,9 +18,17 @@ interface HeaderProps {
   children?: React.ReactNode; // right slot for month picker or actions
 }
 
+/**
+ * Header halaman — dual-mode:
+ * - Mobile: sticky bar h-14 dengan border (perilaku lama, tidak berubah).
+ * - Desktop: baris judul halaman in-flow ala Notion — tanpa border/sticky,
+ *   sejajar dengan container konten (max-w-5xl), judul lebih besar.
+ * Slot kanan (MonthPicker, tombol aksi) tetap berfungsi di kedua mode.
+ */
 export const Header = ({ title, ownerColor, titleSlot, children }: HeaderProps) => {
   // Subtle border tint when ownerColor is provided. Falls back to default
-  // border via CSS class when not specified.
+  // border via CSS class when not specified. (Efek hanya terlihat di mobile —
+  // desktop tidak punya border bawah.)
   const headerStyle = ownerColor
     ? { borderBottomColor: `${ownerColor}33` } // ~20% alpha tint
     : undefined;
@@ -28,7 +36,8 @@ export const Header = ({ title, ownerColor, titleSlot, children }: HeaderProps) 
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background px-4 md:px-6"
+        "sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background px-4",
+        "md:static md:z-auto md:h-auto md:min-h-[3.5rem] md:w-full md:max-w-5xl md:mx-auto md:border-0 md:bg-transparent md:px-6 md:pt-6"
       )}
       style={headerStyle}
     >
@@ -44,7 +53,9 @@ export const Header = ({ title, ownerColor, titleSlot, children }: HeaderProps) 
                 aria-hidden="true"
               />
             )}
-            <h1 className="text-xl-header truncate">{title}</h1>
+            <h1 className="text-xl-header truncate md:text-2xl md:font-semibold md:tracking-tight">
+              {title}
+            </h1>
           </>
         )}
       </div>

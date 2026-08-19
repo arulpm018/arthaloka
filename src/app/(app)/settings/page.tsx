@@ -109,7 +109,7 @@ export default function SettingsPage() {
   return (
     <>
       <Header title="Settings" />
-      <div className="p-4 space-y-6 max-w-2xl mx-auto pb-20">
+      <div className="mx-auto w-full max-w-2xl space-y-6 p-4 pb-20 md:max-w-3xl md:p-6">
         {/* Profile hero */}
         {currentUser ? (
           <AvatarSection user={currentUser} />

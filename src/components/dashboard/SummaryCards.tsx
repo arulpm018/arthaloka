@@ -53,11 +53,11 @@ export const SummaryCards = ({ totalBalance, income, expense, accounts = [] }: S
   const totalAccounts = accounts.length;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 lg:grid lg:grid-cols-3 lg:gap-3 lg:space-y-0">
       {/* Hero Balance Card — Tappable */}
       <button
         onClick={() => setSheetOpen(true)}
-        className="relative w-full text-left rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-5 transition-all active:scale-[0.98]"
+        className="relative w-full text-left rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-5 transition-all active:scale-[0.98] lg:col-span-2"
       >
         {/* Eye toggle — absolute top-right, biar label+angka bisa stack rapat
             tanpa kebagian space row sendiri buat eye button. */}
@@ -197,8 +197,8 @@ export const SummaryCards = ({ totalBalance, income, expense, accounts = [] }: S
         </SheetContent>
       </Sheet>
 
-      {/* Income & Expense Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Income & Expense Grid — 2 kolom di mobile, stack 1 kolom di kanan hero saat desktop */}
+      <div className="grid grid-cols-2 gap-3 lg:col-span-1 lg:grid-cols-1 lg:content-stretch">
         <div className="rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-full bg-income/10 flex items-center justify-center">

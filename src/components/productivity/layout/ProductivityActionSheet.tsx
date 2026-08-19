@@ -6,58 +6,54 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  ArrowLeftRight,
-  Sparkles,
-} from "lucide-react";
+import { CalendarDays, Flame, ListTodo } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-export type ActionType = "expense" | "income" | "transfer" | "wishlist";
+export type ProductivityActionType = "task" | "event" | "habit";
 
-interface ActionSheetProps {
+interface ProductivityActionSheetProps {
   open: boolean;
   onClose: () => void;
-  onSelect: (type: ActionType) => void;
+  onSelect: (type: ProductivityActionType) => void;
 }
 
-export const actions = [
+/**
+ * Padanan ActionSheet finance untuk FAB modul produktivitas — dipakai di
+ * halaman "Hari Ini" yang tidak punya sheet tambah sendiri. Pilihan
+ * menavigasi ke halaman terkait dengan ?add=1 yang auto-open formnya.
+ */
+const actions = [
   {
-    type: "expense" as const,
-    label: "Pengeluaran",
-    description: "Catat pengeluaran baru",
-    icon: ArrowDownCircle,
-    color: "text-expense",
-    bg: "bg-expense/10",
-  },
-  {
-    type: "income" as const,
-    label: "Pemasukan",
-    description: "Catat pemasukan baru",
-    icon: ArrowUpCircle,
-    color: "text-income",
-    bg: "bg-income/10",
-  },
-  {
-    type: "transfer" as const,
-    label: "Transfer",
-    description: "Pindah antar akun",
-    icon: ArrowLeftRight,
-    color: "text-transfer",
-    bg: "bg-transfer/10",
-  },
-  {
-    type: "wishlist" as const,
-    label: "Wishlist",
-    description: "Tambah barang inceran",
-    icon: Sparkles,
+    type: "task" as const,
+    label: "Tugas",
+    description: "Catat tugas baru",
+    icon: ListTodo,
     color: "text-primary",
     bg: "bg-primary/10",
   },
+  {
+    type: "event" as const,
+    label: "Jadwal",
+    description: "Tambah acara",
+    icon: CalendarDays,
+    color: "text-capybara",
+    bg: "bg-capybara/10",
+  },
+  {
+    type: "habit" as const,
+    label: "Habit",
+    description: "Buat habit baru",
+    icon: Flame,
+    color: "text-warning",
+    bg: "bg-warning/10",
+  },
 ];
 
-export const ActionSheet = ({ open, onClose, onSelect }: ActionSheetProps) => {
+export const ProductivityActionSheet = ({
+  open,
+  onClose,
+  onSelect,
+}: ProductivityActionSheetProps) => {
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent side="bottom" className="rounded-t-sheet">

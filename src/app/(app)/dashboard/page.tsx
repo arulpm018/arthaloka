@@ -57,7 +57,7 @@ export default function DashboardPage() {
         <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
       </Header>
 
-      <div className="p-4 space-y-6 max-w-4xl mx-auto">
+      <div className="mx-auto w-full max-w-4xl space-y-6 p-4 md:max-w-5xl md:p-6">
         {isLoading ? (
           <LoadingState variant="page" />
         ) : (
@@ -80,14 +80,16 @@ export default function DashboardPage() {
               <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
             </Link>
 
-            <SpendingByCategory budgets={budgets} />
-            <RecentTransactions
-              transactions={transactions}
-              transfers={transfers}
-              onEdit={(tx) => openSheet(tx.type, tx)}
-              onEditTransfer={(tf) => openSheet("transfer", tf)}
-              onDeleteTransfer={(tf) => setDeleteTransferTarget(tf)}
-            />
+            <div className="space-y-6 xl:grid xl:grid-cols-[minmax(0,1fr)_400px] xl:items-start xl:gap-6 xl:space-y-0">
+              <SpendingByCategory budgets={budgets} />
+              <RecentTransactions
+                transactions={transactions}
+                transfers={transfers}
+                onEdit={(tx) => openSheet(tx.type, tx)}
+                onEditTransfer={(tf) => openSheet("transfer", tf)}
+                onDeleteTransfer={(tf) => setDeleteTransferTarget(tf)}
+              />
+            </div>
           </>
         )}
       </div>

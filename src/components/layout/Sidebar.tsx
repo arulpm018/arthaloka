@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   Home,
   User,
@@ -10,62 +8,60 @@ import {
   Sparkles,
   Settings,
   Receipt,
+  CalendarRange,
   Wallet,
   Tag,
 } from "lucide-react";
-import { cn } from "@/lib/utils/cn";
-import { Logo } from "@/components/shared/Logo";
 import { OWNER_LABELS } from "@/lib/constants/labels";
+import {
+  CollapsibleSidebar,
+  type SidebarGroup,
+  type SidebarNavItem,
+} from "./CollapsibleSidebar";
 
-const navItems = [
-  { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/arul", label: OWNER_LABELS["arul"], icon: User },
-  { href: "/together", label: OWNER_LABELS["shared"], icon: Users },
-  { href: "/fifi", label: OWNER_LABELS["fifi"], icon: Heart },
-  { href: "/wishlist", label: "Wishlist", icon: Sparkles },
-  { href: "/transactions", label: "Transaksi", icon: Receipt },
-  { href: "/accounts", label: "Akun", icon: Wallet },
-  { href: "/categories", label: "Kategori", icon: Tag },
+const groups: SidebarGroup[] = [
+  {
+    label: "Ikhtisar",
+    items: [
+      { href: "/dashboard", label: "Home", icon: Home },
+      { href: "/arul", label: OWNER_LABELS["arul"], icon: User },
+      { href: "/together", label: OWNER_LABELS["shared"], icon: Users },
+      { href: "/fifi", label: OWNER_LABELS["fifi"], icon: Heart },
+    ] satisfies SidebarNavItem[],
+  },
+  {
+    label: "Catatan",
+    items: [
+      { href: "/wishlist", label: "Wishlist", icon: Sparkles },
+      { href: "/transactions", label: "Transaksi", icon: Receipt },
+      { href: "/recap", label: "Rekap Bulanan", icon: CalendarRange },
+    ] satisfies SidebarNavItem[],
+  },
+  {
+    label: "Kelola",
+    items: [
+      { href: "/accounts", label: "Akun", icon: Wallet },
+      { href: "/categories", label: "Kategori", icon: Tag },
+    ] satisfies SidebarNavItem[],
+  },
+];
+
+const footerItems: SidebarNavItem[] = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-export const Sidebar = () => {
-  const pathname = usePathname();
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
 
-  return (
-    <div className="flex h-full flex-col">
-      {/* App name — klik untuk kembali ke pemilihan modul */}
-      <div className="flex h-14 items-center px-6">
-        <Link
-          href="/"
-          aria-label="Kembali ke pemilihan modul"
-          className="rounded-md transition-colors hover:text-muted-foreground"
-        >
-          <Logo size="md" />
-        </Link>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-2">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-                isActive
-                  ? "bg-accent text-foreground font-medium"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-    </div>
-  );
-};
+export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => (
+  <CollapsibleSidebar
+    collapsed={collapsed}
+    onToggle={onToggle}
+    moduleLabel="Keuangan"
+    moduleLabelClassName="text-primary"
+    groups={groups}
+    footerItems={footerItems}
+  />
+);

@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { ScheduleEvent } from "@/types";
+import { Owner, ScheduleEvent } from "@/types";
+import { OWNER_COLORS, OWNER_LABELS } from "@/lib/constants/labels";
+import { cn } from "@/lib/utils/cn";
 import { eventSchema } from "@/lib/validations/event.schema";
 
 interface EventSheetProps {
@@ -22,6 +24,8 @@ interface EventSheetProps {
   event: ScheduleEvent | null;
   /** Tanggal default saat tambah baru */
   defaultDate: string;
+  /** Pemilik default saat tambah baru — biasanya role user aktif */
+  defaultOwner: Owner;
   onSubmit: (values: {
     title: string;
     date: string;
@@ -29,15 +33,19 @@ interface EventSheetProps {
     endTime: string | null;
     location: string | null;
     notes: string | null;
+    owner: Owner;
   }) => Promise<void>;
   onDelete?: (event: ScheduleEvent) => Promise<void>;
 }
+
+const OWNER_OPTIONS: Owner[] = ["arul", "fifi", "shared"];
 
 export const EventSheet = ({
   open,
   onOpenChange,
   event,
   defaultDate,
+  defaultOwner,
   onSubmit,
   onDelete,
 }: EventSheetProps) => {
@@ -47,6 +55,7 @@ export const EventSheet = ({
   const [endTime, setEndTime] = useState("");
   const [location, setLocation] = useState("");
   const [notes, setNotes] = useState("");
+  const [owner, setOwner] = useState<Owner>(defaultOwner);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -61,10 +70,11 @@ export const EventSheet = ({
       setEndTime(event?.endTime ?? "");
       setLocation(event?.location ?? "");
       setNotes(event?.notes ?? "");
+      setOwner(event?.owner ?? defaultOwner);
       setError(null);
       setConfirmDelete(false);
     }
-  }, [open, event, defaultDate]);
+  }, [open, event, defaultDate, defaultOwner]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,6 +85,7 @@ export const EventSheet = ({
       endTime: endTime || null,
       location: location || null,
       notes: notes || null,
+      owner,
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Data tidak valid");
@@ -129,6 +140,33 @@ export const EventSheet = ({
                 autoFocus={!isEditing}
               />
             </div>
+
+            <fieldset className="space-y-1.5">
+              <legend className="text-sm font-medium">Pemilik acara</legend>
+              <div className="grid grid-cols-3 gap-2">
+                {OWNER_OPTIONS.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setOwner(option)}
+                    aria-pressed={owner === option}
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 rounded-lg border px-2 py-2 text-xs font-medium transition-colors",
+                      owner === option
+                        ? "border-foreground/25 bg-accent text-accent-foreground"
+                        : "border-border text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                    )}
+                  >
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: OWNER_COLORS[option] }}
+                      aria-hidden="true"
+                    />
+                    {OWNER_LABELS[option]}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">

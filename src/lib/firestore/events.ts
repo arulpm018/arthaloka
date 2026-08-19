@@ -29,7 +29,13 @@ export const eventsService = {
     data: Partial<
       Pick<
         ScheduleEvent,
-        "title" | "date" | "startTime" | "endTime" | "location" | "notes"
+        | "title"
+        | "date"
+        | "startTime"
+        | "endTime"
+        | "location"
+        | "notes"
+        | "owner"
       >
     >
   ): Promise<void> => {

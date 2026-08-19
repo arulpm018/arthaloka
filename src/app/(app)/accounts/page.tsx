@@ -48,7 +48,7 @@ export default function AccountsPage() {
         </Button>
       </Header>
 
-      <div className="p-4 max-w-4xl mx-auto">
+      <div className="mx-auto w-full max-w-4xl p-4 md:max-w-5xl md:p-6">
         {isLoading ? (
           <LoadingState variant="list" count={5} />
         ) : accounts.length === 0 ? (

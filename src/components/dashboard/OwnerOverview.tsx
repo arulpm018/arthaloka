@@ -104,15 +104,17 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
         <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
       </Header>
 
-      <div className="p-4 space-y-6 max-w-4xl mx-auto">
+      <div className="mx-auto w-full max-w-4xl space-y-6 p-4 md:max-w-5xl md:p-6">
         {isLoading ? (
           <LoadingState variant="page" />
         ) : (
           <>
-            {/* Identity hero — couple photo for shared, header strip dilebur ke balance card untuk arul/fifi. */}
-            {owner === "shared" && (
-              <CoupleHero anniversaryDate={anniversaryDate} />
-            )}
+            <div className="space-y-6 xl:grid xl:grid-cols-[minmax(0,1fr)_400px] xl:items-start xl:gap-6 xl:space-y-0">
+              <div className="space-y-6">
+                {/* Identity hero — couple photo for shared, header strip dilebur ke balance card untuk arul/fifi. */}
+                {owner === "shared" && (
+                  <CoupleHero anniversaryDate={anniversaryDate} />
+                )}
 
             {/* Balance hero card — gradient tinted by owner color, meme 96px */}
             <div
@@ -180,38 +182,44 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
               </div>
             </div>
 
-            {/* Accounts */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium">Akun</h3>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setEditingAccount(null);
-                    setAccountFormOpen(true);
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Tambah
-                </Button>
+              {/* Accounts */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium">Akun</h3>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setEditingAccount(null);
+                      setAccountFormOpen(true);
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Tambah
+                  </Button>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                  {accounts.map((acc) => (
+                    <AccountCard
+                      key={acc.accountId}
+                      account={acc}
+                      onTap={() => handleAccountTap(acc)}
+                    />
+                  ))}
+                </div>
               </div>
-              {accounts.map((acc) => (
-                <AccountCard
-                  key={acc.accountId}
-                  account={acc}
-                  onTap={() => handleAccountTap(acc)}
-                />
-              ))}
             </div>
 
             {/* Recent Transactions */}
-            <RecentTransactions
-              transactions={transactions}
-              transfers={transfers}
-              onEdit={(tx) => openSheet(tx.type, tx)}
-              onEditTransfer={(tf) => openSheet("transfer", tf)}
-            />
+            <div className="xl:sticky xl:top-6">
+              <RecentTransactions
+                transactions={transactions}
+                transfers={transfers}
+                onEdit={(tx) => openSheet(tx.type, tx)}
+                onEditTransfer={(tf) => openSheet("transfer", tf)}
+              />
+            </div>
+            </div>
           </>
         )}
       </div>

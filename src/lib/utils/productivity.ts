@@ -1,4 +1,4 @@
-import { Habit, Task } from "@/types";
+import { Habit, Owner, ScheduleEvent, Task } from "@/types";
 
 /**
  * Helper murni modul Produktivitas — tanggal, pengelompokan tugas,
@@ -236,3 +236,13 @@ export const getHabitProgress = (
     total: due.length,
   };
 };
+
+/**
+ * Pemilik efektif sebuah acara. Field `owner` belum ada di event lama —
+ * turunkan dari `createdBy` via peta uid→Owner; kalau tetap tidak ketemu
+ * (pembuat bukan pasangan), anggap "shared".
+ */
+export const getEventOwner = (
+  event: Pick<ScheduleEvent, "owner" | "createdBy">,
+  uidToOwner: Record<string, Owner>
+): Owner => event.owner ?? uidToOwner[event.createdBy] ?? "shared";

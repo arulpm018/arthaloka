@@ -11,6 +11,7 @@ import {
   isHabitDueOn,
   getHabitStreak,
   getHabitProgress,
+  getEventOwner,
 } from "@/lib/utils/productivity";
 
 const makeTask = (partial: Partial<Task>): Task => ({
@@ -181,5 +182,28 @@ describe("getHabitProgress", () => {
       done: 1,
       total: 2,
     });
+  });
+});
+
+describe("getEventOwner", () => {
+  const uidToOwner = { "uid-arul": "arul", "uid-fifi": "fifi" } as const;
+
+  it("memakai field owner kalau ada (event baru)", () => {
+    expect(
+      getEventOwner({ owner: "shared", createdBy: "uid-arul" }, uidToOwner)
+    ).toBe("shared");
+    expect(
+      getEventOwner({ owner: "fifi", createdBy: "uid-arul" }, uidToOwner)
+    ).toBe("fifi");
+  });
+
+  it("menurunkan owner dari createdBy untuk event lama tanpa field owner", () => {
+    expect(getEventOwner({ createdBy: "uid-fifi" }, uidToOwner)).toBe("fifi");
+    expect(getEventOwner({ createdBy: "uid-arul" }, uidToOwner)).toBe("arul");
+  });
+
+  it("fallback ke shared kalau pembuat tidak dikenal", () => {
+    expect(getEventOwner({ createdBy: "uid-lain" }, uidToOwner)).toBe("shared");
+    expect(getEventOwner({ createdBy: "uid-lain" }, {})).toBe("shared");
   });
 });
