@@ -10,6 +10,7 @@ import { TransactionList } from "@/components/transactions/TransactionList";
 import { TransferList } from "@/components/transactions/TransferList";
 import { TransactionFilters } from "@/components/transactions/TransactionFilters";
 import { TransactionSummaryCard } from "@/components/transactions/TransactionSummaryCard";
+import { CalendarTab } from "@/components/transactions/CalendarTab";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
@@ -45,7 +46,7 @@ function TransactionsPageContent() {
   const [deleteTarget, setDeleteTarget] = useState<Transaction | null>(null);
   const [deleteTransferTarget, setDeleteTransferTarget] = useState<Transfer | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"transactions" | "transfers">("transactions");
+  const [activeTab, setActiveTab] = useState<"transactions" | "transfers" | "calendar">("transactions");
 
   // Deep-link dari halaman kategori/home: ?categoryId=<id> memfilter daftar
   useEffect(() => {
@@ -150,6 +151,16 @@ function TransactionsPageContent() {
           >
             Transfer
           </button>
+          <button
+            onClick={() => setActiveTab("calendar")}
+            className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              activeTab === "calendar"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Kalender
+          </button>
         </div>
 
         {activeTab === "transactions" && (
@@ -215,6 +226,14 @@ function TransactionsPageContent() {
               />
             )}
           </>
+        )}
+
+        {activeTab === "calendar" && (
+          <CalendarTab
+            month={selectedMonth}
+            onEdit={handleEdit}
+            onDelete={(tx) => setDeleteTarget(tx)}
+          />
         )}
 
         {activeTab === "transfers" && (
