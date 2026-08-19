@@ -1,28 +1,58 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { startOfMonth, endOfMonth } from "date-fns";
-import { Receipt } from "lucide-react";
+import { Receipt, X } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { TransactionList } from "@/components/transactions/TransactionList";
 import { TransferList } from "@/components/transactions/TransferList";
 import { TransactionFilters } from "@/components/transactions/TransactionFilters";
+import { TransactionSummaryCard } from "@/components/transactions/TransactionSummaryCard";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useTransfers } from "@/hooks/useTransfers";
+import { useTransactionSummary } from "@/hooks/useTransactionSummary";
+import { useCategories } from "@/hooks/useCategories";
 import { useAppStore } from "@/store/useAppStore";
 import { Transaction, Transfer, TxFilters } from "@/types";
 
 export default function TransactionsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-4 max-w-4xl mx-auto">
+          <LoadingState variant="page" />
+        </div>
+      }
+    >
+      <TransactionsPageContent />
+    </Suspense>
+  );
+}
+
+function TransactionsPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("categoryId");
+
   const { selectedMonth, setSelectedMonth, openSheet } = useAppStore();
   const [partialFilters, setPartialFilters] = useState<Partial<TxFilters>>({});
   const [deleteTarget, setDeleteTarget] = useState<Transaction | null>(null);
   const [deleteTransferTarget, setDeleteTransferTarget] = useState<Transfer | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState<"transactions" | "transfers">("transactions");
+
+  // Deep-link dari halaman kategori/home: ?categoryId=<id> memfilter daftar
+  useEffect(() => {
+    if (categoryParam) {
+      setPartialFilters((prev) => ({ ...prev, categoryId: categoryParam }));
+    }
+  }, [categoryParam]);
 
   const filters: TxFilters = {
     startDate: startOfMonth(selectedMonth),
@@ -31,10 +61,26 @@ export default function TransactionsPage() {
   };
 
   const { transactions, isLoading, hasMore, loadMore, remove } = useTransactions(filters);
+  const { summary, isLoading: summaryLoading } = useTransactionSummary(filters);
+  const { categories } = useCategories();
   const { transfers, isLoading: transfersLoading, remove: removeTransfer } = useTransfers({
     startDate: startOfMonth(selectedMonth),
     endDate: endOfMonth(selectedMonth),
   });
+
+  const activeCategory = useMemo(
+    () => categories.find((c) => c.categoryId === partialFilters.categoryId),
+    [categories, partialFilters.categoryId]
+  );
+
+  const clearCategoryFilter = () => {
+    setPartialFilters((prev) => {
+      const next = { ...prev };
+      delete next.categoryId;
+      return next;
+    });
+    if (categoryParam) router.replace("/transactions");
+  };
 
   const filteredTransactions = useMemo(
     () =>
@@ -108,6 +154,40 @@ export default function TransactionsPage() {
 
         {activeTab === "transactions" && (
           <>
+            {/* Ringkasan bulan ini */}
+            <TransactionSummaryCard
+              summary={summary}
+              isLoading={summaryLoading}
+              showExpense={filters.type !== "income"}
+              showIncome={filters.type !== "expense"}
+            />
+
+            {partialFilters.categoryId && (
+              <div className="flex items-center gap-2 w-fit rounded-full border border-border bg-muted/50 pl-2 pr-1 py-1">
+                {activeCategory ? (
+                  <CategoryIcon
+                    icon={activeCategory.icon}
+                    color={activeCategory.color}
+                    size="sm"
+                  />
+                ) : (
+                  <Receipt className="h-4 w-4 text-muted-foreground ml-1" />
+                )}
+                <span className="text-xs font-medium max-w-[180px] truncate">
+                  {activeCategory?.name ??
+                    filteredTransactions[0]?.categoryName ??
+                    "Kategori"}
+                </span>
+                <button
+                  onClick={clearCategoryFilter}
+                  aria-label="Hapus filter kategori"
+                  className="rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+
             <TransactionFilters
               filters={partialFilters}
               onChange={setPartialFilters}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Tag } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ const scopeTabs: { value: BudgetScope | "all"; label: string }[] = [
 ];
 
 export default function CategoriesPage() {
+  const router = useRouter();
   const { categories, isLoading } = useCategories();
   const {
     categories: wishlistCategories,
@@ -80,6 +82,10 @@ export default function CategoriesPage() {
   const handleCategoryTap = (category: Category) => {
     setEditingCategory(category);
     setFormOpen(true);
+  };
+
+  const handleViewTransactions = (category: Category) => {
+    router.push(`/transactions?categoryId=${category.categoryId}`);
   };
 
   const handleClose = () => {
@@ -215,6 +221,7 @@ export default function CategoriesPage() {
                 categories={filteredCategories}
                 spendingMap={spendingMap}
                 onCategoryTap={handleCategoryTap}
+                onViewTransactions={handleViewTransactions}
                 showScope={activeScope === "all"}
               />
             )}

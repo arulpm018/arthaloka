@@ -1,5 +1,6 @@
 "use client";
 
+import { ReceiptText } from "lucide-react";
 import { Category, BudgetScope } from "@/types";
 import { BudgetProgressBar } from "./BudgetProgressBar";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
@@ -23,6 +24,7 @@ interface CategoryListProps {
   categories: Category[];
   spendingMap?: Record<string, number>;
   onCategoryTap?: (category: Category) => void;
+  onViewTransactions?: (category: Category) => void;
   showScope?: boolean;
 }
 
@@ -30,6 +32,7 @@ export const CategoryList = ({
   categories,
   spendingMap = {},
   onCategoryTap,
+  onViewTransactions,
   showScope = false,
 }: CategoryListProps) => {
   const expenseCategories = categories.filter((c) => c.type === "expense");
@@ -58,6 +61,7 @@ export const CategoryList = ({
                 category={cat}
                 spent={spendingMap[cat.categoryId] || 0}
                 onTap={onCategoryTap}
+                onViewTransactions={onViewTransactions}
                 showScope={showScope}
               />
             ))}
@@ -78,6 +82,7 @@ export const CategoryList = ({
                 category={cat}
                 spent={spendingMap[cat.categoryId] || 0}
                 onTap={onCategoryTap}
+                onViewTransactions={onViewTransactions}
                 showScope={showScope}
               />
             ))}
@@ -98,6 +103,7 @@ export const CategoryList = ({
                 category={cat}
                 spent={spendingMap[cat.categoryId] || 0}
                 onTap={onCategoryTap}
+                onViewTransactions={onViewTransactions}
                 showScope={showScope}
               />
             ))}
@@ -112,44 +118,57 @@ const CategoryItem = ({
   category: cat,
   spent,
   onTap,
+  onViewTransactions,
   showScope,
 }: {
   category: Category;
   spent: number;
   onTap?: (category: Category) => void;
+  onViewTransactions?: (category: Category) => void;
   showScope?: boolean;
 }) => {
   return (
-    <button
-      onClick={() => onTap?.(cat)}
-      className="flex w-full items-center gap-3 rounded-xl p-3 text-left transition-colors hover:bg-accent active:bg-accent"
-    >
-      <CategoryIcon icon={cat.icon} color={cat.color} />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <p className="text-sm font-medium truncate">{cat.name}</p>
-            {showScope && (
-              <span
-                className={cn(
-                  "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium",
-                  scopeColors[cat.budgetScope]
-                )}
-              >
-                {scopeLabels[cat.budgetScope]}
+    <div className="flex items-center rounded-xl transition-colors hover:bg-accent active:bg-accent">
+      <button
+        onClick={() => onTap?.(cat)}
+        className="flex flex-1 items-center gap-3 p-3 text-left min-w-0"
+      >
+        <CategoryIcon icon={cat.icon} color={cat.color} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <p className="text-sm font-medium truncate">{cat.name}</p>
+              {showScope && (
+                <span
+                  className={cn(
+                    "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+                    scopeColors[cat.budgetScope]
+                  )}
+                >
+                  {scopeLabels[cat.budgetScope]}
+                </span>
+              )}
+            </div>
+            {cat.budgetAmount > 0 && (
+              <span className="text-xs text-muted-foreground font-mono shrink-0">
+                {formatCurrency(cat.budgetAmount)}
               </span>
             )}
           </div>
           {cat.budgetAmount > 0 && (
-            <span className="text-xs text-muted-foreground font-mono shrink-0">
-              {formatCurrency(cat.budgetAmount)}
-            </span>
+            <BudgetProgressBar spent={spent} budget={cat.budgetAmount} compact />
           )}
         </div>
-        {cat.budgetAmount > 0 && (
-          <BudgetProgressBar spent={spent} budget={cat.budgetAmount} compact />
-        )}
-      </div>
-    </button>
+      </button>
+      {onViewTransactions && (
+        <button
+          onClick={() => onViewTransactions(cat)}
+          className="shrink-0 rounded-lg p-2.5 mr-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label={`Lihat transaksi kategori ${cat.name}`}
+        >
+          <ReceiptText className="h-4 w-4" />
+        </button>
+      )}
+    </div>
   );
 };
