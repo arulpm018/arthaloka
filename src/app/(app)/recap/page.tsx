@@ -7,12 +7,16 @@ import {
   subMonths,
   getDaysInMonth,
   isSameMonth,
+  format,
 } from "date-fns";
+import { id } from "date-fns/locale";
+import { toast } from "sonner";
 import {
   CalendarDays,
   CalendarRange,
   Flame,
   Receipt,
+  Share2,
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
@@ -106,9 +110,55 @@ export default function RecapPage() {
 
   const hasNoActivity = !isLoading && transactions.length === 0 && transfers.length === 0;
 
+  const handleShare = async () => {
+    const topCategories = Array.from(
+      transactions
+        .filter((t) => t.type === "expense")
+        .reduce<Map<string, number>>((acc, t) => {
+          acc.set(t.categoryName, (acc.get(t.categoryName) ?? 0) + t.amount);
+          return acc;
+        }, new Map())
+    )
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name]) => name);
+
+    const savingsRate = income > 0 ? Math.round((net / income) * 100) : null;
+    const lines = [
+      `📊 Rekap ${format(selectedMonth, "MMMM yyyy", { locale: id })}`,
+      `⬆️ Pemasukan: ${formatCurrency(income)}`,
+      `⬇️ Pengeluaran: ${formatCurrency(expense)}`,
+      net >= 0
+        ? `💰 Disimpan: ${formatCurrency(net)}${savingsRate !== null ? ` (${savingsRate}%)` : ""}`
+        : `⚠️ Defisit: -${formatCurrency(Math.abs(net))}`,
+      topCategories.length > 0 ? `🔥 Terboros: ${topCategories.join(", ")}` : null,
+    ].filter(Boolean);
+
+    const text = lines.join("\n");
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Rekap Bulanan", text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        toast.success("Ringkasan rekap disalin ke clipboard");
+      }
+    } catch {
+      // User membatalkan share dialog — tidak perlu error
+    }
+  };
+
   return (
     <>
       <Header title="Rekap Bulanan">
+        {!isLoading && !hasNoActivity && (
+          <button
+            onClick={handleShare}
+            className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            aria-label="Bagikan rekap bulan ini"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
+        )}
         <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
       </Header>
       <div className="p-4 space-y-4 max-w-4xl mx-auto">

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { BudgetStatus } from "@/types";
@@ -9,22 +10,32 @@ import { cn } from "@/lib/utils/cn";
 
 interface SpendingByCategoryProps {
   budgets: BudgetStatus[];
+  /** Jumlah kategori teratas yang ditampilkan; sisanya diringkas. */
+  limit?: number;
 }
 
-export const SpendingByCategory = ({ budgets }: SpendingByCategoryProps) => {
+export const SpendingByCategory = ({
+  budgets,
+  limit = 3,
+}: SpendingByCategoryProps) => {
   const router = useRouter();
 
   const withSpending = budgets.filter((b) => b.spent > 0);
   if (withSpending.length === 0) return null;
 
   const sorted = [...withSpending].sort((a, b) => b.spent - a.spent);
+  const visible = sorted.slice(0, limit);
+  const hiddenCount = sorted.length - visible.length;
+  const hiddenTotal = sorted
+    .slice(limit)
+    .reduce((sum, b) => sum + b.spent, 0);
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 space-y-4">
       <h3 className="text-sm font-medium">Pengeluaran per Kategori</h3>
 
       <div className="space-y-4">
-        {sorted.map((item) => {
+        {visible.map((item) => {
           const barPercent = item.budgetAmount > 0
             ? Math.min((item.spent / item.budgetAmount) * 100, 100)
             : 100;
@@ -84,6 +95,18 @@ export const SpendingByCategory = ({ budgets }: SpendingByCategoryProps) => {
           );
         })}
       </div>
+
+      <Link
+        href="/recap"
+        className="flex items-center justify-between rounded-lg -mx-1 px-1 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <span>
+          {hiddenCount > 0
+            ? `+${hiddenCount} kategori lainnya • ${formatCurrency(hiddenTotal)}`
+            : "Lihat ringkasan lengkap bulan ini"}
+        </span>
+        <ChevronRight className="h-3.5 w-3.5" />
+      </Link>
     </div>
   );
 };
