@@ -49,7 +49,7 @@ const actions = [
   },
   {
     type: "ai" as const,
-    label: "Asisten AI",
+    label: "Prometheus",
     description: "Bilang saja, langsung dibuatkan",
     icon: Bot,
     color: "text-capybara",

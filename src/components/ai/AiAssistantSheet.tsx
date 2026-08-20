@@ -4,12 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
   CheckCircle2,
-  Loader2,
   Mic,
   RotateCw,
   Send,
-  Sparkles,
   Square,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
 import { useAppStore } from "@/store/useAppStore";
 import { resetChat, sendChat, sendVoice, type AiAction } from "@/lib/ai/client";
 import { cn } from "@/lib/utils/cn";
@@ -219,23 +219,31 @@ export const AiAssistantSheet = () => {
     <Sheet open={open} onOpenChange={(o) => !o && closeAiAssistant()}>
       <SheetContent
         side="bottom"
+        hideClose
         className="flex h-[88dvh] flex-col rounded-t-sheet p-0 sm:mx-auto sm:max-w-2xl md:h-[82dvh]"
       >
-        <SheetHeader className="border-b border-border px-4 py-3">
-          <SheetTitle className="flex items-center gap-2.5 text-base">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-              <Sparkles className="h-4 w-4 text-primary" />
-            </span>
-            <span className="flex min-w-0 flex-col">
-              <span>Asisten AI</span>
-              <span className="text-[11px] font-normal text-muted-foreground">
-                tulis atau bicara — langsung tersimpan
-              </span>
-            </span>
+        <SheetHeader className="flex-row items-center gap-3 space-y-0 border-b border-border bg-gradient-to-b from-capybara/10 to-transparent px-4 py-3">
+          <div className="relative shrink-0">
+            <PrometheusMascot className="h-11 w-11 rounded-2xl shadow-sm-custom" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background bg-income" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <SheetTitle className="text-base font-semibold leading-tight">
+              Prometheus
+            </SheetTitle>
+            <p className="truncate text-xs text-muted-foreground">
+              {isRecording
+                ? "Mendengarkan…"
+                : isBusy
+                  ? "Sedang berpikir…"
+                  : "Asisten AI pribadimu — tulis atau bicara"}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
             <Button
               variant="ghost"
               size="icon"
-              className="ml-auto h-8 w-8 shrink-0"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground"
               onClick={() => void handleReset()}
               disabled={isBusy || isRecording || messages.length === 0}
               aria-label="Reset percakapan"
@@ -243,7 +251,17 @@ export const AiAssistantSheet = () => {
             >
               <RotateCw className="h-4 w-4" />
             </Button>
-          </SheetTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground"
+              onClick={closeAiAssistant}
+              aria-label="Tutup"
+              title="Tutup"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </SheetHeader>
 
         {/* Area chat */}
@@ -254,14 +272,13 @@ export const AiAssistantSheet = () => {
         >
           {messages.length === 0 && !isBusy && (
             <div className="flex h-full flex-col items-center justify-center gap-4 px-4 text-center">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <Sparkles className="h-7 w-7 text-primary" />
-              </span>
-              <div>
-                <p className="text-sm font-medium">Halo! Aku bisa bantu catat apa aja</p>
-                <p className="mt-1 text-xs text-muted-foreground">
+              <PrometheusMascot className="h-24 w-24 animate-bounce-soft rounded-3xl shadow-md-custom" />
+              <div className="space-y-1">
+                <p className="text-base font-semibold">Halo, aku Prometheus!</p>
+                <p className="mx-auto max-w-xs text-xs leading-relaxed text-muted-foreground">
                   Transaksi, transfer, akun, kategori, tugas, jadwal, habit,
-                  wishlist — cukup bilang saja.
+                  sampai wishlist — cukup tulis atau bilang saja, langsung
+                  kusimpan.
                 </p>
               </div>
               <div className="flex max-w-sm flex-wrap justify-center gap-2">
@@ -269,7 +286,7 @@ export const AiAssistantSheet = () => {
                   <button
                     key={s}
                     onClick={() => void runAssistant(s)}
-                    className="rounded-full border border-border bg-accent px-3 py-1.5 text-xs transition-colors hover:bg-accent/80"
+                    className="rounded-full border border-border bg-accent px-3 py-1.5 text-xs transition-colors hover:border-capybara/40 hover:bg-capybara/10"
                   >
                     {s}
                   </button>
@@ -283,9 +300,14 @@ export const AiAssistantSheet = () => {
               key={m.id}
               className={cn(
                 "flex animate-in fade-in-0 slide-in-from-bottom-1 duration-200",
-                m.role === "user" ? "justify-end" : "justify-start"
+                m.role === "user"
+                  ? "justify-end"
+                  : "items-end gap-2 justify-start"
               )}
             >
+              {m.role === "assistant" && (
+                <PrometheusMascot className="h-7 w-7 shrink-0 rounded-lg" />
+              )}
               <div
                 className={cn(
                   "max-w-[85%] space-y-2 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
@@ -319,11 +341,14 @@ export const AiAssistantSheet = () => {
           ))}
 
           {isBusy && (
-            <div className="flex justify-start">
-              <div className="flex items-center gap-2 rounded-2xl rounded-bl-md bg-accent px-4 py-3">
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  {isProcessingVoice ? "Memproses suara…" : "Berpikir…"}
+            <div className="flex items-end gap-2 justify-start">
+              <PrometheusMascot className="h-7 w-7 shrink-0 animate-bounce-soft rounded-lg" />
+              <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-accent px-4 py-3.5">
+                <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.3s]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.15s]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50" />
+                <span className="sr-only">
+                  {isProcessingVoice ? "Memproses suara" : "Berpikir"}
                 </span>
               </div>
             </div>

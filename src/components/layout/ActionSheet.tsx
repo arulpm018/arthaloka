@@ -58,7 +58,7 @@ export const actions = [
   },
   {
     type: "ai" as const,
-    label: "Asisten AI",
+    label: "Prometheus",
     description: "Catat pakai teks atau suara",
     icon: Bot,
     color: "text-capybara",

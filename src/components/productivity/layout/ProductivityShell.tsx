@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Bot } from "lucide-react";
+import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
 import { AiAssistantSheet } from "@/components/ai/AiAssistantSheet";
 import { ProductivitySidebar } from "./ProductivitySidebar";
@@ -63,8 +63,8 @@ export function ProductivityShell({ children }: ProductivityShellProps) {
             className="gap-1.5 rounded-lg"
             onClick={openAiAssistant}
           >
-            <Bot className="h-4 w-4 text-capybara" />
-            Asisten AI
+            <PrometheusMascot className="h-5 w-5 rounded-md" />
+            Prometheus
           </Button>
           <ThemeToggle />
         </DesktopTopbar>

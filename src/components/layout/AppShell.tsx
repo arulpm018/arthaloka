@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Bot } from "lucide-react";
 import { BottomNav } from "./BottomNav";
+import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
 import { Sidebar } from "./Sidebar";
 import { GlobalFAB } from "./GlobalFAB";
 import { DesktopTopbar, type Crumb } from "./DesktopTopbar";
@@ -75,8 +75,8 @@ export function AppShell({ children }: AppShellProps) {
             className="gap-1.5 rounded-lg"
             onClick={openAiAssistant}
           >
-            <Bot className="h-4 w-4 text-capybara" />
-            Asisten AI
+            <PrometheusMascot className="h-5 w-5 rounded-md" />
+            Prometheus
           </Button>
           <QuickAddDropdown />
           <ThemeToggle />
