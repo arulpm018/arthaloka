@@ -58,6 +58,31 @@ Aplikasi Next.js untuk mencatat pengeluaran, pemasukan, transfer antar akun, bud
 - **Charts**: Recharts
 - **Tests**: Vitest + fast-check (property-based)
 
+## Asisten AI (opsional)
+
+Input semua data (transaksi, transfer, akun, kategori, tugas, jadwal, habit,
+wishlist) lewat **teks atau suara** — agent AI (Agno + gemma-4-31b-it,
+fallback gemini-3.5-flash-lite) melakukan tool calling dan menulis langsung ke
+Firestore, hasilnya langsung muncul di UI. Input suara ditranskrip dengan STT
+gemini-3.5-flash-lite; balasan tampil sebagai teks (tanpa TTS).
+
+Cara menjalankan:
+
+```bash
+# 1. Setup & jalankan ai-service (lihat ai-service/README.md untuk detail)
+cd ai-service && cp .env.example .env   # isi GEMINI_API_KEY, FIREBASE_SERVICE_ACCOUNT, AI_SERVICE_KEY
+.venv/bin/uvicorn app.main:app --port 8006
+
+# 2. Tambahkan ke .env root (Next.js)
+#    AI_SERVICE_URL=http://127.0.0.1:8006
+#    AI_SERVICE_KEY=<sama dengan di ai-service/.env>
+
+# 3. Jalankan app seperti biasa — tombol "Asisten AI" ada di topbar &
+#    menu tambah (finance & produktivitas).
+```
+
+Tanpa ai-service berjalan, app tetap normal — hanya fitur AI yang error 502.
+
 ## Documentation
 
 - [`plan.md`](./plan.md) — high-level product plan dan domain model.

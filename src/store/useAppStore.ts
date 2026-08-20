@@ -39,6 +39,11 @@ interface AppStore {
   wishlistAddRequest: number;
   requestWishlistAdd: () => void;
 
+  // Asisten AI sheet — dibuka dari topbar / FAB / menu tambah di kedua modul.
+  aiAssistantOpen: boolean;
+  openAiAssistant: () => void;
+  closeAiAssistant: () => void;
+
   // Actions
   openSheet: (
     type: "expense" | "income" | "transfer",
@@ -90,6 +95,11 @@ export const useAppStore = create<AppStore>()(
       wishlistAddRequest: 0,
       requestWishlistAdd: () =>
         set((s) => ({ wishlistAddRequest: s.wishlistAddRequest + 1 })),
+
+      // Asisten AI
+      aiAssistantOpen: false,
+      openAiAssistant: () => set({ aiAssistantOpen: true }),
+      closeAiAssistant: () => set({ aiAssistantOpen: false }),
 
       // Actions
       openSheet: (type, item) =>

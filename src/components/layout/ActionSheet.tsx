@@ -11,10 +11,11 @@ import {
   ArrowUpCircle,
   ArrowLeftRight,
   Sparkles,
+  Bot,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-export type ActionType = "expense" | "income" | "transfer" | "wishlist";
+export type ActionType = "expense" | "income" | "transfer" | "wishlist" | "ai";
 
 interface ActionSheetProps {
   open: boolean;
@@ -54,6 +55,14 @@ export const actions = [
     icon: Sparkles,
     color: "text-primary",
     bg: "bg-primary/10",
+  },
+  {
+    type: "ai" as const,
+    label: "Asisten AI",
+    description: "Catat pakai teks atau suara",
+    icon: Bot,
+    color: "text-capybara",
+    bg: "bg-capybara/10",
   },
 ];
 

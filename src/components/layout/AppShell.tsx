@@ -1,19 +1,23 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { Bot } from "lucide-react";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 import { GlobalFAB } from "./GlobalFAB";
 import { DesktopTopbar, type Crumb } from "./DesktopTopbar";
 import { QuickAddDropdown } from "./QuickAddDropdown";
+import { AiAssistantSheet } from "@/components/ai/AiAssistantSheet";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
 import { useSidebarState } from "@/hooks/useSidebarState";
+import { useAppStore } from "@/store/useAppStore";
 import { TransactionSheet } from "@/components/transactions/TransactionSheet";
 import { TransferSheet } from "@/components/transactions/TransferSheet";
 import { GlobalWishlistAddSheet } from "@/components/wishlist/GlobalWishlistAddSheet";
 import { OWNER_LABELS } from "@/lib/constants/labels";
 import { cn } from "@/lib/utils/cn";
+import { Button } from "@/components/ui/button";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -46,6 +50,7 @@ const crumbsFor = (pathname: string): Crumb[] => {
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { collapsed, toggle } = useSidebarState(SIDEBAR_STORAGE_KEY);
+  const openAiAssistant = useAppStore((s) => s.openAiAssistant);
 
   return (
     <div className="flex h-dvh flex-col md:flex-row">
@@ -64,6 +69,15 @@ export function AppShell({ children }: AppShellProps) {
       {/* Kolom konten: topbar desktop + area scroll utama */}
       <div className="flex min-w-0 flex-1 flex-col">
         <DesktopTopbar onToggleSidebar={toggle} crumbs={crumbsFor(pathname)}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 rounded-lg"
+            onClick={openAiAssistant}
+          >
+            <Bot className="h-4 w-4 text-capybara" />
+            Asisten AI
+          </Button>
           <QuickAddDropdown />
           <ThemeToggle />
         </DesktopTopbar>
@@ -88,6 +102,9 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Global wishlist add sheet — di-trigger oleh FAB dari halaman manapun */}
       <GlobalWishlistAddSheet />
+
+      {/* Asisten AI — chat/voice input untuk semua data */}
+      <AiAssistantSheet />
     </div>
   );
 }

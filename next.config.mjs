@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Bundle mandiri untuk Docker monolith (node server.js tanpa node_modules penuh).
+  output: "standalone",
   // We render meme assets via plain <img>/<video> so remotePatterns isn't
   // strictly required — but listing them keeps the door open for next/image
   // adoption later (see PERSONALIZATION_PLAN.md §2.3).

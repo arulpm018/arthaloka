@@ -72,7 +72,12 @@ export default function TodayPage() {
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
 
   // FAB → pilih jenis item → halaman terkait dengan ?add=1 (auto-open form).
+  const openAiAssistant = useAppStore((s) => s.openAiAssistant);
   const handleQuickAddSelect = (type: ProductivityActionType) => {
+    if (type === "ai") {
+      openAiAssistant();
+      return;
+    }
     if (type === "task") router.push("/productivity/tasks?add=1");
     else if (type === "event") router.push("/productivity/schedule?add=1");
     else router.push("/productivity/habits?add=1");

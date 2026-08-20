@@ -20,10 +20,15 @@ import { useAppStore } from "@/store/useAppStore";
 export const QuickAddDropdown = () => {
   const openSheet = useAppStore((s) => s.openSheet);
   const requestWishlistAdd = useAppStore((s) => s.requestWishlistAdd);
+  const openAiAssistant = useAppStore((s) => s.openAiAssistant);
 
   const handleSelect = (type: ActionType) => {
     if (type === "wishlist") {
       requestWishlistAdd();
+      return;
+    }
+    if (type === "ai") {
+      openAiAssistant();
       return;
     }
     openSheet(type);
