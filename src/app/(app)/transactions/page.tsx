@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { startOfMonth, endOfMonth } from "date-fns";
-import { Receipt, X } from "lucide-react";
+import { Receipt } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { TransactionList } from "@/components/transactions/TransactionList";
@@ -14,11 +14,9 @@ import { CalendarTab } from "@/components/transactions/CalendarTab";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useTransfers } from "@/hooks/useTransfers";
 import { useTransactionSummary } from "@/hooks/useTransactionSummary";
-import { useCategories } from "@/hooks/useCategories";
 import { useAppStore } from "@/store/useAppStore";
 import { Transaction, Transfer, TxFilters } from "@/types";
 
@@ -63,24 +61,16 @@ function TransactionsPageContent() {
 
   const { transactions, isLoading, hasMore, loadMore, remove } = useTransactions(filters);
   const { summary, isLoading: summaryLoading } = useTransactionSummary(filters);
-  const { categories } = useCategories();
   const { transfers, isLoading: transfersLoading, remove: removeTransfer } = useTransfers({
     startDate: startOfMonth(selectedMonth),
     endDate: endOfMonth(selectedMonth),
   });
 
-  const activeCategory = useMemo(
-    () => categories.find((c) => c.categoryId === partialFilters.categoryId),
-    [categories, partialFilters.categoryId]
-  );
-
-  const clearCategoryFilter = () => {
-    setPartialFilters((prev) => {
-      const next = { ...prev };
-      delete next.categoryId;
-      return next;
-    });
-    if (categoryParam) router.replace("/transactions");
+  // Deep-link ?categoryId= hanya pemeta awal; setelah user mengubah filter,
+  // param dibuang supaya reload tidak memaksakan filter lama.
+  const handleFiltersChange = (next: Partial<TxFilters>) => {
+    setPartialFilters(next);
+    if (categoryParam && !next.categoryId) router.replace("/transactions");
   };
 
   const filteredTransactions = useMemo(
@@ -167,8 +157,16 @@ function TransactionsPageContent() {
 
         {activeTab === "transactions" && (
           <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-4 lg:space-y-0">
-            {/* Ringkasan bulan ini */}
+            {/* Filter & pencarian */}
             <div className="lg:col-start-2 lg:row-start-1">
+              <TransactionFilters
+                filters={partialFilters}
+                onChange={handleFiltersChange}
+              />
+            </div>
+
+            {/* Ringkasan bulan ini */}
+            <div className="lg:col-start-2 lg:row-start-2">
               <TransactionSummaryCard
                 summary={summary}
                 isLoading={summaryLoading}
@@ -177,40 +175,7 @@ function TransactionsPageContent() {
               />
             </div>
 
-            {partialFilters.categoryId && (
-              <div className="flex items-center gap-2 w-fit rounded-full border border-border bg-muted/50 pl-2 pr-1 py-1 lg:col-start-2">
-                {activeCategory ? (
-                  <CategoryIcon
-                    icon={activeCategory.icon}
-                    color={activeCategory.color}
-                    size="sm"
-                  />
-                ) : (
-                  <Receipt className="h-4 w-4 text-muted-foreground ml-1" />
-                )}
-                <span className="text-xs font-medium max-w-[180px] truncate">
-                  {activeCategory?.name ??
-                    filteredTransactions[0]?.categoryName ??
-                    "Kategori"}
-                </span>
-                <button
-                  onClick={clearCategoryFilter}
-                  aria-label="Hapus filter kategori"
-                  className="rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            )}
-
-            <div className="lg:col-start-2">
-              <TransactionFilters
-                filters={partialFilters}
-                onChange={setPartialFilters}
-              />
-            </div>
-
-            <div className="lg:col-start-1 lg:row-start-1 lg:row-span-3 lg:self-start">
+            <div className="lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:self-start">
               {isLoading ? (
                 <LoadingState variant="transaction-list" count={8} />
               ) : filteredTransactions.length === 0 ? (
