@@ -35,6 +35,15 @@ export async function sendChat(payload: {
   return data;
 }
 
+export async function resetChat(uid: string): Promise<void> {
+  const res = await fetch("/api/ai/reset", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid }),
+  });
+  if (!res.ok) throw new Error("Gagal reset chat");
+}
+
 export async function sendVoice(
   audio: Blob,
   payload: { uid: string; role: string; owner_hint?: string; display_name?: string }

@@ -17,6 +17,17 @@ export async function proxyAiChat(body: unknown): Promise<Response> {
   });
 }
 
+export async function proxyAiReset(uid: string): Promise<Response> {
+  return fetch(`${SERVICE_URL}/ai/reset`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(SERVICE_KEY ? { "X-AI-Service-Key": SERVICE_KEY } : {}),
+    },
+    body: JSON.stringify({ uid }),
+  });
+}
+
 export async function proxyAiVoice(form: FormData): Promise<Response> {
   const headers: HeadersInit = {};
   if (SERVICE_KEY) headers["X-AI-Service-Key"] = SERVICE_KEY;
