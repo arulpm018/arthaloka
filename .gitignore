@@ -27,6 +27,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.production
 
 # vercel
 .vercel
@@ -36,3 +37,14 @@ yarn-error.log*
 next-env.d.ts
 
 .env
+
+# ai-service (Python)
+ai-service/.venv/
+ai-service/.env
+__pycache__/
+*.pyc
+ai-service/data/
+
+# Service account Firebase — JANGAN pernah di-commit (rotate kalau terlanjur)
+service-account*.json
+*-firebase-adminsdk-*.json

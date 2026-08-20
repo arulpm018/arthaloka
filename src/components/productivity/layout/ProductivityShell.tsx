@@ -1,12 +1,16 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { Bot } from "lucide-react";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
+import { AiAssistantSheet } from "@/components/ai/AiAssistantSheet";
 import { ProductivitySidebar } from "./ProductivitySidebar";
 import { ProductivityBottomNav } from "./ProductivityBottomNav";
 import { DesktopTopbar, type Crumb } from "@/components/layout/DesktopTopbar";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useSidebarState } from "@/hooks/useSidebarState";
+import { useAppStore } from "@/store/useAppStore";
 import { cn } from "@/lib/utils/cn";
 
 const SIDEBAR_STORAGE_KEY = "arthafiloka.sidebarCollapsed.productivity";
@@ -34,6 +38,7 @@ interface ProductivityShellProps {
 export function ProductivityShell({ children }: ProductivityShellProps) {
   const pathname = usePathname();
   const { collapsed, toggle } = useSidebarState(SIDEBAR_STORAGE_KEY);
+  const openAiAssistant = useAppStore((s) => s.openAiAssistant);
 
   return (
     <div className="flex h-dvh flex-col md:flex-row">
@@ -52,6 +57,15 @@ export function ProductivityShell({ children }: ProductivityShellProps) {
       {/* Kolom konten: topbar desktop + area scroll utama */}
       <div className="flex min-w-0 flex-1 flex-col">
         <DesktopTopbar onToggleSidebar={toggle} crumbs={crumbsFor(pathname)}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 rounded-lg"
+            onClick={openAiAssistant}
+          >
+            <Bot className="h-4 w-4 text-capybara" />
+            Asisten AI
+          </Button>
           <ThemeToggle />
         </DesktopTopbar>
 
@@ -64,6 +78,9 @@ export function ProductivityShell({ children }: ProductivityShellProps) {
 
       {/* Bottom nav - mobile only */}
       <ProductivityBottomNav />
+
+      {/* Asisten AI — input teks/suara untuk tugas, jadwal, habit */}
+      <AiAssistantSheet />
     </div>
   );
 }

@@ -6,10 +6,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { CalendarDays, Flame, ListTodo } from "lucide-react";
+import { Bot, CalendarDays, Flame, ListTodo } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-export type ProductivityActionType = "task" | "event" | "habit";
+export type ProductivityActionType = "task" | "event" | "habit" | "ai";
 
 interface ProductivityActionSheetProps {
   open: boolean;
@@ -46,6 +46,14 @@ const actions = [
     icon: Flame,
     color: "text-warning",
     bg: "bg-warning/10",
+  },
+  {
+    type: "ai" as const,
+    label: "Asisten AI",
+    description: "Bilang saja, langsung dibuatkan",
+    icon: Bot,
+    color: "text-capybara",
+    bg: "bg-capybara/10",
   },
 ];
 

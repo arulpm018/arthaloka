@@ -35,6 +35,7 @@ export const GlobalFAB = () => {
   const [open, setOpen] = useState(false);
   const openSheet = useAppStore((s) => s.openSheet);
   const requestWishlistAdd = useAppStore((s) => s.requestWishlistAdd);
+  const openAiAssistant = useAppStore((s) => s.openAiAssistant);
 
   const isFabRoute = FAB_ROUTES.some((r) => pathname.startsWith(r));
   if (!isFabRoute) return null;
@@ -42,6 +43,10 @@ export const GlobalFAB = () => {
   const handleSelect = (type: ActionType) => {
     if (type === "wishlist") {
       requestWishlistAdd();
+      return;
+    }
+    if (type === "ai") {
+      openAiAssistant();
       return;
     }
     openSheet(type);
