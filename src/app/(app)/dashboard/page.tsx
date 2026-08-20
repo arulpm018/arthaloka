@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { CalendarRange, ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout/Header";
-import { MonthPicker } from "@/components/shared/MonthPicker";
+import { Logo } from "@/components/shared/Logo";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { SpendingByCategory } from "@/components/dashboard/SpendingByCategory";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
@@ -20,22 +20,24 @@ import { useAppStore } from "@/store/useAppStore";
 import { Transfer } from "@/types";
 
 export default function DashboardPage() {
-  const { selectedMonth, setSelectedMonth, openSheet } = useAppStore();
+  const { openSheet } = useAppStore();
+  // Home selalu fokus ke bulan berjalan — ganti bulan cukup lewat Rekap Bulanan.
+  const currentMonth = useMemo(() => new Date(), []);
   const [deleteTransferTarget, setDeleteTransferTarget] = useState<Transfer | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { accounts } = useAccounts();
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
 
-  const { income, expense, isLoading: summaryLoading } = useSummary(selectedMonth);
-  const { budgets, isLoading: budgetLoading } = useBudgetStatus(selectedMonth);
+  const { income, expense, isLoading: summaryLoading } = useSummary(currentMonth);
+  const { budgets, isLoading: budgetLoading } = useBudgetStatus(currentMonth);
   const { transactions, isLoading: txLoading } = useTransactions({
-    startDate: startOfMonth(selectedMonth),
-    endDate: endOfMonth(selectedMonth),
+    startDate: startOfMonth(currentMonth),
+    endDate: endOfMonth(currentMonth),
   });
   const { transfers, isLoading: tfLoading, remove: removeTransfer } = useTransfers({
-    startDate: startOfMonth(selectedMonth),
-    endDate: endOfMonth(selectedMonth),
+    startDate: startOfMonth(currentMonth),
+    endDate: endOfMonth(currentMonth),
   });
 
   const isLoading = summaryLoading || budgetLoading || txLoading || tfLoading;
@@ -53,9 +55,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Header title="Arthafiloka">
-        <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
-      </Header>
+      <Header titleSlot={<Logo size="lg" />} />
 
       <div className="mx-auto w-full max-w-4xl space-y-6 p-4 md:max-w-5xl md:p-6">
         {isLoading ? (

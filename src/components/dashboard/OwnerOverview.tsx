@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { Plus, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { OwnerSwitcherTitle } from "@/components/layout/OwnerSwitcherTitle";
-import { MonthPicker } from "@/components/shared/MonthPicker";
 import { AccountCard } from "@/components/accounts/AccountCard";
 import { AccountForm } from "@/components/accounts/AccountForm";
 import { AccountDetailSheet } from "@/components/accounts/AccountDetailSheet";
@@ -31,7 +30,10 @@ interface OwnerOverviewProps {
 }
 
 export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
-  const { selectedMonth, setSelectedMonth, openSheet, setDefaultOwner } = useAppStore();
+  const { openSheet, setDefaultOwner } = useAppStore();
+  // Halaman owner selalu fokus ke bulan berjalan — ganti bulan cukup lewat
+  // Rekap Bulanan / Transaksi.
+  const currentMonth = useMemo(() => new Date(), []);
   const [accountFormOpen, setAccountFormOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
@@ -43,15 +45,15 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
   }, [setDefaultOwner, owner]);
 
   const { accounts, isLoading: accountsLoading } = useAccounts(owner);
-  const { income, expense, isLoading: summaryLoading } = useSummary(selectedMonth, owner);
+  const { income, expense, isLoading: summaryLoading } = useSummary(currentMonth, owner);
   const { transactions, isLoading: txLoading } = useTransactions({
-    startDate: startOfMonth(selectedMonth),
-    endDate: endOfMonth(selectedMonth),
+    startDate: startOfMonth(currentMonth),
+    endDate: endOfMonth(currentMonth),
     owner,
   });
   const { transfers, isLoading: tfLoading } = useTransfers({
-    startDate: startOfMonth(selectedMonth),
-    endDate: endOfMonth(selectedMonth),
+    startDate: startOfMonth(currentMonth),
+    endDate: endOfMonth(currentMonth),
     owner,
   });
 
@@ -100,9 +102,7 @@ export const OwnerOverview = ({ owner }: OwnerOverviewProps) => {
       <Header
         ownerColor={OWNER_COLORS[owner]}
         titleSlot={<OwnerSwitcherTitle activeOwner={owner} />}
-      >
-        <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
-      </Header>
+      />
 
       <div className="mx-auto w-full max-w-4xl space-y-6 p-4 md:max-w-5xl md:p-6">
         {isLoading ? (

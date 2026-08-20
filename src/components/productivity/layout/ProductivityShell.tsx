@@ -22,7 +22,9 @@ const crumbsFor = (pathname: string): Crumb[] => {
       ? "Jadwal"
       : pathname.startsWith("/productivity/habits")
         ? "Habit"
-        : "Hari Ini";
+        : pathname.startsWith("/productivity/settings")
+          ? "Settings"
+          : "Hari Ini";
   return [{ label: "Produktivitas" }, { label: page }];
 };
 

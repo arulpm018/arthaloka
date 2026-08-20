@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, ListTodo, CalendarDays, Flame, LayoutGrid } from "lucide-react";
+import { Sun, ListTodo, CalendarDays, Flame, Settings } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/productivity/tasks", label: "Tugas", icon: ListTodo },
   { href: "/productivity/schedule", label: "Jadwal", icon: CalendarDays },
   { href: "/productivity/habits", label: "Habit", icon: Flame },
+  { href: "/productivity/settings", label: "Settings", icon: Settings },
 ];
 
 export const ProductivityBottomNav = () => {
@@ -38,15 +39,6 @@ export const ProductivityBottomNav = () => {
             </Link>
           );
         })}
-
-        {/* Kembali ke launcher superapp */}
-        <Link
-          href="/"
-          className="flex min-w-[44px] flex-col items-center justify-center gap-0.5 px-3 py-2 text-muted-foreground"
-        >
-          <LayoutGrid className="h-5 w-5" />
-          <span className="text-[10px]">Apps</span>
-        </Link>
       </div>
     </nav>
   );

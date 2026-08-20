@@ -22,7 +22,7 @@ export const MonthPicker = ({ value, onChange }: MonthPickerProps) => {
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <span className="text-sm font-medium min-w-[100px] text-center">
+      <span className="text-base font-semibold min-w-[110px] text-center">
         {formatMonthYear(value)}
       </span>
       <Button

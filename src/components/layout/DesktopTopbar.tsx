@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { ChevronRight, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AppSwitcher } from "@/components/shared/AppSwitcher";
 
 export interface Crumb {
   label: string;
@@ -79,11 +80,10 @@ export const DesktopTopbar = ({
         </nav>
       )}
 
-      {children && (
-        <div className="ml-auto flex shrink-0 items-center gap-1.5">
-          {children}
-        </div>
-      )}
+      <div className="ml-auto flex shrink-0 items-center gap-1.5">
+        <AppSwitcher className="h-8 w-8" />
+        {children}
+      </div>
     </header>
   );
 };

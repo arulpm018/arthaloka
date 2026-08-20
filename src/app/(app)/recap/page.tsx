@@ -149,7 +149,11 @@ export default function RecapPage() {
 
   return (
     <>
-      <Header title="Rekap Bulanan">
+      <Header
+        titleSlot={
+          <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
+        }
+      >
         {!isLoading && !hasNoActivity && (
           <button
             onClick={handleShare}
@@ -159,7 +163,6 @@ export default function RecapPage() {
             <Share2 className="h-4 w-4" />
           </button>
         )}
-        <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
       </Header>
       <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
         {isLoading ? (

@@ -125,9 +125,11 @@ function TransactionsPageContent() {
 
   return (
     <>
-      <Header title="Transaksi">
-        <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
-      </Header>
+      <Header
+        titleSlot={
+          <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
+        }
+      />
       <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
         {/* Tabs */}
         <div className="flex rounded-lg border border-border bg-muted p-1">

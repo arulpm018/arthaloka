@@ -1,9 +1,10 @@
 "use client";
 
-import { Sun, ListTodo, CalendarDays, Flame } from "lucide-react";
+import { Sun, ListTodo, CalendarDays, Flame, Settings } from "lucide-react";
 import {
   CollapsibleSidebar,
   type SidebarGroup,
+  type SidebarNavItem,
 } from "@/components/layout/CollapsibleSidebar";
 
 const groups: SidebarGroup[] = [
@@ -15,6 +16,10 @@ const groups: SidebarGroup[] = [
       { href: "/productivity/habits", label: "Habit", icon: Flame },
     ],
   },
+];
+
+const footerItems: SidebarNavItem[] = [
+  { href: "/productivity/settings", label: "Settings", icon: Settings },
 ];
 
 interface ProductivitySidebarProps {
@@ -32,5 +37,6 @@ export const ProductivitySidebar = ({
     moduleLabel="Produktivitas"
     moduleLabelClassName="text-capybara"
     groups={groups}
+    footerItems={footerItems}
   />
 );
