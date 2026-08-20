@@ -6,6 +6,11 @@
 const SERVICE_URL = process.env.AI_SERVICE_URL || "http://127.0.0.1:8006";
 const SERVICE_KEY = process.env.AI_SERVICE_KEY || "";
 
+/** Untuk pesan error diagnostik — URL tujuan yang sedang dipakai proxy. */
+export function aiServiceTarget(): string {
+  return SERVICE_URL;
+}
+
 export async function proxyAiChat(body: unknown): Promise<Response> {
   return fetch(`${SERVICE_URL}/ai/chat`, {
     method: "POST",

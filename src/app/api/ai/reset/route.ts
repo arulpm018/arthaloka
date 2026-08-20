@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { proxyAiReset } from "@/lib/ai/service";
+import { aiServiceTarget, proxyAiReset } from "@/lib/ai/service";
 
 export const runtime = "nodejs";
 
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(await upstream.json());
   } catch {
     return NextResponse.json(
-      { error: "AI service tidak terjangkau" },
+      { error: `AI service tidak terjangkau (target: ${aiServiceTarget()}).` },
       { status: 502 }
     );
   }
