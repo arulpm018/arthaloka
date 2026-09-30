@@ -8,6 +8,7 @@ import type { AiChatResponse, ChatTurn } from "./types";
 export const MAX_TOOL_ROUNDS = 5;
 export const MAX_HISTORY_MESSAGES = 20;
 const MAX_MESSAGE_CHARS = 2000;
+const PARTIAL_REPLY = "Sudah tersimpan, tapi Prometheus gagal menyusun balasan. Cek daftar transaksi ya.";
 
 /** Riwayat dari client: hanya user/assistant, teks non-kosong, dipotong. */
 export function sanitizeHistory(raw: unknown): ChatTurn[] {
@@ -61,13 +62,20 @@ KONTEKS:
 - Kategori: ${categories}`;
 }
 
-/** Loop model ↔ tool sampai model membalas teks (maks MAX_TOOL_ROUNDS putaran). */
+/**
+ * Loop model ↔ tool sampai model membalas teks (maks MAX_TOOL_ROUNDS putaran).
+ * `deadline` (epoch ms) membatasi total waktu: tidak memulai putaran baru
+ * setelah lewat, dan timeout tiap panggilan = sisa waktu.
+ */
 export async function runAgent(params: {
   history: ChatTurn[];
   ctx: ToolContext;
   systemPrompt: string;
   chat: ChatFn;
+  deadline?: number;
+  clock?: () => number;
 }): Promise<AiChatResponse> {
+  const clock = params.clock ?? Date.now;
   const messages: LlmMessage[] = [
     { role: "system", content: params.systemPrompt },
     ...params.history.map((m): LlmMessage => ({ role: m.role, content: m.content })),
@@ -75,7 +83,25 @@ export async function runAgent(params: {
   let model = "";
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-    const { message, model: usedModel } = await params.chat(messages, TOOL_DEFINITIONS);
+    const remaining = params.deadline === undefined ? undefined : params.deadline - clock();
+    if (remaining !== undefined && remaining <= 0) break;
+
+    let response: Awaited<ReturnType<ChatFn>>;
+    try {
+      response = await params.chat(
+        messages,
+        TOOL_DEFINITIONS,
+        remaining === undefined ? undefined : { timeoutMs: remaining }
+      );
+    } catch (error) {
+      // Data dari putaran sebelumnya sudah tersimpan — jangan buang laporannya,
+      // supaya user tidak mengirim ulang dan tercatat dobel.
+      if (params.ctx.actions.length > 0) {
+        return { reply: PARTIAL_REPLY, actions: params.ctx.actions, model };
+      }
+      throw error;
+    }
+    const { message, model: usedModel } = response;
     model = usedModel;
     messages.push(message);
 

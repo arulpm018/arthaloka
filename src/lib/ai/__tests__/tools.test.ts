@@ -51,6 +51,27 @@ describe("add_transactions", () => {
     expect(store.transactions[0]).toMatchObject({ accountId: "a-fifi", categoryId: "c-gaji", name: "Gaji September" });
   });
 
+  it("nama rekening ambigu antar pemilik → pilih milik user yang mencatat", async () => {
+    store.accounts.push({ id: "a-fifi-bca", name: "BCA", owner: "fifi", type: "bank", balance: 0, order: 3 });
+    await run(
+      "add_transactions",
+      { items: [{ type: "expense", amount: 22000, category: "Makan", account: "bca" }] },
+      makeCtx(store, { uid: "u-fifi", role: "fifi" })
+    );
+    expect(store.transactions[0].accountId).toBe("a-fifi-bca");
+  });
+
+  it("nama ambigu tanpa milik user → rekening bersama lebih dulu", async () => {
+    store.accounts.push({ id: "a-arul-jago", name: "Jago", owner: "arul", type: "bank", balance: 0, order: 3 });
+    store.accounts.push({ id: "a-shared-jago", name: "Jago", owner: "shared", type: "bank", balance: 0, order: 4 });
+    await run(
+      "add_transactions",
+      { items: [{ type: "expense", amount: 5000, category: "Makan", account: "jago" }] },
+      makeCtx(store, { uid: "u-fifi", role: "fifi" })
+    );
+    expect(store.transactions[0].accountId).toBe("a-shared-jago");
+  });
+
   it("kategori belum ada → dibuat otomatis", async () => {
     const { ctx } = await run("add_transactions", {
       items: [{ type: "expense", amount: 5000, category: "Parkir" }],
@@ -89,6 +110,11 @@ describe("add_transfer", () => {
     expect(store.transfers[0]).toMatchObject({ amount: 500_000, name: "Transfer" });
     expect(store.transfers[0].from.id).toBe("a-arul");
     expect(store.transfers[0].to.id).toBe("a-shared");
+  });
+  it("rekening asal ambigu → milik user yang mencatat", async () => {
+    store.accounts.push({ id: "a-fifi-bca", name: "BCA", owner: "fifi", type: "bank", balance: 0, order: 3 });
+    await run("add_transfer", { amount: 1000, from: "bca", to: "jago bersama" }, makeCtx(store, { uid: "u-fifi", role: "fifi" }));
+    expect(store.transfers[0].from.id).toBe("a-fifi-bca");
   });
   it("asal = tujuan → gagal", async () => {
     const { result } = await run("add_transfer", { amount: 1000, from: "BCA", to: "BCA" });

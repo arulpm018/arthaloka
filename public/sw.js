@@ -15,6 +15,9 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(data.title || "Arthafiloka", {
       body: data.body || "",
       tag: data.tag,
+      // Notif bertag sama (budget per kategori, transaksi pasangan) menggantikan
+      // yang lama — tetap bunyi/getar supaya tidak terlewat.
+      renotify: !!data.tag,
       icon: "/logo-192.png",
       data: { url: data.url || "/dashboard" },
     })

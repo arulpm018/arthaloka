@@ -19,7 +19,8 @@ export type LlmMessage =
 
 export type ChatFn = (
   messages: LlmMessage[],
-  tools: unknown[]
+  tools: unknown[],
+  options?: { timeoutMs?: number }
 ) => Promise<{ message: AssistantMessage; model: string }>;
 
 /**
@@ -33,7 +34,7 @@ export function createDeepSeekChat(opts: {
   timeoutMs?: number;
 }): ChatFn {
   const fetchImpl = opts.fetchImpl ?? fetch;
-  return async (messages, tools) => {
+  return async (messages, tools, options) => {
     const res = await fetchImpl(DEEPSEEK_URL, {
       method: "POST",
       headers: {
@@ -48,7 +49,7 @@ export function createDeepSeekChat(opts: {
         temperature: 0.3,
         max_tokens: 1024,
       }),
-      signal: AbortSignal.timeout(opts.timeoutMs ?? 45_000),
+      signal: AbortSignal.timeout(options?.timeoutMs ?? opts.timeoutMs ?? 45_000),
     });
 
     if (!res.ok) {

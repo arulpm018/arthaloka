@@ -3,7 +3,7 @@ import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { MONTH_NAMES_ID, wibMonthRange, wibParts } from "@/lib/utils/wib";
 import type { AccountType, CategoryType, Owner, TransactionType } from "@/types";
 import type { FinanceStore, NewTransaction, StoreAccount, StoreCategory } from "./financeStore";
-import { normalizeAmount, parseDateInput, pickByName } from "./parse";
+import { normalizeAmount, parseDateInput, pickAccountByName, pickByName } from "./parse";
 import type { AiAction } from "./types";
 
 export interface ToolContext {
@@ -184,7 +184,7 @@ const add_transactions: Handler = async (args, ctx) => {
       if (!type) throw new Error("type harus 'expense' atau 'income'");
       const amount = normalizeAmount(raw.amount as number | string);
       const accountName = str(raw.account);
-      const account = accountName ? pickByName(accounts, accountName, "Rekening") : defaultAccount(accounts, ctx.role);
+      const account = accountName ? pickAccountByName(accounts, accountName, ctx.role) : defaultAccount(accounts, ctx.role);
       const categoryName = str(raw.category);
       if (!categoryName) throw new Error("kategori wajib diisi");
       pending.push({ type, amount, account, categoryName, name: str(raw.name), date: parseDateInput(str(raw.date), ctx.now) });
@@ -227,8 +227,8 @@ const add_transactions: Handler = async (args, ctx) => {
 const add_transfer: Handler = async (args, ctx) => {
   const accounts = await ctx.store.listAccounts();
   const amount = normalizeAmount(args.amount as number | string);
-  const from = pickByName(accounts, str(args.from), "Rekening asal");
-  const to = pickByName(accounts, str(args.to), "Rekening tujuan");
+  const from = pickAccountByName(accounts, str(args.from), ctx.role, "Rekening asal");
+  const to = pickAccountByName(accounts, str(args.to), ctx.role, "Rekening tujuan");
   if (from.id === to.id) throw new Error("rekening asal dan tujuan sama.");
   const name = str(args.name) || "Transfer";
   await ctx.store.addTransfer({ name, amount, from, to, date: parseDateInput(str(args.date), ctx.now) }, ctx.uid);

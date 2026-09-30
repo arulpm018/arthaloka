@@ -26,6 +26,7 @@ import { useCategoryUsage } from "@/hooks/useCategoryUsage";
 import { useAppStore } from "@/store/useAppStore";
 import { OWNER_LABELS } from "@/lib/constants/labels";
 import {
+  noteFromName,
   pickVisibleCategories,
   readLastAccountId,
   resolveDefaultAccountId,
@@ -127,7 +128,7 @@ export const TransactionSheet = () => {
     if (isEditing && editingTransaction) {
       reset({
         type: editingTransaction.type,
-        name: editingTransaction.name,
+        name: noteFromName(editingTransaction.name, editingTransaction.categoryName),
         amount: editingTransaction.amount,
         accountId: editingTransaction.accountId,
         accountName: editingTransaction.accountName,

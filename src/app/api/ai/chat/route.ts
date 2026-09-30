@@ -11,6 +11,9 @@ import { notifyTransactionsCreated } from "@/lib/notify/notifications";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+/** Batas waktu total agent — sisa ~10 detik untuk notifikasi & respons sebelum limit Vercel. */
+const AGENT_BUDGET_MS = 50_000;
+
 export async function POST(req: Request) {
   let user: AuthedUser;
   try {
@@ -48,6 +51,7 @@ export async function POST(req: Request) {
       ctx,
       systemPrompt: buildSystemPrompt({ displayName, role, now, accounts, categories }),
       chat: createDeepSeekChat({ apiKey, model: process.env.DEEPSEEK_MODEL || "deepseek-flash" }),
+      deadline: now.getTime() + AGENT_BUDGET_MS,
     });
 
     if (ctx.createdTransactionIds.length > 0) {

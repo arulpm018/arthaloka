@@ -8,17 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
 import { useAppStore } from "@/store/useAppStore";
-import { sendChat, type AiAction, type ChatTurn } from "@/lib/ai/client";
+import { sendChat } from "@/lib/ai/client";
+import { markTurnFailed, toHistory, type ChatMessage } from "@/lib/ai/chatHistory";
 import { cn } from "@/lib/utils/cn";
-
-interface ChatMessage {
-  id: string;
-  role: "user" | "assistant";
-  text: string;
-  actions?: AiAction[];
-  /** Pesan error lokal — tidak dikirim balik ke model. */
-  isError?: boolean;
-}
 
 const SUGGESTIONS = [
   "Catat makan siang 25rb",
@@ -74,10 +66,7 @@ export const AiAssistantSheet = () => {
       if (!currentUser || isThinking) return;
       atBottomRef.current = true;
       const userMsg: ChatMessage = { id: nextId(), role: "user", text };
-      const history: ChatTurn[] = [...messages, userMsg]
-        .filter((m) => !m.isError)
-        .map((m) => ({ role: m.role, content: m.text }))
-        .slice(-HISTORY_LIMIT);
+      const history = toHistory([...messages, userMsg], HISTORY_LIMIT);
 
       setMessages((prev) => [...prev, userMsg]);
       setIsThinking(true);
@@ -86,7 +75,10 @@ export const AiAssistantSheet = () => {
         setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: res.reply, actions: res.actions }]);
       } catch (e) {
         const errText = e instanceof Error ? e.message : "Prometheus error";
-        setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: `⚠️ ${errText}`, isError: true }]);
+        setMessages((prev) => [
+          ...markTurnFailed(prev, userMsg.id),
+          { id: nextId(), role: "assistant", text: `⚠️ ${errText}`, isError: true },
+        ]);
         toast.error(errText);
       } finally {
         setIsThinking(false);

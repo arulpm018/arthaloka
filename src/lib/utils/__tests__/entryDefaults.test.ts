@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  noteFromName,
   pickVisibleCategories,
   resolveDefaultAccountId,
   resolveTransactionName,
@@ -65,5 +66,14 @@ describe("resolveTransactionName", () => {
   });
   it("catatan kosong → nama kategori", () => {
     expect(resolveTransactionName("   ", "Makan")).toBe("Makan");
+  });
+});
+
+describe("noteFromName (isi field catatan saat edit)", () => {
+  it("nama = nama kategori (catatan kosong waktu dicatat) → catatan kosong, supaya ganti kategori ikut ganti nama", () => {
+    expect(noteFromName("Makan", "Makan")).toBe("");
+  });
+  it("nama custom → tetap jadi catatan", () => {
+    expect(noteFromName("Bakso Pak Kumis", "Makan")).toBe("Bakso Pak Kumis");
   });
 });

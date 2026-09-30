@@ -47,6 +47,14 @@ export function resolveTransactionName(note: string, categoryName: string): stri
   return note.trim() || categoryName;
 }
 
+/**
+ * Isi field catatan saat mengedit: nama yang dulu diisi otomatis dari
+ * kategori dikosongkan, supaya mengganti kategori ikut mengganti nama.
+ */
+export function noteFromName(name: string, categoryName: string): string {
+  return name === categoryName ? "" : name;
+}
+
 export function readLastAccountId(): string | null {
   try {
     return window.localStorage.getItem(LAST_ACCOUNT_STORAGE_KEY);

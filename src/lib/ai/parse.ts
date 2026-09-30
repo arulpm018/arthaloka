@@ -1,4 +1,5 @@
 import { wibDate, wibIsoDate } from "@/lib/utils/wib";
+import type { Owner } from "@/types";
 
 const DAY_MS = 86_400_000;
 
@@ -73,19 +74,55 @@ export function parseDateInput(value: string | undefined | null, now: Date): Dat
   return wibDate(year, month, day, 12); // tanggal lain → tengah hari WIB
 }
 
+/**
+ * Semua item di tingkat kecocokan terbaik: exact → awalan → mengandung →
+ * nama item terkandung di input. Kosong kalau tidak ada yang cocok.
+ */
+function bestMatches<T extends { name: string }>(items: T[], name: string): T[] {
+  const n = name.trim().toLowerCase();
+  if (!n) return [];
+  const lower = (item: T) => item.name.toLowerCase();
+  const tiers: ((item: T) => boolean)[] = [
+    (i) => lower(i) === n,
+    (i) => lower(i).startsWith(n),
+    (i) => lower(i).includes(n),
+    (i) => lower(i).length >= 3 && n.includes(lower(i)),
+  ];
+  for (const tier of tiers) {
+    const matches = items.filter(tier);
+    if (matches.length > 0) return matches;
+  }
+  return [];
+}
+
+function notFound<T extends { name: string }>(items: T[], name: string, kind: string): Error {
+  const list = items.slice(0, 15).map((i) => i.name).join(", ") || "-";
+  return new Error(`${kind} '${name}' tidak ditemukan. Yang ada: ${list}`);
+}
+
 /** Cocokkan nama: exact → awalan → mengandung → nama item terkandung di input. */
 export function pickByName<T extends { name: string }>(items: T[], name: string, kind: string): T {
-  const n = name.trim().toLowerCase();
-  const lower = (item: T) => item.name.toLowerCase();
-  const found = n
-    ? items.find((i) => lower(i) === n) ??
-      items.find((i) => lower(i).startsWith(n)) ??
-      items.find((i) => lower(i).includes(n)) ??
-      items.find((i) => lower(i).length >= 3 && n.includes(lower(i)))
-    : undefined;
-  if (!found) {
-    const list = items.slice(0, 15).map((i) => i.name).join(", ") || "-";
-    throw new Error(`${kind} '${name}' tidak ditemukan. Yang ada: ${list}`);
-  }
+  const [found] = bestMatches(items, name);
+  if (!found) throw notFound(items, name, kind);
   return found;
+}
+
+/**
+ * Seperti `pickByName`, tapi kalau beberapa rekening sama-sama cocok
+ * (mis. "BCA" milik Arul & Fifi), utamakan milik user yang mencatat,
+ * lalu rekening bersama — jangan diam-diam memakai rekening pasangan.
+ */
+export function pickAccountByName<T extends { name: string; owner: Owner }>(
+  accounts: T[],
+  name: string,
+  role: Owner,
+  kind = "Rekening"
+): T {
+  const matches = bestMatches(accounts, name);
+  if (matches.length === 0) throw notFound(accounts, name, kind);
+  return (
+    matches.find((a) => a.owner === role) ??
+    matches.find((a) => a.owner === "shared") ??
+    matches[0]
+  );
 }

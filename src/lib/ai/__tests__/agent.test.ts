@@ -88,6 +88,45 @@ describe("runAgent", () => {
     expect(toolMessages[0].content).toContain("Tersimpan");
   });
 
+  it("DeepSeek gagal setelah transaksi tersimpan → balasan parsial berisi aksi, tidak throw", async () => {
+    const store = new FakeStore();
+    const chat = vi
+      .fn<ChatFn>()
+      .mockResolvedValueOnce(toolCalls(["add_transactions", { items: [{ type: "expense", amount: 25000, category: "Makan" }] }]))
+      .mockRejectedValueOnce(new Error("DeepSeek 503"));
+    const res = await runAgent({ history: [{ role: "user", content: "makan 25rb" }], ctx: makeCtx(store), systemPrompt: "SYS", chat });
+    expect(res.actions).toHaveLength(1);
+    expect(res.reply).toMatch(/tersimpan/i);
+    expect(store.transactions).toHaveLength(1);
+  });
+
+  it("DeepSeek gagal sebelum ada aksi → tetap error (route balas 502)", async () => {
+    const chat = vi.fn<ChatFn>().mockRejectedValue(new Error("DeepSeek 503"));
+    await expect(
+      runAgent({ history: [{ role: "user", content: "hai" }], ctx: makeCtx(new FakeStore()), systemPrompt: "SYS", chat })
+    ).rejects.toThrow("DeepSeek 503");
+  });
+
+  it("tenggat total terlewati → tidak memulai putaran baru; timeout per panggilan = sisa waktu", async () => {
+    let now = 0;
+    const chat = vi.fn<ChatFn>().mockImplementation(async () => {
+      now += 30_000; // tiap putaran makan 30 detik
+      return toolCalls(["list_accounts", {}]);
+    });
+    const res = await runAgent({
+      history: [{ role: "user", content: "x" }],
+      ctx: makeCtx(new FakeStore()),
+      systemPrompt: "SYS",
+      chat,
+      deadline: 50_000,
+      clock: () => now,
+    });
+    expect(chat).toHaveBeenCalledTimes(2);
+    expect(chat.mock.calls[0][2]).toEqual({ timeoutMs: 50_000 });
+    expect(chat.mock.calls[1][2]).toEqual({ timeoutMs: 20_000 });
+    expect(res.reply).toMatch(/kepanjangan/);
+  });
+
   it("berhenti setelah MAX_TOOL_ROUNDS", async () => {
     const chat = vi.fn<ChatFn>().mockResolvedValue(toolCalls(["list_accounts", {}]));
     const res = await runAgent({ history: [{ role: "user", content: "loop" }], ctx: makeCtx(new FakeStore()), systemPrompt: "SYS", chat });
