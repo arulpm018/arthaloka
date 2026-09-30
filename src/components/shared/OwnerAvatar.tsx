@@ -4,7 +4,6 @@ import { useState } from "react";
 import { cn } from "@/lib/utils/cn";
 import { OWNER_COLORS, OWNER_LABELS } from "@/lib/constants/labels";
 import { useAppStore } from "@/store/useAppStore";
-import { useCouplePhotoContext } from "@/components/shared/CouplePhotoProvider";
 import type { Owner } from "@/types";
 
 interface OwnerAvatarProps {
@@ -33,9 +32,7 @@ const SIZE_CLASS = {
 const PIXEL_SIZE = { sm: 24, md: 40, lg: 80 } as const;
 
 const localPhotoFor = (owner: Owner): string | null => {
-  // Foto couple ditangani oleh component khusus (CoupleHero) — di sini fokus
-  // ke per-orang. `shared` di-render sebagai initial "WE" chip dengan tint
-  // shared color.
+  // `shared` tidak punya foto — di-render sebagai chip "WE".
   if (owner === "arul") return "/photos/arul.jpg";
   if (owner === "fifi") return "/photos/fifi.jpg";
   return null;
@@ -72,19 +69,12 @@ export const OwnerAvatar = ({
     return null;
   });
 
-  // Owner=shared → ambil foto couple dari Firestore (single subscription via provider).
-  const { photo: couplePhoto } = useCouplePhotoContext();
-  const couplePhotoUrl = owner === "shared" ? couplePhoto?.dataUrl ?? null : null;
-
   // Build fallback chain. State tracks current attempt index — naik kalau
   // <img> error, sampai kehabisan kandidat → render initial chip.
   const candidates: string[] = [];
   if (photoURL) candidates.push(photoURL);
   if (customAvatarFromStore && customAvatarFromStore !== photoURL) {
     candidates.push(customAvatarFromStore);
-  }
-  if (couplePhotoUrl && couplePhotoUrl !== photoURL) {
-    candidates.push(couplePhotoUrl);
   }
   const local = useLocalFallback ? localPhotoFor(owner) : null;
   if (local) candidates.push(local);

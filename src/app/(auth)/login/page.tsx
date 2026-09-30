@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,42 +12,20 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/shared/Logo";
-import { getCachedCoupleDataUrl } from "@/hooks/useCouplePhoto";
 
 const ALLOWED_EMAILS = (process.env.NEXT_PUBLIC_ALLOWED_EMAILS || "")
   .split(",")
   .map((e) => e.trim());
 
-/**
- * Foto couple sebagai background blur. Sumber:
- *   1. Cache localStorage — last-known uploaded data URL
- *      (di-update di Settings setelah login).
- *   2. Local fallback `/photos/couple/default.jpg`.
- *   3. Gradient placeholder kalau dua-duanya gagal.
- *
- * Kita ga fetch dari Firestore di sini karena belum auth — rules block.
- */
-const COUPLE_BG_FALLBACK = "/photos/couple/default.jpg";
+/** Foto latar blur halaman login (file statis di public/). */
+const LOGIN_BG = "/photos/couple/default.jpg";
 
 export default function LoginPage() {
   const router = useRouter();
   const { loginWithGoogle } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [bgAttempt, setBgAttempt] = useState(0);
-  const [cachedUrl, setCachedUrl] = useState<string | null>(null);
-
-  // Hydrate cache di client (avoid SSR mismatch).
-  useEffect(() => {
-    setCachedUrl(getCachedCoupleDataUrl());
-    setBgAttempt(0);
-  }, []);
-
-  const candidates = [cachedUrl, COUPLE_BG_FALLBACK].filter(
-    (s): s is string => !!s
-  );
-  const bgSrc = candidates[bgAttempt];
-  const bgErrored = bgAttempt >= candidates.length;
+  const [bgErrored, setBgErrored] = useState(false);
 
   const handleGoogleLogin = async () => {
     setError(null);
@@ -85,12 +63,12 @@ export default function LoginPage() {
         aria-hidden="true"
         className="fixed inset-0 -z-10 overflow-hidden bg-background"
       >
-        {!bgErrored && bgSrc && (
+        {!bgErrored && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={bgSrc}
+            src={LOGIN_BG}
             alt=""
-            onError={() => setBgAttempt((n) => n + 1)}
+            onError={() => setBgErrored(true)}
             className="h-full w-full object-cover scale-105 blur-md opacity-40 dark:opacity-25"
           />
         )}

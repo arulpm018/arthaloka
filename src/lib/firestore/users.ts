@@ -1,10 +1,4 @@
-import {
-  doc,
-  updateDoc,
-  serverTimestamp,
-  Timestamp,
-  deleteField,
-} from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { User } from "@/types";
 
@@ -57,26 +51,5 @@ export const usersService = {
       partnerUid,
       updatedAt: serverTimestamp(),
     });
-  },
-
-  /**
-   * Update relationship metadata (anniversary date). Pakai dot-notation biar
-   * field selain yang di-update tetap intact. Pass `null` untuk hapus field.
-   */
-  updateRelationship: async (
-    uid: string,
-    updates: Partial<{ anniversaryDate: Timestamp | null }>
-  ): Promise<void> => {
-    const ref = doc(db, COLLECTION, uid);
-    const payload: Record<string, unknown> = {
-      updatedAt: serverTimestamp(),
-    };
-    if ("anniversaryDate" in updates) {
-      payload["relationship.anniversaryDate"] =
-        updates.anniversaryDate === null
-          ? deleteField()
-          : updates.anniversaryDate;
-    }
-    await updateDoc(ref, payload);
   },
 };

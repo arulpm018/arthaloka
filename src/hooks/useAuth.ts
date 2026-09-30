@@ -40,7 +40,7 @@ export function useAuth() {
     return () => unsub();
   }, []);
 
-  // Subscribe ke user doc — realtime update saat preferences/relationship berubah.
+  // Subscribe ke user doc — realtime update saat preferences berubah.
   useEffect(() => {
     if (!firebaseUser) return;
     const ref = doc(db, "users", firebaseUser.uid);

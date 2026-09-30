@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { TrendingUp, TrendingDown, Wallet, Eye, EyeOff, Building2, Smartphone, PiggyBank } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { MemeReaction } from "@/components/shared/MemeReaction";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
-import { getMoodForBalance } from "@/lib/utils/memeMood";
 import { OWNER_LABELS, OWNER_COLORS } from "@/lib/constants/labels";
 import { useAppStore } from "@/store/useAppStore";
 import { Account, Owner } from "@/types";
@@ -89,17 +87,6 @@ export const SummaryCards = ({ totalBalance, income, expense, accounts = [] }: S
               {showBalance ? formatCurrency(totalBalance) : HIDDEN_PLACEHOLDER}
             </p>
           </div>
-          {/* Mood reaction — hanya muncul kalau saldo ditampilkan, biar
-              kondisi finansial nggak ke-leak via emoji saat hideBalance ON.
-              Width-nya intrinsic ke konten kiri → meme nempel dekat angka. */}
-          {showBalance && (
-            <MemeReaction
-              mood={getMoodForBalance(totalBalance)}
-              size="md"
-              seed={`balance-${getMoodForBalance(totalBalance)}`}
-              className="h-20 w-20 sm:h-24 sm:w-24 text-3xl sm:text-4xl shrink-0"
-            />
-          )}
         </div>
       </button>
 

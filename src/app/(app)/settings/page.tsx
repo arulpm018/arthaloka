@@ -3,5 +3,5 @@
 import { SettingsScreen } from "@/components/settings/SettingsScreen";
 
 export default function SettingsPage() {
-  return <SettingsScreen module="finance" />;
+  return <SettingsScreen />;
 }

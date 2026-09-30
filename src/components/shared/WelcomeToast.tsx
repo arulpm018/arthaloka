@@ -55,8 +55,7 @@ const greetingForHour = (hour: number): Greeting => {
  * Welcome toast time-based — Personalization Plan §3.13.
  *
  * Trigger sekali per session (per browser tab) ketika user pertama kali
- * masuk app. Skip kalau `preferences.showMemes` di-off (toggle yang sama
- * dipakai sebagai opt-out untuk semua flair).
+ * masuk app.
  */
 export const WelcomeToast = () => {
   const currentUser = useAppStore((s) => s.currentUser);
@@ -64,7 +63,6 @@ export const WelcomeToast = () => {
 
   useEffect(() => {
     if (isLoading || !currentUser) return;
-    if (currentUser.preferences?.showMemes === false) return;
 
     let alreadyShown = false;
     try {
