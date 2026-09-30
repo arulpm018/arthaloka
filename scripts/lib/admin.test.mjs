@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { createBatchWriter } from "./admin.mjs";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { createBatchWriter, initAdminDb } from "./admin.mjs";
 
 /** Fake Firestore: catat berapa operasi tiap batch yang di-commit. */
 function fakeDb() {
@@ -29,5 +29,20 @@ describe("createBatchWriter", () => {
     const db = fakeDb();
     await createBatchWriter(db).flush();
     expect(db.committed).toEqual([]);
+  });
+});
+
+describe("initAdminDb", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("file service account tidak ada → pesan jelas cara membuatnya", () => {
+    vi.stubEnv("FIREBASE_SERVICE_ACCOUNT", "/path/ke/service-account.json");
+    expect(() => initAdminDb()).toThrow(/tidak ditemukan.*Generate new private key/s);
+  });
+
+  it("belum di-set sama sekali → pesan jelas", () => {
+    vi.stubEnv("FIREBASE_SERVICE_ACCOUNT", "");
+    vi.stubEnv("GOOGLE_APPLICATION_CREDENTIALS", "");
+    expect(() => initAdminDb()).toThrow(/FIREBASE_SERVICE_ACCOUNT belum di-set/);
   });
 });

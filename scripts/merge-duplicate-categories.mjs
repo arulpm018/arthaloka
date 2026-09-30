@@ -11,7 +11,13 @@ import { createBatchWriter, initAdminDb } from "./lib/admin.mjs";
 import { planCategoryMerges } from "./lib/categoryMerge.mjs";
 
 const apply = process.argv.includes("--apply");
-const db = initAdminDb();
+let db;
+try {
+  db = initAdminDb();
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
 
 const catSnap = await db.collection("categories").where("isActive", "==", true).get();
 const categories = catSnap.docs.map((d) => ({ id: d.id, ...d.data() }));

@@ -6,15 +6,27 @@
  *   FIREBASE_SERVICE_ACCOUNT=/path/ke/service-account.json
  *   GOOGLE_APPLICATION_CREDENTIALS=/path/ke/service-account.json
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { applicationDefault, cert, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
+const HOW_TO_GET_KEY =
+  "Buat key: Firebase Console → Project settings → Service accounts → Generate new private key, " +
+  "lalu jalankan dengan FIREBASE_SERVICE_ACCOUNT=<lokasi file .json itu>.";
+
 export function initAdminDb() {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT?.trim();
-  const credential = raw
-    ? cert(JSON.parse(raw.startsWith("{") ? raw : readFileSync(raw, "utf8")))
-    : applicationDefault();
+  let credential;
+  if (raw) {
+    if (!raw.startsWith("{") && !existsSync(raw)) {
+      throw new Error(`File service account tidak ditemukan: ${raw}\n${HOW_TO_GET_KEY}`);
+    }
+    credential = cert(JSON.parse(raw.startsWith("{") ? raw : readFileSync(raw, "utf8")));
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    credential = applicationDefault();
+  } else {
+    throw new Error(`FIREBASE_SERVICE_ACCOUNT belum di-set.\n${HOW_TO_GET_KEY}`);
+  }
   initializeApp({ credential });
   return getFirestore();
 }

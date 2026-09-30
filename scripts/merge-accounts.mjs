@@ -33,7 +33,13 @@ if (toOwner && !OWNERS.includes(toOwner)) {
 }
 
 const rupiah = (n) => `Rp${Math.round(n).toLocaleString("id-ID")}`;
-const db = initAdminDb();
+let db;
+try {
+  db = initAdminDb();
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
 
 const accountSnap = await db.collection("accounts").where("isActive", "==", true).get();
 const accounts = accountSnap.docs
