@@ -1,17 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { startOfMonth, endOfMonth } from "date-fns";
+import { useRouter } from "next/navigation";
+import { startOfMonth, endOfMonth, format } from "date-fns";
+import { id as idLocale } from "date-fns/locale";
 import { CalendarRange, ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Logo } from "@/components/shared/Logo";
-import { SummaryCards } from "@/components/dashboard/SummaryCards";
-import { SpendingByCategory } from "@/components/dashboard/SpendingByCategory";
+import { BudgetHero } from "@/components/dashboard/BudgetHero";
+import { BudgetWatchlist } from "@/components/dashboard/BudgetWatchlist";
+import { BalanceStrip } from "@/components/dashboard/BalanceStrip";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { useSummary } from "@/hooks/useSummary";
 import { useBudgetStatus } from "@/hooks/useBudgetStatus";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useTransfers } from "@/hooks/useTransfers";
@@ -20,17 +22,24 @@ import { useAppStore } from "@/store/useAppStore";
 import { Transfer } from "@/types";
 
 export default function DashboardPage() {
-  const { openSheet } = useAppStore();
-  // Home selalu fokus ke bulan berjalan — ganti bulan cukup lewat Rekap Bulanan.
+  const router = useRouter();
+  const openSheet = useAppStore((s) => s.openSheet);
+  // Beranda selalu fokus ke bulan berjalan — bulan lain lewat Rekap/Budget.
   const currentMonth = useMemo(() => new Date(), []);
   const [deleteTransferTarget, setDeleteTransferTarget] = useState<Transfer | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { accounts } = useAccounts();
-  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
+  // Deep-link dari notifikasi pengingat: /dashboard?add=1 langsung buka form catat.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("add") === "1") {
+      openSheet("expense");
+      router.replace("/dashboard");
+    }
+  }, [openSheet, router]);
 
-  const { income, expense, isLoading: summaryLoading } = useSummary(currentMonth);
-  const { budgets, isLoading: budgetLoading } = useBudgetStatus(currentMonth);
+  const { accounts, isLoading: accountsLoading } = useAccounts();
+  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
+  const { summary, isLoading: budgetLoading } = useBudgetStatus(currentMonth);
   const { transactions, isLoading: txLoading } = useTransactions({
     startDate: startOfMonth(currentMonth),
     endDate: endOfMonth(currentMonth),
@@ -40,7 +49,8 @@ export default function DashboardPage() {
     endDate: endOfMonth(currentMonth),
   });
 
-  const isLoading = summaryLoading || budgetLoading || txLoading || tfLoading;
+  const isLoading = accountsLoading || budgetLoading || txLoading || tfLoading;
+  const monthLabel = format(currentMonth, "MMMM", { locale: idLocale });
 
   const handleDeleteTransfer = async () => {
     if (!deleteTransferTarget) return;
@@ -57,39 +67,35 @@ export default function DashboardPage() {
     <>
       <Header titleSlot={<Logo size="lg" />} />
 
-      <div className="mx-auto w-full max-w-4xl space-y-6 p-4 md:max-w-5xl md:p-6">
+      <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
         {isLoading ? (
           <LoadingState variant="page" />
         ) : (
           <>
-            <SummaryCards totalBalance={totalBalance} income={income} expense={expense} accounts={accounts} />
-
+            <BudgetHero summary={summary} monthLabel={monthLabel} />
+            <BudgetWatchlist items={summary.items} />
+            <RecentTransactions
+              transactions={transactions}
+              transfers={transfers}
+              limit={5}
+              onEdit={(tx) => openSheet(tx.type, tx)}
+              onEditTransfer={(tf) => openSheet("transfer", tf)}
+              onDeleteTransfer={(tf) => setDeleteTransferTarget(tf)}
+            />
+            <BalanceStrip totalBalance={totalBalance} />
             <Link
               href="/recap"
               className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent/50 active:bg-accent"
             >
-              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
                 <CalendarRange className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">Rekap Bulanan</p>
-                <p className="text-xs text-muted-foreground">
-                  Ringkasan lengkap arus kas, kategori & insight bulan ini
-                </p>
+                <p className="text-xs text-muted-foreground">Arus kas, kategori & insight bulan ini</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
             </Link>
-
-            <div className="space-y-6 xl:grid xl:grid-cols-[minmax(0,1fr)_400px] xl:items-start xl:gap-6 xl:space-y-0">
-              <SpendingByCategory budgets={budgets} />
-              <RecentTransactions
-                transactions={transactions}
-                transfers={transfers}
-                onEdit={(tx) => openSheet(tx.type, tx)}
-                onEditTransfer={(tf) => openSheet("transfer", tf)}
-                onDeleteTransfer={(tf) => setDeleteTransferTarget(tf)}
-              />
-            </div>
           </>
         )}
       </div>
@@ -99,7 +105,7 @@ export default function DashboardPage() {
         onClose={() => setDeleteTransferTarget(null)}
         onConfirm={handleDeleteTransfer}
         title="Hapus Transfer?"
-        description="Saldo kedua akun akan dikembalikan. Tindakan ini tidak bisa dibatalkan."
+        description="Saldo kedua rekening akan dikembalikan. Tindakan ini tidak bisa dibatalkan."
         isLoading={isDeleting}
       />
     </>

@@ -15,6 +15,8 @@ interface RecentTransactionsProps {
   onEdit: (tx: Transaction) => void;
   onEditTransfer?: (transfer: Transfer) => void;
   onDeleteTransfer?: (transfer: Transfer) => void;
+  /** Jumlah item maksimal (default 10) */
+  limit?: number;
 }
 
 type FeedItem =
@@ -42,6 +44,7 @@ export const RecentTransactions = ({
   onEdit,
   onEditTransfer,
   onDeleteTransfer,
+  limit = 10,
 }: RecentTransactionsProps) => {
   const merged: FeedItem[] = [
     ...transactions.map((t) => ({
@@ -56,7 +59,7 @@ export const RecentTransactions = ({
     })),
   ].sort((a, b) => b.date - a.date);
 
-  const recent = merged.slice(0, 10);
+  const recent = merged.slice(0, limit);
   if (recent.length === 0) return null;
 
   // Group by date
