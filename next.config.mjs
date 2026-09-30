@@ -19,6 +19,10 @@ const nextConfig = {
   async redirects() {
     return [
       { source: "/productivity/:path*", destination: "/dashboard", permanent: false },
+      { source: "/arul", destination: "/dashboard", permanent: false },
+      { source: "/fifi", destination: "/dashboard", permanent: false },
+      { source: "/together", destination: "/dashboard", permanent: false },
+      { source: "/more", destination: "/dashboard", permanent: false },
     ];
   },
   async headers() {

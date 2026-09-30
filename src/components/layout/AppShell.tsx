@@ -1,21 +1,18 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { Plus } from "lucide-react";
 import { BottomNav } from "./BottomNav";
-import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
 import { Sidebar } from "./Sidebar";
-import { GlobalFAB } from "./GlobalFAB";
 import { DesktopTopbar, type Crumb } from "./DesktopTopbar";
-import { QuickAddDropdown } from "./QuickAddDropdown";
+import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
 import { AiAssistantSheet } from "@/components/ai/AiAssistantSheet";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
-import { useSidebarState } from "@/hooks/useSidebarState";
-import { useAppStore } from "@/store/useAppStore";
 import { TransactionSheet } from "@/components/transactions/TransactionSheet";
 import { TransferSheet } from "@/components/transactions/TransferSheet";
-import { GlobalWishlistAddSheet } from "@/components/wishlist/GlobalWishlistAddSheet";
-import { OWNER_LABELS } from "@/lib/constants/labels";
+import { useSidebarState } from "@/hooks/useSidebarState";
+import { useAppStore } from "@/store/useAppStore";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
 
@@ -26,31 +23,24 @@ interface AppShellProps {
 const SIDEBAR_STORAGE_KEY = "arthafiloka.sidebarCollapsed.finance";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Home",
-  "/arul": OWNER_LABELS.arul,
-  "/together": OWNER_LABELS.shared,
-  "/fifi": OWNER_LABELS.fifi,
-  "/wishlist": "Wishlist",
+  "/dashboard": "Beranda",
   "/transactions": "Transaksi",
+  "/categories": "Budget",
+  "/accounts": "Rekening",
   "/recap": "Rekap Bulanan",
-  "/accounts": "Akun",
-  "/categories": "Kategori",
-  "/settings": "Settings",
-  "/more": "More",
+  "/settings": "Pengaturan",
 };
 
-/** Longest-prefix match supaya /dashboard tidak menang atas route lain. */
 const crumbsFor = (pathname: string): Crumb[] => {
-  const match = Object.keys(PAGE_TITLES)
-    .filter((route) => pathname.startsWith(route))
-    .sort((a, b) => b.length - a.length)[0];
-  return [{ label: "Keuangan" }, { label: match ? PAGE_TITLES[match] : "" }].filter((c) => c.label);
+  const match = Object.keys(PAGE_TITLES).find((route) => pathname.startsWith(route));
+  return match ? [{ label: PAGE_TITLES[match] }] : [];
 };
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { collapsed, toggle } = useSidebarState(SIDEBAR_STORAGE_KEY);
   const openAiAssistant = useAppStore((s) => s.openAiAssistant);
+  const openSheet = useAppStore((s) => s.openSheet);
 
   return (
     <div className="flex h-dvh flex-col md:flex-row">
@@ -66,44 +56,31 @@ export function AppShell({ children }: AppShellProps) {
         <Sidebar collapsed={collapsed} onToggle={toggle} />
       </aside>
 
-      {/* Kolom konten: topbar desktop + area scroll utama */}
       <div className="flex min-w-0 flex-1 flex-col">
         <DesktopTopbar onToggleSidebar={toggle} crumbs={crumbsFor(pathname)}>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 rounded-lg"
-            onClick={openAiAssistant}
-          >
+          <Button variant="outline" size="sm" className="gap-1.5 rounded-lg" onClick={openAiAssistant}>
             <PrometheusMascot className="h-5 w-5 rounded-md" />
             Prometheus
           </Button>
-          <QuickAddDropdown />
+          <Button size="sm" className="gap-1.5 rounded-lg" onClick={() => openSheet("expense")}>
+            <Plus className="h-4 w-4" />
+            Catat
+          </Button>
           <ThemeToggle />
         </DesktopTopbar>
 
         <main className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto pb-nav-height md:pb-0">
-            {children}
-          </div>
+          <div className="flex-1 overflow-y-auto pb-nav-height md:pb-0">{children}</div>
         </main>
       </div>
 
-      {/* Bottom nav - mobile only */}
+      {/* Bottom nav (mobile) — tombol "+" di tengah membuka form catat */}
       <BottomNav />
 
-      {/* Global FAB — mobile only; di desktop digantikan QuickAddDropdown di topbar */}
-      <GlobalFAB />
-
-      {/* Global transaction sheets — accessible from BottomNav, FAB, etc. */}
       <TransactionSheet mode="expense" />
       <TransactionSheet mode="income" />
       <TransferSheet />
 
-      {/* Global wishlist add sheet — di-trigger oleh FAB dari halaman manapun */}
-      <GlobalWishlistAddSheet />
-
-      {/* Asisten AI — chat/voice input untuk semua data */}
       <AiAssistantSheet />
     </div>
   );

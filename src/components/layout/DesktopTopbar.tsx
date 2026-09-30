@@ -14,7 +14,7 @@ interface DesktopTopbarProps {
   onToggleSidebar: () => void;
   /** Breadcrumb kiri — crumb terakhir (tanpa href) jadi judul halaman */
   crumbs?: Crumb[];
-  /** Slot aksi kanan (QuickAddDropdown, ThemeToggle, dsb.) */
+  /** Slot aksi kanan (tombol Catat, Prometheus, ThemeToggle) */
   children?: React.ReactNode;
 }
 

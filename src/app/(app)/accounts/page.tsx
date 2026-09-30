@@ -41,7 +41,7 @@ export default function AccountsPage() {
 
   return (
     <>
-      <Header title="Akun">
+      <Header title="Rekening">
         <Button size="sm" onClick={() => setFormOpen(true)}>
           <Plus className="h-4 w-4 mr-1" />
           Tambah

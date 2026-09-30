@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
+import { HeaderQuickActions } from "./HeaderQuickActions";
 
 interface HeaderProps {
   /**
@@ -61,6 +62,10 @@ export const Header = ({ title, ownerColor, titleSlot, children }: HeaderProps) 
       </div>
       <div className="flex items-center gap-2">
         {children}
+        {/* Aksi global mobile — di desktop ada di DesktopTopbar */}
+        <div className="flex items-center gap-1.5 md:hidden">
+          <HeaderQuickActions />
+        </div>
       </div>
     </header>
   );
