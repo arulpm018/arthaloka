@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { AvatarSection } from "@/components/settings/AvatarSection";
+import { NotificationToggle } from "@/components/settings/NotificationToggle";
 import { SettingsGroup, SettingsRow } from "@/components/settings/SettingsRow";
 import { useAuth } from "@/hooks/useAuth";
 import { useAppStore } from "@/store/useAppStore";
@@ -42,6 +43,10 @@ export function SettingsScreen() {
         ) : (
           <div className="h-32 rounded-xl bg-muted animate-pulse" />
         )}
+
+        <SettingsGroup title="Notifikasi">
+          <NotificationToggle />
+        </SettingsGroup>
 
         <SettingsGroup title="Tampilan">
           <div className="px-3 py-3">
