@@ -35,8 +35,6 @@ const SUGGESTIONS = [
   "Catat makan siang 25rb",
   "Kopi 22rb pakai jago",
   "Transfer 500rb jago ke wondr",
-  "Tugas belanja mingguan",
-  "Jadwal dinner jumat malam",
   "Rekap bulan ini",
 ];
 
@@ -276,9 +274,8 @@ export const AiAssistantSheet = () => {
               <div className="space-y-1">
                 <p className="text-base font-semibold">Halo, aku Prometheus!</p>
                 <p className="mx-auto max-w-xs text-xs leading-relaxed text-muted-foreground">
-                  Transaksi, transfer, akun, kategori, tugas, jadwal, habit,
-                  sampai wishlist — cukup tulis atau bilang saja, langsung
-                  kusimpan.
+                  Transaksi, transfer, rekening, dan kategori — cukup tulis
+                  atau bilang saja, langsung kusimpan.
                 </p>
               </div>
               <div className="flex max-w-sm flex-wrap justify-center gap-2">

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Timestamp, serverTimestamp } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -27,7 +27,6 @@ import {
   TransactionFormValues,
 } from "@/lib/validations/transaction.schema";
 import { transactionsService } from "@/lib/firestore/transactions";
-import { wishlistItemsService } from "@/lib/firestore/wishlistItems";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
 import { useAppStore } from "@/store/useAppStore";
@@ -108,8 +107,6 @@ export const TransactionSheet = ({ mode }: TransactionSheetProps) => {
     editingTransaction,
     currentUser,
     defaultOwner,
-    prefillData,
-    prefillSource,
   } = useAppStore();
   const { accounts } = useAccounts();
   const { categories } = useCategories();
@@ -175,20 +172,15 @@ export const TransactionSheet = ({ mode }: TransactionSheetProps) => {
         note: editingTransaction.note || "",
       });
     } else {
-      // Owner: prefill (e.g. wishlist item.owner) wins over defaultOwner.
-      const ownerDefault =
-        prefillData?.owner ?? defaultOwner ?? currentUser?.role ?? "arul";
-      // Account default uses the user's preferred account, falling back to
-      // the first account that matches the resolved owner. The prefill flow
-      // (wishlist) intentionally does not pre-select an account.
+      const ownerDefault = defaultOwner ?? currentUser?.role ?? "arul";
       const defaultAccount =
         accounts.find(
           (a) => a.accountId === currentUser?.preferences?.defaultAccountId
         ) || accounts.find((a) => a.owner === ownerDefault) || accounts[0];
       reset({
         type: mode,
-        name: prefillData?.name ?? "",
-        amount: prefillData?.amount ?? 0,
+        name: "",
+        amount: 0,
         accountId: defaultAccount?.accountId || "",
         accountName: defaultAccount?.name || "",
         categoryId: "",
@@ -208,7 +200,6 @@ export const TransactionSheet = ({ mode }: TransactionSheetProps) => {
     currentUser,
     defaultOwner,
     mode,
-    prefillData,
     reset,
   ]);
 
@@ -234,31 +225,9 @@ export const TransactionSheet = ({ mode }: TransactionSheetProps) => {
         );
         toast.success(config.successMessage.edit);
       } else {
-        const newTxId = await transactionsService.create(
+        await transactionsService.create(
           data as unknown as CreateTransactionInput
         );
-
-        // Cross-feature side effect: when this create flow originated from a
-        // wishlist item, mark the item as purchased and link the new
-        // transaction id back to it. We swallow errors here so the success
-        // toast for the transaction itself isn't blocked — the transaction
-        // already saved successfully.
-        if (prefillSource?.type === "wishlist") {
-          try {
-            await wishlistItemsService.update(prefillSource.itemId, {
-              isPurchased: true,
-              purchasedAt: serverTimestamp() as unknown as Timestamp,
-              linkedTransactionId: newTxId,
-            });
-          } catch (linkError) {
-            console.error(
-              "Failed to link wishlist item to transaction:",
-              linkError
-            );
-            toast.error("Transaksi tersimpan, tapi gagal update wishlist.");
-          }
-        }
-
         toast.success(config.successMessage.create);
       }
       closeSheet();

@@ -23,6 +23,7 @@ const nextConfig = {
       { source: "/fifi", destination: "/dashboard", permanent: false },
       { source: "/together", destination: "/dashboard", permanent: false },
       { source: "/more", destination: "/dashboard", permanent: false },
+      { source: "/wishlist", destination: "/dashboard", permanent: false },
     ];
   },
   async headers() {
