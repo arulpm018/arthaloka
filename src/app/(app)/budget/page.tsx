@@ -34,8 +34,17 @@ export default function BudgetPage() {
 
   return (
     <>
-      <Header title="Budget">
-        <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
+      <Header titleSlot={<MonthPicker value={selectedMonth} onChange={setSelectedMonth} />}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => setFormOpen(true)}
+          aria-label="Tambah kategori"
+          title="Tambah kategori"
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
       </Header>
       <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
         {summary.totalBudget > 0 && (
@@ -76,15 +85,6 @@ export default function BudgetPage() {
           />
         )}
       </div>
-
-      <Button
-        size="sm"
-        className="fixed bottom-24 right-4 rounded-full shadow-lg md:bottom-6"
-        onClick={() => setFormOpen(true)}
-      >
-        <Plus className="mr-1 h-4 w-4" />
-        Kategori
-      </Button>
 
       <CategoryForm open={formOpen} onClose={handleClose} editingCategory={editingCategory} />
     </>
