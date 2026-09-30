@@ -69,6 +69,12 @@ Hapus seluruh file, route, hook, lib, type, schema, test milik:
   CollapsibleSidebar, SidebarUserCard "Ganti Modul", More). Login & onboarding
   redirect ke `/dashboard`. `manifest.start_url` = `/dashboard`.
 - **SettingsScreen**: buang prop `module` dan section non-keuangan.
+- **Halaman per-pemilik & navigasi baru** (dipindah dari fase 2 supaya tidak
+  mengedit file yang akan dihapus): hapus `/arul`, `/fifi`, `/together`,
+  `/more`, `OwnerOverview`, `OwnerSwitcherTitle`, `GlobalFAB`, `FAB`,
+  `ActionSheet`, `QuickAddDropdown`. Navigasi bawah baru langsung dipasang
+  (item Budget menunjuk `/categories` sampai fase 2 membuat `/budget`).
+  Route lama di-redirect ke `/dashboard` lewat `next.config.mjs`.
 
 Data Firestore koleksi lama (`tasks`, `events`, `habits`, `wishlist*`, `memes`,
 `appConfig`) **tidak dihapus**; rules-nya dibiarkan. Hanya kode yang dibuang.
@@ -175,8 +181,10 @@ sebagai tab; logika simpan tetap).
 
 Edit transaksi memakai sheet yang sama, terisi data lama.
 
-Entry point: FAB (mobile) & tombol tambah topbar (desktop) langsung membuka
-sheet di tab Keluar; menu aksi hanya berisi Catat & Tanya Prometheus (AI).
+Entry point: tombol **+** di tengah navigasi bawah (mobile) & tombol "Catat"
+di topbar (desktop) langsung membuka sheet di tab Keluar — tanpa menu pilihan.
+Prometheus (AI) dibuka dari ikon maskot di header mobile / tombol topbar desktop.
+Header mobile juga memuat avatar → Settings.
 `/dashboard?add=1` membuka sheet (dipakai notifikasi pengingat).
 
 ### Test fase 2
