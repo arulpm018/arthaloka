@@ -1,4 +1,4 @@
-/** Kontrak data chat Prometheus — dipakai client & server. */
+/** Kontrak data chat asisten AI — dipakai client & server. */
 export interface AiAction {
   tool: string;
   label: string;

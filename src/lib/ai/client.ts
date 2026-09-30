@@ -5,7 +5,7 @@ import type { AiChatResponse, ChatTurn } from "./types";
 
 export type { AiAction, AiChatResponse, ChatTurn } from "./types";
 
-/** Kirim riwayat chat (maks 20 pesan terakhir) ke Prometheus. */
+/** Kirim riwayat chat (maks 20 pesan terakhir) ke asisten AI. */
 export async function sendChat(messages: ChatTurn[]): Promise<AiChatResponse> {
   const res = await authFetch("/api/ai/chat", {
     method: "POST",
@@ -13,6 +13,6 @@ export async function sendChat(messages: ChatTurn[]): Promise<AiChatResponse> {
     body: JSON.stringify({ messages }),
   });
   const data = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(data?.error || "Prometheus tidak bisa dihubungi");
+  if (!res.ok) throw new Error(data?.error || "AI tidak bisa dihubungi");
   return data as AiChatResponse;
 }

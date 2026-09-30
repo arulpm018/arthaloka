@@ -3,18 +3,18 @@ import type { SVGProps } from "react";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Maskot Prometheus — capybara dengan jeruk di atas kepala.
+ * Maskot asisten AI — capybara dengan jeruk di atas kepala.
  * Flat-first: dua keluarga warna (coklat hangat + oranye jeruk) di atas
  * krem solid. Desain sederhana supaya tetap terbaca di 16–24px.
  */
-export const PrometheusMascot = ({
+export const AiMascot = ({
   className,
   ...props
 }: SVGProps<SVGSVGElement>) => (
   <svg
     viewBox="0 0 64 64"
     role="img"
-    aria-label="Prometheus, maskot capybara"
+    aria-label="Maskot asisten AI"
     className={cn("shrink-0 select-none", className)}
     {...props}
   >

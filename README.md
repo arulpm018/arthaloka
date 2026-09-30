@@ -88,7 +88,7 @@ berstatus Bersama. Jangan mencatat transaksi di app selama `--apply` berjalan.
 - **Charts**: Recharts
 - **Tests**: Vitest + fast-check (property-based)
 
-## Asisten AI (Prometheus)
+## Asisten AI
 
 Chat teks untuk mencatat transaksi, transfer, membuat rekening/kategori, dan
 menanyakan ringkasan bulanan. Berjalan sebagai API route Next.js

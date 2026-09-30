@@ -1,6 +1,6 @@
 import type { AiAction, ChatTurn } from "./types";
 
-/** Pesan di layar chat Prometheus. */
+/** Pesan di layar chat asisten AI. */
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";

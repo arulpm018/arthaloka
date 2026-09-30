@@ -5,7 +5,6 @@ import { Plus } from "lucide-react";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 import { DesktopTopbar, type Crumb } from "./DesktopTopbar";
-import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
 import { AiAssistantSheet } from "@/components/ai/AiAssistantSheet";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { OfflineBadge } from "@/components/shared/OfflineBadge";
@@ -39,7 +38,6 @@ const crumbsFor = (pathname: string): Crumb[] => {
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { collapsed, toggle } = useSidebarState(SIDEBAR_STORAGE_KEY);
-  const openAiAssistant = useAppStore((s) => s.openAiAssistant);
   const openSheet = useAppStore((s) => s.openSheet);
 
   return (
@@ -58,10 +56,6 @@ export function AppShell({ children }: AppShellProps) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <DesktopTopbar onToggleSidebar={toggle} crumbs={crumbsFor(pathname)}>
-          <Button variant="outline" size="sm" className="gap-1.5 rounded-lg" onClick={openAiAssistant}>
-            <PrometheusMascot className="h-5 w-5 rounded-md" />
-            Prometheus
-          </Button>
           <Button size="sm" className="gap-1.5 rounded-lg" onClick={() => openSheet("expense")}>
             <Plus className="h-4 w-4" />
             Catat

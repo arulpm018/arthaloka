@@ -65,6 +65,6 @@ export async function POST(req: Request) {
     return NextResponse.json(result);
   } catch (error) {
     console.error("[ai/chat]", error);
-    return NextResponse.json({ error: "Prometheus lagi gangguan, coba lagi sebentar." }, { status: 502 });
+    return NextResponse.json({ error: "AI lagi gangguan, coba lagi sebentar." }, { status: 502 });
   }
 }

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
+import { AiMascot } from "@/components/ai/AiMascot";
 import { useAppStore } from "@/store/useAppStore";
 import { sendChat } from "@/lib/ai/client";
 import { markTurnFailed, toHistory, type ChatMessage } from "@/lib/ai/chatHistory";
@@ -74,7 +74,7 @@ export const AiAssistantSheet = () => {
         const res = await sendChat(history);
         setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: res.reply, actions: res.actions }]);
       } catch (e) {
-        const errText = e instanceof Error ? e.message : "Prometheus error";
+        const errText = e instanceof Error ? e.message : "AI error";
         setMessages((prev) => [
           ...markTurnFailed(prev, userMsg.id),
           { id: nextId(), role: "assistant", text: `⚠️ ${errText}`, isError: true },
@@ -103,11 +103,11 @@ export const AiAssistantSheet = () => {
       >
         <SheetHeader className="flex-row items-center gap-3 space-y-0 border-b border-border bg-gradient-to-b from-capybara/10 to-transparent px-4 py-3">
           <div className="relative shrink-0">
-            <PrometheusMascot className="h-11 w-11 rounded-2xl shadow-sm-custom" />
+            <AiMascot className="h-11 w-11 rounded-2xl shadow-sm-custom" />
             <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background bg-income" />
           </div>
           <div className="min-w-0 flex-1">
-            <SheetTitle className="text-base font-semibold leading-tight">Prometheus</SheetTitle>
+            <SheetTitle className="text-base font-semibold leading-tight">AI</SheetTitle>
             <p className="truncate text-xs text-muted-foreground">
               {isThinking ? "Sedang berpikir…" : "Asisten keuanganmu — tulis saja"}
             </p>
@@ -140,9 +140,9 @@ export const AiAssistantSheet = () => {
         <div ref={scrollRef} onScroll={handleScroll} className="relative flex-1 space-y-3 overflow-y-auto px-4 py-4">
           {messages.length === 0 && !isThinking && (
             <div className="flex h-full flex-col items-center justify-center gap-4 px-4 text-center">
-              <PrometheusMascot className="h-24 w-24 animate-bounce-soft rounded-3xl shadow-md-custom" />
+              <AiMascot className="h-24 w-24 animate-bounce-soft rounded-3xl shadow-md-custom" />
               <div className="space-y-1">
-                <p className="text-base font-semibold">Halo, aku Prometheus!</p>
+                <p className="text-base font-semibold">Halo, aku asisten AI!</p>
                 <p className="mx-auto max-w-xs text-xs leading-relaxed text-muted-foreground">
                   Catat transaksi, transfer, cek budget & rekap — cukup tulis, langsung kusimpan.
                 </p>
@@ -169,7 +169,7 @@ export const AiAssistantSheet = () => {
                 m.role === "user" ? "justify-end" : "items-end justify-start gap-2"
               )}
             >
-              {m.role === "assistant" && <PrometheusMascot className="h-7 w-7 shrink-0 rounded-lg" />}
+              {m.role === "assistant" && <AiMascot className="h-7 w-7 shrink-0 rounded-lg" />}
               <div
                 className={cn(
                   "max-w-[85%] space-y-2 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
@@ -199,7 +199,7 @@ export const AiAssistantSheet = () => {
 
           {isThinking && (
             <div className="flex items-end justify-start gap-2">
-              <PrometheusMascot className="h-7 w-7 shrink-0 animate-bounce-soft rounded-lg" />
+              <AiMascot className="h-7 w-7 shrink-0 animate-bounce-soft rounded-lg" />
               <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-accent px-4 py-3.5">
                 <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.3s]" />
                 <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.15s]" />

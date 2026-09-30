@@ -8,7 +8,7 @@ import type { AiChatResponse, ChatTurn } from "./types";
 export const MAX_TOOL_ROUNDS = 5;
 export const MAX_HISTORY_MESSAGES = 20;
 const MAX_MESSAGE_CHARS = 2000;
-const PARTIAL_REPLY = "Sudah tersimpan, tapi Prometheus gagal menyusun balasan. Cek daftar transaksi ya.";
+const PARTIAL_REPLY = "Sudah tersimpan, tapi AI gagal menyusun balasan. Cek daftar transaksi ya.";
 
 /** Riwayat dari client: hanya user/assistant, teks non-kosong, dipotong. */
 export function sanitizeHistory(raw: unknown): ChatTurn[] {
@@ -42,7 +42,7 @@ export function buildSystemPrompt(input: {
   const categories = input.categories.map((c) => `${c.name} [${c.type}]`).join(", ") || "-";
 
   // Bagian statis di depan supaya prefix cache DeepSeek kena; konteks dinamis di akhir.
-  return `Kamu "Prometheus", asisten keuangan rumah tangga Arul & Fifi (satu rumah tangga; rekening dibedakan pemiliknya: Arul, Fifi, atau Bersama).
+  return `Kamu asisten AI keuangan rumah tangga Arul & Fifi (satu rumah tangga; rekening dibedakan pemiliknya: Arul, Fifi, atau Bersama).
 
 ATURAN:
 1. Bahasa Indonesia santai, ringkas (maksimal 3 kalimat).
