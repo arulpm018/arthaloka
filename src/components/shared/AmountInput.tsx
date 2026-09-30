@@ -15,6 +15,8 @@ interface AmountInputProps {
    * (input padding collapses to `pl-3`).
    */
   prefix?: string;
+  /** "lg" = nominal besar di tengah (form catat). */
+  size?: "default" | "lg";
 }
 
 export const AmountInput = ({
@@ -23,6 +25,7 @@ export const AmountInput = ({
   autoFocus,
   className,
   prefix = "Rp",
+  size = "default",
 }: AmountInputProps) => {
   const [displayValue, setDisplayValue] = useState(value > 0 ? formatNumber(value) : "");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,11 +50,12 @@ export const AmountInput = ({
   };
 
   const hasPrefix = prefix !== "";
+  const isLarge = size === "lg";
 
   return (
     <div className={cn("relative", className)}>
       {hasPrefix && (
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+        <span className={cn("absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground", isLarge ? "text-lg" : "text-sm")}>
           {prefix}
         </span>
       )}
@@ -63,8 +67,9 @@ export const AmountInput = ({
         onChange={handleChange}
         placeholder="0"
         className={cn(
-          "flex h-10 w-full rounded-md border border-input bg-background pr-3 py-2 text-sm font-mono tabular-nums ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          hasPrefix ? "pl-10" : "pl-3"
+          "flex w-full rounded-md border border-input bg-background pr-3 py-2 font-mono tabular-nums ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          isLarge ? "h-16 text-center text-3xl font-semibold" : "h-10 text-sm",
+          hasPrefix ? (isLarge ? "pl-12" : "pl-10") : "pl-3"
         )}
       />
     </div>

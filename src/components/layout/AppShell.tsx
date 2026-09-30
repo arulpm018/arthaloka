@@ -77,8 +77,7 @@ export function AppShell({ children }: AppShellProps) {
       {/* Bottom nav (mobile) — tombol "+" di tengah membuka form catat */}
       <BottomNav />
 
-      <TransactionSheet mode="expense" />
-      <TransactionSheet mode="income" />
+      <TransactionSheet />
       <TransferSheet />
 
       <AiAssistantSheet />

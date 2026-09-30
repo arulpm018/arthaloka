@@ -10,25 +10,21 @@ interface CategoryGridProps {
   onSelect: (categoryId: string) => void;
 }
 
-export const CategoryGrid = ({
-  categories,
-  selected,
-  onSelect,
-}: CategoryGridProps) => {
+export const CategoryGrid = ({ categories, selected, onSelect }: CategoryGridProps) => {
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-4 gap-1.5">
       {categories.map((cat) => {
         const Icon = getCategoryIcon(cat.icon);
+        const isSelected = selected === cat.categoryId;
         return (
           <button
             key={cat.categoryId}
             type="button"
             onClick={() => onSelect(cat.categoryId)}
+            aria-pressed={isSelected}
             className={cn(
-              "flex flex-col items-center gap-1.5 rounded-lg p-3 text-center transition-colors",
-              selected === cat.categoryId
-                ? "bg-accent ring-2 ring-ring"
-                : "hover:bg-accent/50"
+              "flex flex-col items-center gap-1 rounded-lg p-2 text-center transition-colors",
+              isSelected ? "bg-accent ring-2 ring-ring" : "hover:bg-accent/50"
             )}
           >
             <div
@@ -37,7 +33,7 @@ export const CategoryGrid = ({
             >
               <Icon className="h-4 w-4" style={{ color: cat.color }} />
             </div>
-            <span className="text-xs truncate w-full">{cat.name}</span>
+            <span className="w-full truncate text-[11px]">{cat.name}</span>
           </button>
         );
       })}

@@ -2,32 +2,22 @@
 
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { Eye, Image as ImageIcon, LogOut, Monitor, Moon, Sun, Wallet } from "lucide-react";
+import { Eye, Image as ImageIcon, LogOut, Monitor, Moon, Sun } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { AvatarSection } from "@/components/settings/AvatarSection";
 import { SettingsGroup, SettingsRow } from "@/components/settings/SettingsRow";
 import { useAuth } from "@/hooks/useAuth";
-import { useAccounts } from "@/hooks/useAccounts";
 import { useAppStore } from "@/store/useAppStore";
-import { usersService } from "@/lib/firestore/users";
 import { cn } from "@/lib/utils/cn";
 import pkg from "../../../package.json";
 
-/** Layar Pengaturan: profil, preferensi, tema, privasi, tentang, logout. */
+/** Layar Pengaturan: profil, tema, privasi, tentang, logout. */
 export function SettingsScreen() {
-  const { logout, firebaseUser } = useAuth();
+  const { logout } = useAuth();
   const { currentUser, hideBalance, setHideBalance } = useAppStore();
-  const { accounts } = useAccounts();
   const { theme, setTheme } = useTheme();
 
   const [logoutConfirm, setLogoutConfirm] = useState(false);
@@ -43,18 +33,6 @@ export function SettingsScreen() {
     }
   };
 
-  const handleDefaultAccount = async (accountId: string) => {
-    if (!firebaseUser) return;
-    await usersService.updatePreferences(firebaseUser.uid, {
-      defaultAccountId: accountId,
-    });
-  };
-
-  const defaultAccountId = currentUser?.preferences?.defaultAccountId ?? "";
-  const eligibleAccounts = accounts.filter(
-    (acc) => acc.owner === currentUser?.role || acc.owner === "shared"
-  );
-
   return (
     <>
       <Header title="Pengaturan" />
@@ -64,32 +42,6 @@ export function SettingsScreen() {
         ) : (
           <div className="h-32 rounded-xl bg-muted animate-pulse" />
         )}
-
-        <SettingsGroup title="Preferensi">
-          <div className="px-3 py-2.5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                <Wallet className="h-4 w-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium leading-tight">Akun default</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Pre-fill di form transaksi</p>
-              </div>
-              <Select value={defaultAccountId} onValueChange={handleDefaultAccount}>
-                <SelectTrigger className="h-8 w-32 text-xs">
-                  <SelectValue placeholder="Pilih..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {eligibleAccounts.map((acc) => (
-                    <SelectItem key={acc.accountId} value={acc.accountId}>
-                      {acc.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </SettingsGroup>
 
         <SettingsGroup title="Tampilan">
           <div className="px-3 py-3">

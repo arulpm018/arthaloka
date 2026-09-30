@@ -29,7 +29,6 @@ import { useCategories } from "@/hooks/useCategories";
 import { useAppStore } from "@/store/useAppStore";
 import { categoryIconOptions } from "@/lib/utils/categoryIcons";
 import { AmountInput } from "@/components/shared/AmountInput";
-import { OWNER_LABELS } from "@/lib/constants/labels";
 import { cn } from "@/lib/utils/cn";
 import { Trash2 } from "lucide-react";
 
@@ -37,16 +36,18 @@ interface CategoryFormProps {
   open: boolean;
   onClose: () => void;
   editingCategory?: Category | null;
+  /** Tipe awal saat membuat kategori baru (mis. dari form catat) */
+  defaultType?: "expense" | "income";
 }
 
 export const CategoryForm = ({
   open,
   onClose,
   editingCategory,
+  defaultType = "expense",
 }: CategoryFormProps) => {
   const { create, update, deactivate } = useCategories();
   const currentUser = useAppStore((s) => s.currentUser);
-  const defaultOwner = useAppStore((s) => s.defaultOwner);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const {
@@ -63,9 +64,9 @@ export const CategoryForm = ({
       name: "",
       icon: "package",
       color: "#64748b",
-      type: "expense",
+      type: defaultType,
       budgetAmount: 0,
-      budgetScope: defaultOwner || "arul",
+      budgetScope: "shared",
       isActive: true,
       order: 0,
       createdBy: currentUser?.uid ?? "",
@@ -90,15 +91,15 @@ export const CategoryForm = ({
         name: "",
         icon: "package",
         color: "#64748b",
-        type: "expense",
+        type: defaultType,
         budgetAmount: 0,
-        budgetScope: defaultOwner || "arul",
+        budgetScope: "shared",
         isActive: true,
         order: 0,
         createdBy: currentUser?.uid ?? "",
       });
     }
-  }, [editingCategory, open, reset, currentUser, defaultOwner]);
+  }, [editingCategory, open, reset, currentUser, defaultType]);
 
   const onSubmit = async (data: CategoryFormValues) => {
     try {
@@ -203,7 +204,7 @@ export const CategoryForm = ({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Budget Bulanan (IDR)</label>
+            <label className="text-sm font-medium">Limit per bulan</label>
             <Controller
               name="budgetAmount"
               control={control}
@@ -214,28 +215,7 @@ export const CategoryForm = ({
                 />
               )}
             />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Scope Budget</label>
-            <Select
-              value={watch("budgetScope")}
-              onValueChange={(val) =>
-                setValue(
-                  "budgetScope",
-                  val as "arul" | "fifi" | "shared"
-                )
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="arul">{OWNER_LABELS["arul"]}</SelectItem>
-                <SelectItem value="fifi">{OWNER_LABELS["fifi"]}</SelectItem>
-                <SelectItem value="shared">{OWNER_LABELS["shared"]}</SelectItem>
-              </SelectContent>
-            </Select>
+            <p className="text-xs text-muted-foreground">Isi 0 kalau tanpa limit.</p>
           </div>
 
           <input type="hidden" {...register("createdBy")} />
