@@ -13,7 +13,7 @@ import { db } from "@/lib/firebase";
 import { Transaction } from "@/types";
 import { startOfMonth, endOfMonth } from "date-fns";
 
-export function useSummary(month: Date, owner?: string) {
+export function useSummary(month: Date) {
   const [income, setIncome] = useState(0);
   const [expense, setExpense] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +30,6 @@ export function useSummary(month: Date, owner?: string) {
       where("date", "<=", Timestamp.fromDate(endOfMonth(monthDate))),
       orderBy("date", "desc"),
     ];
-    if (owner) constraints.push(where("owner", "==", owner));
 
     const q = query(collection(db, "transactions"), ...constraints);
 
@@ -55,7 +54,7 @@ export function useSummary(month: Date, owner?: string) {
     );
 
     return () => unsubscribe();
-  }, [monthMs, owner]);
+  }, [monthMs]);
 
   return { income, expense, net: income - expense, isLoading };
 }

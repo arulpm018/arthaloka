@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils/cn";
 import { Account } from "@/types";
 import { Wallet, Building2, Smartphone, PiggyBank, TrendingUp } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
+import { OWNER_LABELS } from "@/lib/constants/labels";
 
 interface AccountCardProps {
   account: Account;
@@ -52,8 +53,8 @@ export const AccountCard = ({ account, onTap }: AccountCardProps) => {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate">{account.name}</p>
-        <p className={cn("text-xs capitalize", ownerColors[account.owner])}>
-          {account.owner}
+        <p className={cn("text-xs", ownerColors[account.owner])}>
+          {OWNER_LABELS[account.owner]}
         </p>
       </div>
       <p className="text-sm font-mono font-medium tabular-nums">

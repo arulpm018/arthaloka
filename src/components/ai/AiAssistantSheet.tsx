@@ -45,7 +45,6 @@ export const AiAssistantSheet = () => {
   const open = useAppStore((s) => s.aiAssistantOpen);
   const closeAiAssistant = useAppStore((s) => s.closeAiAssistant);
   const currentUser = useAppStore((s) => s.currentUser);
-  const defaultOwner = useAppStore((s) => s.defaultOwner);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -62,7 +61,7 @@ export const AiAssistantSheet = () => {
 
   const uid = currentUser?.uid || "";
   const role = currentUser?.role || "arul";
-  const ownerHint = defaultOwner || role;
+  const ownerHint = role;
 
   const scrollToBottom = useCallback((force = false) => {
     const el = scrollRef.current;

@@ -18,7 +18,6 @@ export interface BudgetStatus {
 export interface TxFilters {
   startDate: Date;
   endDate: Date;
-  owner?: "arul" | "fifi" | "shared";
   categoryId?: string;
   accountId?: string;
   type?: "expense" | "income";
@@ -28,5 +27,4 @@ export interface TxFilters {
 export interface TransferFilters {
   startDate: Date;
   endDate: Date;
-  owner?: "arul" | "fifi" | "shared";
 }

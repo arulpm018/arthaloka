@@ -18,7 +18,7 @@ import { startOfMonth, endOfMonth } from "date-fns";
  * Used for recap views that need the full month: daily chart,
  * category breakdown, top expenses.
  */
-export function useMonthTransactions(month: Date, owner?: string) {
+export function useMonthTransactions(month: Date) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,7 +34,6 @@ export function useMonthTransactions(month: Date, owner?: string) {
       where("date", "<=", Timestamp.fromDate(endOfMonth(monthDate))),
       orderBy("date", "desc"),
     ];
-    if (owner) constraints.push(where("owner", "==", owner));
 
     const q = query(collection(db, "transactions"), ...constraints);
 
@@ -55,7 +54,7 @@ export function useMonthTransactions(month: Date, owner?: string) {
     );
 
     return () => unsubscribe();
-  }, [monthMs, owner]);
+  }, [monthMs]);
 
   return { transactions, isLoading };
 }

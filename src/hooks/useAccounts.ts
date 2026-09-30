@@ -9,31 +9,20 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Account, CreateAccountInput, Owner } from "@/types";
+import { Account, CreateAccountInput } from "@/types";
 import { accountsService } from "@/lib/firestore/accounts";
 
-export function useAccounts(owner?: Owner) {
+/** Semua rekening aktif (milik Arul, Fifi, dan Bersama). */
+export function useAccounts() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const accountsRef = collection(db, "accounts");
-
-    let q;
-    if (owner) {
-      q = query(
-        accountsRef,
-        where("isActive", "==", true),
-        where("owner", "==", owner),
-        orderBy("order", "asc")
-      );
-    } else {
-      q = query(
-        accountsRef,
-        where("isActive", "==", true),
-        orderBy("order", "asc")
-      );
-    }
+    const q = query(
+      collection(db, "accounts"),
+      where("isActive", "==", true),
+      orderBy("order", "asc")
+    );
 
     const unsubscribe = onSnapshot(
       q,
@@ -52,7 +41,7 @@ export function useAccounts(owner?: Owner) {
     );
 
     return () => unsubscribe();
-  }, [owner]);
+  }, []);
 
   const create = async (input: CreateAccountInput): Promise<string> => {
     return accountsService.create(input);
@@ -70,12 +59,5 @@ export function useAccounts(owner?: Owner) {
     return accountsService.reorder(orderedIds);
   };
 
-  return {
-    accounts,
-    isLoading,
-    create,
-    update,
-    deactivate,
-    reorder,
-  };
+  return { accounts, isLoading, create, update, deactivate, reorder };
 }

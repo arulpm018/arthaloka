@@ -35,7 +35,6 @@ export function useTransactionSummary(filters: TxFilters) {
 
   const startMs = filters.startDate.getTime();
   const endMs = filters.endDate.getTime();
-  const ownerFilter = filters.owner;
   const typeFilter = filters.type;
   const categoryIdFilter = filters.categoryId;
   const accountIdFilter = filters.accountId;
@@ -47,7 +46,6 @@ export function useTransactionSummary(filters: TxFilters) {
       where("date", ">=", Timestamp.fromDate(filters.startDate)),
       where("date", "<=", Timestamp.fromDate(filters.endDate)),
     ];
-    if (ownerFilter) constraints.push(where("owner", "==", ownerFilter));
     if (typeFilter) constraints.push(where("type", "==", typeFilter));
     if (categoryIdFilter)
       constraints.push(where("categoryId", "==", categoryIdFilter));
@@ -80,7 +78,7 @@ export function useTransactionSummary(filters: TxFilters) {
 
     return () => unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startMs, endMs, ownerFilter, typeFilter, categoryIdFilter, accountIdFilter]);
+  }, [startMs, endMs, typeFilter, categoryIdFilter, accountIdFilter]);
 
   return { summary, isLoading };
 }

@@ -52,7 +52,6 @@ export const AccountDetailSheet = ({
   const { transactions, isLoading: txLoading } = useTransactions({
     startDate: startOfMonth(selectedMonth),
     endDate: endOfMonth(selectedMonth),
-    owner: account?.owner,
     accountId: account?.accountId,
   });
 
@@ -133,7 +132,7 @@ export const AccountDetailSheet = ({
                 <div>
                   <p className="text-xs text-muted-foreground">Pemilik</p>
                   <p className="font-medium capitalize">
-                    {account.owner === "shared" ? OWNER_LABELS["shared"] : account.owner}
+                    {OWNER_LABELS[account.owner]}
                   </p>
                 </div>
               </div>

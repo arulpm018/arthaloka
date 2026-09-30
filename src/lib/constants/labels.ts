@@ -1,14 +1,13 @@
 import type { Owner } from "@/types";
 
 /**
- * Display labels for owner values. Database tetap pakai value `"shared"`,
- * tapi UI menampilkan "Bareng" sebagai pengganti "Berdua"/"Together"/"Bersama"
- * yang sebelumnya dipakai inkonsisten di V1.
+ * Label pemilik rekening. Database tetap pakai value `"shared"`, UI
+ * menampilkan "Bersama".
  */
 export const OWNER_LABELS: Record<Owner, string> = {
   arul: "Arul",
   fifi: "Fifi",
-  shared: "Bareng",
+  shared: "Bersama",
 };
 
 /**

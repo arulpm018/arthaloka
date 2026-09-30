@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { OWNER_LABELS } from "@/lib/constants/labels";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
 import { TxFilters } from "@/types";
@@ -134,7 +133,6 @@ export const TransactionFilters = ({
   ];
 
   const activeCount = [
-    filters.owner,
     filters.type,
     filters.categoryId,
     filters.accountId,
@@ -186,18 +184,7 @@ export const TransactionFilters = ({
         })}
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        <FacetChip
-          label="Pemilik"
-          value={filters.owner}
-          valueLabel={filters.owner ? OWNER_LABELS[filters.owner] : null}
-          options={(["arul", "fifi", "shared"] as const).map((o) => ({
-            value: o,
-            label: OWNER_LABELS[o],
-          }))}
-          onChange={(val) => setFacet("owner", val as TxFilters["owner"])}
-        />
-
+      <div className="grid grid-cols-2 gap-2">
         <FacetChip
           label="Kategori"
           value={filters.categoryId}
@@ -210,7 +197,7 @@ export const TransactionFilters = ({
         />
 
         <FacetChip
-          label="Akun"
+          label="Rekening"
           value={filters.accountId}
           valueLabel={accountName}
           options={accounts.map((a) => ({

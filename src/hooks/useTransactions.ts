@@ -26,7 +26,6 @@ function buildBaseConstraints(filters: TxFilters): QueryConstraint[] {
     where("date", "<=", Timestamp.fromDate(filters.endDate)),
   ];
 
-  if (filters.owner) constraints.push(where("owner", "==", filters.owner));
   if (filters.type) constraints.push(where("type", "==", filters.type));
   if (filters.categoryId)
     constraints.push(where("categoryId", "==", filters.categoryId));
@@ -54,7 +53,6 @@ export function useTransactions(filters: TxFilters) {
   // render, so depending on the Date reference would cause infinite re-runs.
   const startMs = filters.startDate.getTime();
   const endMs = filters.endDate.getTime();
-  const ownerFilter = filters.owner;
   const typeFilter = filters.type;
   const categoryIdFilter = filters.categoryId;
   const accountIdFilter = filters.accountId;
@@ -99,7 +97,6 @@ export function useTransactions(filters: TxFilters) {
   }, [
     startMs,
     endMs,
-    ownerFilter,
     typeFilter,
     categoryIdFilter,
     accountIdFilter,

@@ -16,7 +16,6 @@ interface AppStore {
   editingTransaction: Transaction | null;
   editingTransfer: Transfer | null;
   selectedMonth: Date;
-  defaultOwner: "arul" | "fifi" | "shared" | null;
 
   // Privacy State (persisted)
   hideBalance: boolean;
@@ -33,7 +32,6 @@ interface AppStore {
   ) => void;
   closeSheet: () => void;
   setSelectedMonth: (date: Date) => void;
-  setDefaultOwner: (owner: "arul" | "fifi" | "shared" | null) => void;
   setHideBalance: (hide: boolean) => void;
 }
 
@@ -53,7 +51,6 @@ export const useAppStore = create<AppStore>()(
       editingTransaction: null,
       editingTransfer: null,
       selectedMonth: new Date(),
-      defaultOwner: null,
 
       // Privacy State
       hideBalance: false,
@@ -79,7 +76,6 @@ export const useAppStore = create<AppStore>()(
           editingTransfer: null,
         }),
       setSelectedMonth: (date) => set({ selectedMonth: date }),
-      setDefaultOwner: (owner) => set({ defaultOwner: owner }),
       setHideBalance: (hide) => set({ hideBalance: hide }),
     }),
     {
