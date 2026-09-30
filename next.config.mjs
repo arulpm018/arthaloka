@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Bundle mandiri untuk Docker monolith (node server.js tanpa node_modules penuh).
-  output: "standalone",
   images: {
     remotePatterns: [
       // Google profile photo (currentUser.photoURL via Firebase Auth).

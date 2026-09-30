@@ -70,30 +70,23 @@ Jalankan dry-run dulu, cek daftar, baru `--apply`.
 - **Charts**: Recharts
 - **Tests**: Vitest + fast-check (property-based)
 
-## Asisten AI (opsional)
+## Asisten AI (Prometheus)
 
-Input semua data (transaksi, transfer, akun, kategori, tugas, jadwal, habit,
-wishlist) lewat **teks atau suara** — agent AI (Agno + gemma-4-31b-it,
-fallback gemini-3.5-flash-lite) melakukan tool calling dan menulis langsung ke
-Firestore, hasilnya langsung muncul di UI. Input suara ditranskrip dengan STT
-gemini-3.5-flash-lite; balasan tampil sebagai teks (tanpa TTS).
+Chat teks untuk mencatat transaksi, transfer, membuat rekening/kategori, dan
+menanyakan ringkasan bulanan. Berjalan sebagai API route Next.js
+(`/api/ai/chat`) yang memanggil DeepSeek (`deepseek-flash`, thinking mode
+dimatikan) dengan tool calling, lalu menulis ke Firestore lewat Admin SDK.
 
-Cara menjalankan:
+## Environment server (Vercel → Project Settings → Environment Variables)
 
-```bash
-# 1. Setup & jalankan ai-service (lihat ai-service/README.md untuk detail)
-cd ai-service && cp .env.example .env   # isi GEMINI_API_KEY, FIREBASE_SERVICE_ACCOUNT, AI_SERVICE_KEY
-.venv/bin/uvicorn app.main:app --port 8006
+| Variabel | Isi |
+|---|---|
+| `FIREBASE_SERVICE_ACCOUNT` | JSON service account satu baris (`jq -c . service-account.json`) |
+| `ALLOWED_EMAILS` | Email yang boleh memakai API, dipisah koma |
+| `DEEPSEEK_API_KEY` | API key dari platform.deepseek.com |
+| `DEEPSEEK_MODEL` | Opsional, default `deepseek-flash` |
 
-# 2. Tambahkan ke .env root (Next.js)
-#    AI_SERVICE_URL=http://127.0.0.1:8006
-#    AI_SERVICE_KEY=<sama dengan di ai-service/.env>
-
-# 3. Jalankan app seperti biasa — tombol "Asisten AI" ada di topbar &
-#    menu tambah (finance & produktivitas).
-```
-
-Tanpa ai-service berjalan, app tetap normal — hanya fitur AI yang error 502.
+Variabel `AI_SERVICE_URL`, `AI_SERVICE_KEY`, dan `GEMINI_API_KEY` tidak dipakai lagi — boleh dihapus dari Vercel.
 
 ## Documentation
 
