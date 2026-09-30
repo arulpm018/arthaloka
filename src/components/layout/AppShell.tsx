@@ -25,7 +25,7 @@ const SIDEBAR_STORAGE_KEY = "arthafiloka.sidebarCollapsed.finance";
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Beranda",
   "/transactions": "Transaksi",
-  "/categories": "Budget",
+  "/budget": "Budget",
   "/accounts": "Rekening",
   "/recap": "Rekap Bulanan",
   "/settings": "Pengaturan",

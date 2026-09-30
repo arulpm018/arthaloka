@@ -12,7 +12,7 @@ const groups: SidebarGroup[] = [
     items: [
       { href: "/dashboard", label: "Beranda", icon: Home },
       { href: "/transactions", label: "Transaksi", icon: Receipt },
-      { href: "/categories", label: "Budget", icon: PieChart },
+      { href: "/budget", label: "Budget", icon: PieChart },
       { href: "/accounts", label: "Rekening", icon: Wallet },
       { href: "/recap", label: "Rekap Bulanan", icon: CalendarRange },
     ] satisfies SidebarNavItem[],

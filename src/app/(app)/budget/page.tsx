@@ -8,46 +8,24 @@ import { Header } from "@/components/layout/Header";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { CategoryList } from "@/components/categories/CategoryList";
 import { CategoryForm } from "@/components/categories/CategoryForm";
+import { BudgetProgressBar } from "@/components/categories/BudgetProgressBar";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { useCategories } from "@/hooks/useCategories";
 import { useBudgetStatus } from "@/hooks/useBudgetStatus";
 import { useAppStore } from "@/store/useAppStore";
-import { Category, BudgetScope } from "@/types";
-import { OWNER_LABELS } from "@/lib/constants/labels";
-import { cn } from "@/lib/utils/cn";
+import { formatCurrency } from "@/lib/utils/formatCurrency";
+import { Category } from "@/types";
 
-const scopeTabs: { value: BudgetScope | "all"; label: string }[] = [
-  { value: "all", label: "Semua" },
-  { value: "arul", label: OWNER_LABELS["arul"] },
-  { value: "fifi", label: OWNER_LABELS["fifi"] },
-  { value: "shared", label: OWNER_LABELS["shared"] },
-];
-
-export default function CategoriesPage() {
+/** Budget bersama: limit per kategori (berlaku tiap bulan) + progres bulan terpilih. */
+export default function BudgetPage() {
   const router = useRouter();
   const { categories, isLoading } = useCategories();
   const { selectedMonth, setSelectedMonth } = useAppStore();
-  const { budgets } = useBudgetStatus(selectedMonth);
+  const { summary, spendingByCategory } = useBudgetStatus(selectedMonth);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [activeScope, setActiveScope] = useState<BudgetScope | "all">("all");
-
-  const spendingMap: Record<string, number> = {};
-  budgets.forEach((b) => {
-    spendingMap[b.categoryId] = b.spent;
-  });
-
-  const filteredCategories =
-    activeScope === "all"
-      ? categories
-      : categories.filter((c) => c.budgetScope === activeScope);
-
-  const handleCategoryTap = (category: Category) => {
-    setEditingCategory(category);
-    setFormOpen(true);
-  };
 
   const handleClose = () => {
     setFormOpen(false);
@@ -60,44 +38,41 @@ export default function CategoriesPage() {
         <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
       </Header>
       <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
-        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-          {scopeTabs.map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => setActiveScope(tab.value)}
-              className={cn(
-                "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                activeScope === tab.value
-                  ? "bg-foreground text-background"
-                  : "bg-accent text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        {summary.totalBudget > 0 && (
+          <div className="space-y-1 rounded-xl border border-border bg-card p-4">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="text-sm text-muted-foreground">Terpakai</p>
+              <p className="font-mono text-sm tabular-nums">
+                {formatCurrency(summary.totalSpent)} / {formatCurrency(summary.totalBudget)}
+              </p>
+            </div>
+            <BudgetProgressBar spent={summary.totalSpent} budget={summary.totalBudget} compact />
+          </div>
+        )}
 
         {isLoading ? (
           <LoadingState variant="list" count={8} />
-        ) : filteredCategories.length === 0 ? (
+        ) : categories.length === 0 ? (
           <EmptyState
             icon={Tag}
             title="Belum ada kategori"
-            description="Tambahkan kategori pengeluaran/pemasukan"
+            description="Tambahkan kategori lalu isi limit per bulan"
             action={
               <Button size="sm" onClick={() => setFormOpen(true)}>
-                <Plus className="h-4 w-4 mr-1" />
+                <Plus className="mr-1 h-4 w-4" />
                 Tambah
               </Button>
             }
           />
         ) : (
           <CategoryList
-            categories={filteredCategories}
-            spendingMap={spendingMap}
-            onCategoryTap={handleCategoryTap}
+            categories={categories}
+            spendingMap={spendingByCategory}
+            onCategoryTap={(c) => {
+              setEditingCategory(c);
+              setFormOpen(true);
+            }}
             onViewTransactions={(c) => router.push(`/transactions?categoryId=${c.categoryId}`)}
-            showScope={activeScope === "all"}
           />
         )}
       </div>
@@ -107,8 +82,8 @@ export default function CategoriesPage() {
         className="fixed bottom-24 right-4 rounded-full shadow-lg md:bottom-6"
         onClick={() => setFormOpen(true)}
       >
-        <Plus className="h-4 w-4 mr-1" />
-        Tambah
+        <Plus className="mr-1 h-4 w-4" />
+        Kategori
       </Button>
 
       <CategoryForm open={formOpen} onClose={handleClose} editingCategory={editingCategory} />

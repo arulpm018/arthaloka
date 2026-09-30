@@ -18,6 +18,7 @@ const nextConfig = {
       { source: "/together", destination: "/dashboard", permanent: false },
       { source: "/more", destination: "/dashboard", permanent: false },
       { source: "/wishlist", destination: "/dashboard", permanent: false },
+      { source: "/categories", destination: "/budget", permanent: false },
     ];
   },
   async headers() {

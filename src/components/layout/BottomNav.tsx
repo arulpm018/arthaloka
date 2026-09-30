@@ -18,7 +18,7 @@ const LEFT_ITEMS: NavItem[] = [
 ];
 
 const RIGHT_ITEMS: NavItem[] = [
-  { href: "/categories", label: "Budget", icon: PieChart },
+  { href: "/budget", label: "Budget", icon: PieChart },
   { href: "/accounts", label: "Rekening", icon: Wallet },
 ];
 
