@@ -7,6 +7,7 @@ import { Transaction } from "@/types";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import { useLongPress } from "@/hooks/useLongPress";
 import { TransactionItemActions } from "./TransactionItemActions";
+import { useRecorderLabel } from "@/hooks/useRecorderLabel";
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -16,6 +17,8 @@ interface TransactionItemProps {
 
 export const TransactionItem = ({ transaction, onTap, onDelete }: TransactionItemProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const recorderOf = useRecorderLabel();
+  const recorder = recorderOf(transaction.ownerUid);
   const handlers = useLongPress({
     onLongPress: () => {
       if (onDelete) setMenuOpen(true);
@@ -40,6 +43,7 @@ export const TransactionItem = ({ transaction, onTap, onDelete }: TransactionIte
             <p className="text-sm font-medium truncate">{transaction.name}</p>
             <p className="text-xs text-muted-foreground">
               {transaction.categoryName}
+              {recorder && ` · dicatat ${recorder}`}
             </p>
           </div>
           <p
