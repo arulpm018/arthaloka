@@ -4,17 +4,24 @@ import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { budgetLevel, type MonthBudgetSummary } from "@/lib/utils/budget";
+import type { BudgetMood } from "@/lib/utils/budgetMood";
+import { MOOD_CAPTION, MOOD_EMOJI } from "@/lib/constants/memes";
+import { MemeReaction } from "@/components/shared/MemeReaction";
 
 interface BudgetHeroProps {
   summary: MonthBudgetSummary;
   /** Nama bulan, mis. "Oktober" */
   monthLabel: string;
+  /** Kondisi keuangan untuk meme; null = tanpa meme */
+  mood?: BudgetMood | null;
+  /** Penentu GIF (mis. tanggal hari ini) */
+  memeSeed?: number;
 }
 
 const BAR_COLOR = { normal: "bg-income", warning: "bg-warning", over: "bg-expense" } as const;
 
 /** Kartu utama Beranda: sisa budget bulan ini + jatah per hari. */
-export const BudgetHero = ({ summary, monthLabel }: BudgetHeroProps) => {
+export const BudgetHero = ({ summary, monthLabel, mood = null, memeSeed = 0 }: BudgetHeroProps) => {
   if (summary.totalBudget === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border p-5 text-center">
@@ -38,12 +45,22 @@ export const BudgetHero = ({ summary, monthLabel }: BudgetHeroProps) => {
       href="/budget"
       className="block rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 transition-transform active:scale-[0.99]"
     >
-      <p className="text-xs font-medium text-muted-foreground">
-        {over ? `Budget ${monthLabel} terlewati` : `Sisa budget ${monthLabel}`}
-      </p>
-      <p className={cn("mt-1 truncate font-mono text-3xl font-bold tabular-nums tracking-tight", over && "text-expense")}>
-        {over ? `Lewat ${formatCurrency(Math.abs(summary.remaining))}` : formatCurrency(summary.remaining)}
-      </p>
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium text-muted-foreground">
+            {over ? `Budget ${monthLabel} terlewati` : `Sisa budget ${monthLabel}`}
+          </p>
+          <p className={cn("mt-1 truncate font-mono text-3xl font-bold tabular-nums tracking-tight", over && "text-expense")}>
+            {over ? `Lewat ${formatCurrency(Math.abs(summary.remaining))}` : formatCurrency(summary.remaining)}
+          </p>
+          {mood && (
+            <p className="mt-1 text-xs font-medium text-muted-foreground">
+              {MOOD_EMOJI[mood]} {MOOD_CAPTION[mood]}
+            </p>
+          )}
+        </div>
+        {mood && <MemeReaction mood={mood} seed={memeSeed} className="h-20 w-20 shrink-0 rounded-xl" />}
+      </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
         <div className={cn("h-full rounded-full transition-all", BAR_COLOR[level])} style={{ width: `${pct}%` }} />
       </div>

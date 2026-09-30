@@ -15,6 +15,7 @@ import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useBudgetStatus } from "@/hooks/useBudgetStatus";
+import { budgetMood } from "@/lib/utils/budgetMood";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useTransfers } from "@/hooks/useTransfers";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -72,7 +73,12 @@ export default function DashboardPage() {
           <LoadingState variant="page" />
         ) : (
           <>
-            <BudgetHero summary={summary} monthLabel={monthLabel} />
+            <BudgetHero
+              summary={summary}
+              monthLabel={monthLabel}
+              mood={budgetMood(summary, currentMonth)}
+              memeSeed={currentMonth.getDate()}
+            />
             <BudgetWatchlist items={summary.items} />
             <RecentTransactions
               transactions={transactions}
