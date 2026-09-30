@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    // web-push memakai modul Node (crypto/https) — jangan di-bundle.
+    serverComponentsExternalPackages: ["web-push"],
+  },
   images: {
     remotePatterns: [
       // Google profile photo (currentUser.photoURL via Firebase Auth).
@@ -29,6 +33,10 @@ const nextConfig = {
             value: "same-origin-allow-popups",
           },
         ],
+      },
+      {
+        source: "/sw.js",
+        headers: [{ key: "Cache-Control", value: "no-cache" }],
       },
     ];
   },
