@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronUp, LayoutGrid, LogOut, Settings } from "lucide-react";
+import { ChevronUp, LogOut, Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +24,7 @@ interface SidebarUserCardProps {
 
 /**
  * Kartu user di footer sidebar desktop — avatar + nama, klik membuka menu
- * (Pengaturan / Ganti Modul / Keluar). Saat sidebar collapsed jadi ikon
+ * (Pengaturan / Keluar). Saat sidebar collapsed jadi ikon
  * avatar saja dengan tooltip nama.
  */
 export const SidebarUserCard = ({ collapsed }: SidebarUserCardProps) => {
@@ -85,12 +85,6 @@ export const SidebarUserCard = ({ collapsed }: SidebarUserCardProps) => {
           <Link href="/settings">
             <Settings className="h-4 w-4" />
             Pengaturan
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/">
-            <LayoutGrid className="h-4 w-4" />
-            Ganti Modul
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

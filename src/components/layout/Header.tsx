@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import { AppSwitcher } from "@/components/shared/AppSwitcher";
 
 interface HeaderProps {
   /**
@@ -60,13 +59,8 @@ export const Header = ({ title, ownerColor, titleSlot, children }: HeaderProps) 
           </>
         )}
       </div>
-      {/* Switcher modul — mobile only; di desktop ada di DesktopTopbar.
-          Selalu paling kanan (setelah aksi halaman) supaya posisinya konsisten. */}
       <div className="flex items-center gap-2">
         {children}
-        <div className="md:hidden">
-          <AppSwitcher />
-        </div>
       </div>
     </header>
   );

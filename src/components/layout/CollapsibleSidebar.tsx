@@ -55,7 +55,7 @@ export const CollapsibleSidebar = ({
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-        {/* Brand — klik logo kembali ke pemilihan modul */}
+        {/* Brand — klik logo ke Beranda */}
         <div
           className={cn(
             "flex h-14 shrink-0 items-center border-b border-sidebar-border",
@@ -66,8 +66,8 @@ export const CollapsibleSidebar = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/"
-                  aria-label="Kembali ke pemilihan modul"
+                  href="/dashboard"
+                  aria-label="Ke Beranda"
                   className="rounded-md p-1 transition-colors hover:bg-sidebar-accent/60"
                 >
                   <Logo size="md" showText={false} />
@@ -78,8 +78,8 @@ export const CollapsibleSidebar = ({
           ) : (
             <>
               <Link
-                href="/"
-                aria-label="Kembali ke pemilihan modul"
+                href="/dashboard"
+                aria-label="Ke Beranda"
                 className="rounded-md transition-colors hover:text-muted-foreground"
               >
                 <Logo size="md" />

@@ -61,7 +61,7 @@ export default function OnboardingPage() {
         updatedAt: serverTimestamp(),
       });
 
-      router.push("/");
+      router.push("/dashboard");
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Gagal menyimpan profil";

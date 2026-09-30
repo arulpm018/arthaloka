@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Arthafiloka",
     short_name: "Arthafiloka",
     description: "Dunia keuangan Arul & Fifi.",
-    start_url: "/",
+    start_url: "/dashboard",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#ffffff",

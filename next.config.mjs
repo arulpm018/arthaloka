@@ -14,6 +14,13 @@ const nextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
   },
+  // Route modul/halaman yang sudah dihapus — arahkan ke Beranda supaya
+  // bookmark / tab PWA lama tidak 404.
+  async redirects() {
+    return [
+      { source: "/productivity/:path*", destination: "/dashboard", permanent: false },
+    ];
+  },
   async headers() {
     return [
       {
