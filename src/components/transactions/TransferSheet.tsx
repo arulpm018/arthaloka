@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Timestamp } from "firebase/firestore";
@@ -22,11 +22,13 @@ import { useAccounts } from "@/hooks/useAccounts";
 import { useAppStore } from "@/store/useAppStore";
 import { AmountInput } from "@/components/shared/AmountInput";
 import { DeleteTransferDialog } from "@/components/transactions/DeleteTransferDialog";
+import { EntryTypeTabs } from "@/components/transactions/EntryTypeTabs";
+import { readLastAccountId } from "@/lib/utils/entryDefaults";
 import { OWNER_LABELS } from "@/lib/constants/labels";
 import { CreateTransferInput } from "@/types";
 
 export const TransferSheet = () => {
-  const { activeSheet, closeSheet, currentUser, defaultOwner, editingTransfer } = useAppStore();
+  const { activeSheet, closeSheet, currentUser, editingTransfer } = useAppStore();
   const { accounts } = useAccounts();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -49,65 +51,77 @@ export const TransferSheet = () => {
       amount: 0,
       fromAccountId: "",
       fromAccountName: "",
-      fromAccountOwner: currentUser?.role || "arul",
+      fromAccountOwner: "shared",
       toAccountId: "",
       toAccountName: "",
-      toAccountOwner: currentUser?.role || "arul",
-      owner: currentUser?.role || "arul",
+      toAccountOwner: "shared",
+      owner: "shared",
       ownerUid: currentUser?.uid || "",
       date: Timestamp.now(),
       note: "",
     },
   });
 
+  // Reset hanya saat dibuka / ganti target edit (bukan tiap snapshot rekening).
+  const initKeyRef = useRef<string | null>(null);
   useEffect(() => {
-    if (isOpen) {
-      if (isEditing && editingTransfer) {
-        reset({
-          name: editingTransfer.name,
-          amount: editingTransfer.amount,
-          fromAccountId: editingTransfer.fromAccountId,
-          fromAccountName: editingTransfer.fromAccountName,
-          fromAccountOwner: editingTransfer.fromAccountOwner,
-          toAccountId: editingTransfer.toAccountId,
-          toAccountName: editingTransfer.toAccountName,
-          toAccountOwner: editingTransfer.toAccountOwner,
-          owner: editingTransfer.owner,
-          ownerUid: editingTransfer.ownerUid,
-          date: editingTransfer.date,
-          note: editingTransfer.note || "",
-        });
-      } else {
-        const ownerDefault = defaultOwner || currentUser?.role || "arul";
-        reset({
-          name: "",
-          amount: 0,
-          fromAccountId: "",
-          fromAccountName: "",
-          fromAccountOwner: ownerDefault,
-          toAccountId: "",
-          toAccountName: "",
-          toAccountOwner: ownerDefault,
-          owner: ownerDefault,
-          ownerUid: currentUser?.uid || "",
-          date: Timestamp.now(),
-          note: "",
-        });
-      }
+    if (!isOpen) {
+      initKeyRef.current = null;
+      return;
     }
-  }, [isOpen, isEditing, editingTransfer, currentUser, defaultOwner, reset]);
+    const key = editingTransfer?.transferId ?? "new";
+    if (initKeyRef.current === key) return;
+    if (!isEditing && accounts.length === 0) return; // tunggu rekening termuat
+    initKeyRef.current = key;
+
+    if (isEditing && editingTransfer) {
+      reset({
+        name: editingTransfer.name,
+        amount: editingTransfer.amount,
+        fromAccountId: editingTransfer.fromAccountId,
+        fromAccountName: editingTransfer.fromAccountName,
+        fromAccountOwner: editingTransfer.fromAccountOwner,
+        toAccountId: editingTransfer.toAccountId,
+        toAccountName: editingTransfer.toAccountName,
+        toAccountOwner: editingTransfer.toAccountOwner,
+        owner: editingTransfer.owner,
+        ownerUid: editingTransfer.ownerUid,
+        date: editingTransfer.date,
+        note: editingTransfer.note || "",
+      });
+      return;
+    }
+
+    const lastId = readLastAccountId();
+    const from = accounts.find((a) => a.accountId === lastId);
+    reset({
+      name: "",
+      amount: 0,
+      fromAccountId: from?.accountId ?? "",
+      fromAccountName: from?.name ?? "",
+      fromAccountOwner: from?.owner ?? "shared",
+      toAccountId: "",
+      toAccountName: "",
+      toAccountOwner: "shared",
+      owner: from?.owner ?? "shared",
+      ownerUid: currentUser?.uid || "",
+      date: Timestamp.now(),
+      note: "",
+    });
+  }, [isOpen, isEditing, editingTransfer, accounts, currentUser, reset]);
 
   const onSubmit = async (data: TransferFormValues) => {
+    const payload = { ...data, name: data.name.trim() || "Transfer" };
     try {
       if (isEditing && editingTransfer) {
         await transfersService.update(
           editingTransfer.transferId,
           editingTransfer,
-          data as unknown as CreateTransferInput
+          payload as unknown as CreateTransferInput
         );
         toast.success("Perubahan tersimpan");
       } else {
-        await transfersService.create(data as unknown as CreateTransferInput);
+        await transfersService.create(payload as unknown as CreateTransferInput);
         toast.success("Transfer tersimpan");
       }
       closeSheet();
@@ -140,6 +154,7 @@ export const TransferSheet = () => {
       setValue("fromAccountId", id);
       setValue("fromAccountName", acc.name);
       setValue("fromAccountOwner", acc.owner);
+      setValue("owner", acc.owner);
     }
   };
 
@@ -169,10 +184,12 @@ export const TransferSheet = () => {
         <SheetContent side="bottom" className="rounded-t-2xl max-h-[90vh] overflow-y-auto">
           <SheetHeader>
             <SheetTitle>
-              {isEditing ? "Edit Transfer" : "Transfer Antar Akun"}
+              {isEditing ? "Edit Transfer" : "Catat Transfer"}
             </SheetTitle>
           </SheetHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
+            {!isEditing && <EntryTypeTabs value="transfer" />}
+
             {/* Amount */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Jumlah</label>
@@ -190,8 +207,7 @@ export const TransferSheet = () => {
 
             {/* Name */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Keterangan</label>
-              <Input placeholder="Top up, pindah dana, dll" {...register("name")} />
+              <Input placeholder="Catatan (opsional)" aria-label="Catatan" {...register("name")} />
               {errors.name && (
                 <p className="text-xs text-destructive">{errors.name.message}</p>
               )}
@@ -199,10 +215,10 @@ export const TransferSheet = () => {
 
             {/* From Account */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Dari Akun</label>
+              <label className="text-sm font-medium">Dari rekening</label>
               <Select value={watch("fromAccountId")} onValueChange={handleFromAccount}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Pilih akun asal" />
+                  <SelectValue placeholder="Pilih rekening asal" />
                 </SelectTrigger>
                 <SelectContent>
                   {accounts.map((acc) => (
@@ -224,10 +240,10 @@ export const TransferSheet = () => {
 
             {/* To Account */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Ke Akun</label>
+              <label className="text-sm font-medium">Ke rekening</label>
               <Select value={watch("toAccountId")} onValueChange={handleToAccount}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Pilih akun tujuan" />
+                  <SelectValue placeholder="Pilih rekening tujuan" />
                 </SelectTrigger>
                 <SelectContent>
                   {accounts
@@ -265,12 +281,6 @@ export const TransferSheet = () => {
               />
             </div>
 
-            {/* Note */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">Catatan (opsional)</label>
-              <Input placeholder="Catatan" {...register("note")} />
-            </div>
-
             <Button
               type="submit"
               className="w-full bg-transfer hover:bg-transfer/90 text-white"
@@ -280,7 +290,7 @@ export const TransferSheet = () => {
                 ? "Menyimpan..."
                 : isEditing
                   ? "Simpan Perubahan"
-                  : "Transfer"}
+                  : "Simpan"}
             </Button>
 
             {isEditing && (
