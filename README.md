@@ -59,6 +59,24 @@ FIREBASE_SERVICE_ACCOUNT=/path/ke/service-account.json node scripts/merge-duplic
 
 Jalankan dry-run dulu, cek daftar, baru `--apply`.
 
+## Gabungkan rekening (mis. "Pacaran" → Jago Bersama)
+
+Transaksi & transfer rekening asal dipindah ke rekening tujuan, saldo
+dijumlah, lalu rekening asal dinonaktifkan (hilang dari app). Transfer antar
+kedua rekening itu dihapus karena jadi transfer ke diri sendiri.
+
+```bash
+# 1. Lihat daftar rekening (id, nama, pemilik, saldo)
+FIREBASE_SERVICE_ACCOUNT=/path/ke/service-account.json node scripts/merge-accounts.mjs
+# 2. Dry-run — tampilkan rencana
+FIREBASE_SERVICE_ACCOUNT=/path/ke/service-account.json node scripts/merge-accounts.mjs --from "Pacaran (Jago)" --to "Jago Bersama" --to-owner shared
+# 3. Eksekusi
+FIREBASE_SERVICE_ACCOUNT=/path/ke/service-account.json node scripts/merge-accounts.mjs --from "Pacaran (Jago)" --to "Jago Bersama" --to-owner shared --apply
+```
+
+`--to-owner` opsional (arul/fifi/shared) — pakai kalau rekening tujuan belum
+berstatus Bersama. Jangan mencatat transaksi di app selama `--apply` berjalan.
+
 ## Tech Stack
 
 - **Framework**: Next.js 14 (App Router)

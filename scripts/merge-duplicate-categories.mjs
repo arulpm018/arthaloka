@@ -5,24 +5,13 @@
  *   node scripts/merge-duplicate-categories.mjs           # dry-run (hanya tampilkan rencana)
  *   node scripts/merge-duplicate-categories.mjs --apply   # eksekusi
  *
- * Kredensial (salah satu):
- *   FIREBASE_SERVICE_ACCOUNT='{"type":"service_account",...}'   (JSON satu baris)
- *   FIREBASE_SERVICE_ACCOUNT=/path/ke/service-account.json
- *   GOOGLE_APPLICATION_CREDENTIALS=/path/ke/service-account.json
+ * Kredensial: lihat scripts/lib/admin.mjs.
  */
-import { readFileSync } from "node:fs";
-import { applicationDefault, cert, initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { createBatchWriter, initAdminDb } from "./lib/admin.mjs";
 import { planCategoryMerges } from "./lib/categoryMerge.mjs";
 
 const apply = process.argv.includes("--apply");
-const raw = process.env.FIREBASE_SERVICE_ACCOUNT?.trim();
-const credential = raw
-  ? cert(JSON.parse(raw.startsWith("{") ? raw : readFileSync(raw, "utf8")))
-  : applicationDefault();
-
-initializeApp({ credential });
-const db = getFirestore();
+const db = initAdminDb();
 
 const catSnap = await db.collection("categories").where("isActive", "==", true).get();
 const categories = catSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -57,18 +46,7 @@ if (!apply) {
   process.exit(0);
 }
 
-const BATCH_LIMIT = 450;
-let batch = db.batch();
-let ops = 0;
-const queue = async (fn) => {
-  fn(batch);
-  ops += 1;
-  if (ops >= BATCH_LIMIT) {
-    await batch.commit();
-    batch = db.batch();
-    ops = 0;
-  }
-};
+const { queue, flush } = createBatchWriter(db);
 
 for (const p of plans) {
   for (const r of p.remove) {
@@ -87,6 +65,6 @@ for (const p of plans) {
     b.update(db.collection("categories").doc(p.keep.id), { budgetAmount: p.budgetAmount, budgetScope: "shared" })
   );
 }
-if (ops > 0) await batch.commit();
+await flush();
 
 console.log(`\nSelesai: ${plans.length} grup kategori digabung.`);
