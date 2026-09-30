@@ -1,5 +1,6 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { AuthError, allowedEmails, verifyRequest } from "@/lib/server/auth";
+import { AdminConfigError } from "@/lib/server/firebaseAdmin";
 
 const req = (authorization?: string) =>
   new Request("http://localhost/api/x", {
@@ -33,6 +34,13 @@ describe("verifyRequest", () => {
     const err = await verifyRequest(req("Bearer abc"), verify).catch((e) => e);
     expect(err).toBeInstanceOf(AuthError);
     expect(err.status).toBe(401);
+  });
+
+  it("server belum dikonfigurasi → error konfigurasi, bukan 401", async () => {
+    const verify = vi.fn().mockRejectedValue(new AdminConfigError("FIREBASE_SERVICE_ACCOUNT belum di-set"));
+    const err = await verifyRequest(req("Bearer abc"), verify).catch((e) => e);
+    expect(err).toBeInstanceOf(AdminConfigError);
+    expect(err).not.toBeInstanceOf(AuthError);
   });
 
   it("email di luar whitelist → 403", async () => {

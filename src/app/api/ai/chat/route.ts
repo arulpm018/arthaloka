@@ -1,33 +1,56 @@
-import { NextRequest, NextResponse } from "next/server";
-import { aiServiceTarget, proxyAiChat } from "@/lib/ai/service";
+import { NextResponse } from "next/server";
+import { adminDb } from "@/lib/server/firebaseAdmin";
+import { authErrorResponse, verifyRequest, type AuthedUser } from "@/lib/server/auth";
+import { buildSystemPrompt, runAgent, sanitizeHistory } from "@/lib/ai/agent";
+import { createDeepSeekChat } from "@/lib/ai/deepseek";
+import { createFirestoreFinanceStore } from "@/lib/ai/firestoreFinanceStore";
+import type { ToolContext } from "@/lib/ai/tools";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
+  let user: AuthedUser;
   try {
-    const body = await req.json();
-    if (!body?.uid || !body?.message) {
-      return NextResponse.json(
-        { error: "uid dan message wajib diisi" },
-        { status: 400 }
-      );
-    }
-    const upstream = await proxyAiChat(body);
-    const data = await upstream.json().catch(() => null);
-    if (!upstream.ok) {
-      return NextResponse.json(
-        { error: data?.detail || "AI service error" },
-        { status: upstream.status === 401 ? 502 : upstream.status }
-      );
-    }
-    return NextResponse.json(data);
-  } catch {
-    // AI service belum jalan / tidak terjangkau
-    return NextResponse.json(
-      {
-        error: `AI service tidak terjangkau (target: ${aiServiceTarget()}). Pastikan ai-service berjalan.`,
-      },
-      { status: 502 }
-    );
+    user = await verifyRequest(req);
+  } catch (error) {
+    return authErrorResponse(error);
+  }
+
+  const body = await req.json().catch(() => null);
+  const history = sanitizeHistory(body?.messages);
+  if (history.length === 0 || history[history.length - 1].role !== "user") {
+    return NextResponse.json({ error: "Pesan kosong" }, { status: 400 });
+  }
+
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ error: "DEEPSEEK_API_KEY belum di-set di server" }, { status: 500 });
+  }
+
+  try {
+    const db = adminDb();
+    const store = createFirestoreFinanceStore(db);
+    const [profile, accounts, categories] = await Promise.all([
+      db.collection("users").doc(user.uid).get(),
+      store.listAccounts(),
+      store.listCategories(),
+    ]);
+    const role: "arul" | "fifi" = profile.get("role") === "fifi" ? "fifi" : "arul";
+    const displayName = (profile.get("displayName") as string | undefined) ?? "";
+    const now = new Date();
+
+    const ctx: ToolContext = { store, uid: user.uid, role, now, actions: [], createdTransactionIds: [] };
+    const result = await runAgent({
+      history,
+      ctx,
+      systemPrompt: buildSystemPrompt({ displayName, role, now, accounts, categories }),
+      chat: createDeepSeekChat({ apiKey, model: process.env.DEEPSEEK_MODEL || "deepseek-flash" }),
+    });
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("[ai/chat]", error);
+    return NextResponse.json({ error: "Prometheus lagi gangguan, coba lagi sebentar." }, { status: 502 });
   }
 }

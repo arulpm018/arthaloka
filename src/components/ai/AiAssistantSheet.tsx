@@ -1,27 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  ArrowDown,
-  CheckCircle2,
-  Mic,
-  RotateCw,
-  Send,
-  Square,
-  X,
-} from "lucide-react";
+import { ArrowDown, CheckCircle2, RotateCw, Send, X } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { PrometheusMascot } from "@/components/ai/PrometheusMascot";
 import { useAppStore } from "@/store/useAppStore";
-import { resetChat, sendChat, sendVoice, type AiAction } from "@/lib/ai/client";
+import { sendChat, type AiAction, type ChatTurn } from "@/lib/ai/client";
 import { cn } from "@/lib/utils/cn";
 
 interface ChatMessage {
@@ -29,14 +16,19 @@ interface ChatMessage {
   role: "user" | "assistant";
   text: string;
   actions?: AiAction[];
+  /** Pesan error lokal — tidak dikirim balik ke model. */
+  isError?: boolean;
 }
 
 const SUGGESTIONS = [
   "Catat makan siang 25rb",
-  "Kopi 22rb pakai jago",
-  "Transfer 500rb jago ke wondr",
+  "Kopi 22rb pakai BCA",
+  "Transfer 500rb ke rekening bersama",
+  "Sisa budget makan bulan ini?",
   "Rekap bulan ini",
 ];
+
+const HISTORY_LIMIT = 20;
 
 let msgSeq = 0;
 const nextId = () => `ai-msg-${++msgSeq}`;
@@ -49,19 +41,11 @@ export const AiAssistantSheet = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
   const [showScrollDown, setShowScrollDown] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
   /** Posisi baca user — auto-scroll cuma jalan kalau memang sedang di dasar. */
   const atBottomRef = useRef(true);
-
-  const uid = currentUser?.uid || "";
-  const role = currentUser?.role || "arul";
-  const ownerHint = role;
 
   const scrollToBottom = useCallback((force = false) => {
     const el = scrollRef.current;
@@ -81,136 +65,42 @@ export const AiAssistantSheet = () => {
     setShowScrollDown(!atBottom);
   }, []);
 
-  // Ikuti pesan terbaru hanya selama user memang ada di dasar chat —
-  // kalau dia sedang membaca ke atas, jangan tarik posisinya.
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isThinking, isProcessingVoice, scrollToBottom]);
-
-  const appendMessage = (msg: Omit<ChatMessage, "id">) => {
-    const full = { ...msg, id: nextId() };
-    setMessages((prev) => [...prev, full]);
-    return full;
-  };
+  }, [messages, isThinking, scrollToBottom]);
 
   const runAssistant = useCallback(
-    async (message: string) => {
-      if (!uid) return;
-      atBottomRef.current = true; // user baru kirim — ikuti thread-nya
-      appendMessage({ role: "user", text: message });
+    async (text: string) => {
+      if (!currentUser || isThinking) return;
+      atBottomRef.current = true;
+      const userMsg: ChatMessage = { id: nextId(), role: "user", text };
+      const history: ChatTurn[] = [...messages, userMsg]
+        .filter((m) => !m.isError)
+        .map((m) => ({ role: m.role, content: m.text }))
+        .slice(-HISTORY_LIMIT);
+
+      setMessages((prev) => [...prev, userMsg]);
       setIsThinking(true);
       try {
-        const res = await sendChat({
-          uid,
-          role,
-          owner_hint: ownerHint,
-          display_name: currentUser?.displayName || "",
-          message,
-        });
-        appendMessage({
-          role: "assistant",
-          text: res.reply,
-          actions: res.actions,
-        });
+        const res = await sendChat(history);
+        setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: res.reply, actions: res.actions }]);
       } catch (e) {
-        const text = e instanceof Error ? e.message : "AI service error";
-        appendMessage({ role: "assistant", text: `⚠️ ${text}` });
-        toast.error(text);
+        const errText = e instanceof Error ? e.message : "Prometheus error";
+        setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: `⚠️ ${errText}`, isError: true }]);
+        toast.error(errText);
       } finally {
         setIsThinking(false);
       }
     },
-    [uid, role, ownerHint, currentUser?.displayName]
+    [currentUser, isThinking, messages]
   );
-
-  const handleReset = useCallback(async () => {
-    setMessages([]);
-    if (!uid) return;
-    try {
-      await resetChat(uid);
-      toast.success("Percakapan direset");
-    } catch {
-      // Riwayat lokal tetap terhapus — reset server best-effort.
-    }
-  }, [uid]);
-
-  const stopRecording = useCallback((cancel: boolean = false) => {
-    const rec = recorderRef.current;
-    if (!rec) return;
-    (rec as MediaRecorder & { _cancel?: boolean })._cancel = cancel;
-    if (rec.state !== "inactive") rec.stop();
-  }, []);
-
-  const startRecording = useCallback(async () => {
-    if (!uid || isRecording) return;
-    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-      toast.error("Browser tidak mendukung rekam suara");
-      return;
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-        ? "audio/webm;codecs=opus"
-        : MediaRecorder.isTypeSupported("audio/webm")
-          ? "audio/webm"
-          : MediaRecorder.isTypeSupported("audio/mp4")
-            ? "audio/mp4"
-            : "";
-      const rec = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-      chunksRef.current = [];
-
-      rec.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-      rec.onstop = async () => {
-        stream.getTracks().forEach((t) => t.stop());
-        const cancelled = (rec as MediaRecorder & { _cancel?: boolean })._cancel;
-        const blob = new Blob(chunksRef.current, {
-          type: rec.mimeType || "audio/webm",
-        });
-        setIsRecording(false);
-        if (cancelled || blob.size < 1000) return;
-
-        atBottomRef.current = true;
-        setIsProcessingVoice(true);
-        try {
-          const res = await sendVoice(blob, {
-            uid,
-            role,
-            owner_hint: ownerHint,
-            display_name: currentUser?.displayName || "",
-          });
-          appendMessage({ role: "user", text: res.transcript });
-          appendMessage({
-            role: "assistant",
-            text: res.reply,
-            actions: res.actions,
-          });
-        } catch (e) {
-          const text = e instanceof Error ? e.message : "AI service error";
-          appendMessage({ role: "assistant", text: `⚠️ ${text}` });
-          toast.error(text);
-        } finally {
-          setIsProcessingVoice(false);
-        }
-      };
-
-      recorderRef.current = rec;
-      rec.start();
-      setIsRecording(true);
-    } catch {
-      toast.error("Tidak bisa akses mikrofon — cek izin browser");
-    }
-  }, [uid, isRecording, role, ownerHint, currentUser?.displayName]);
 
   const handleSend = () => {
     const text = input.trim();
-    if (!text || isThinking || isRecording) return;
+    if (!text || isThinking) return;
     setInput("");
     void runAssistant(text);
   };
-
-  const isBusy = isThinking || isProcessingVoice;
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && closeAiAssistant()}>
@@ -225,15 +115,9 @@ export const AiAssistantSheet = () => {
             <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background bg-income" />
           </div>
           <div className="min-w-0 flex-1">
-            <SheetTitle className="text-base font-semibold leading-tight">
-              Prometheus
-            </SheetTitle>
+            <SheetTitle className="text-base font-semibold leading-tight">Prometheus</SheetTitle>
             <p className="truncate text-xs text-muted-foreground">
-              {isRecording
-                ? "Mendengarkan…"
-                : isBusy
-                  ? "Sedang berpikir…"
-                  : "Asisten AI pribadimu — tulis atau bicara"}
+              {isThinking ? "Sedang berpikir…" : "Asisten keuanganmu — tulis saja"}
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
@@ -241,8 +125,8 @@ export const AiAssistantSheet = () => {
               variant="ghost"
               size="icon"
               className="h-9 w-9 text-muted-foreground hover:text-foreground"
-              onClick={() => void handleReset()}
-              disabled={isBusy || isRecording || messages.length === 0}
+              onClick={() => setMessages([])}
+              disabled={isThinking || messages.length === 0}
               aria-label="Reset percakapan"
               title="Reset percakapan"
             >
@@ -261,20 +145,14 @@ export const AiAssistantSheet = () => {
           </div>
         </SheetHeader>
 
-        {/* Area chat */}
-        <div
-          ref={scrollRef}
-          onScroll={handleScroll}
-          className="relative flex-1 space-y-3 overflow-y-auto px-4 py-4"
-        >
-          {messages.length === 0 && !isBusy && (
+        <div ref={scrollRef} onScroll={handleScroll} className="relative flex-1 space-y-3 overflow-y-auto px-4 py-4">
+          {messages.length === 0 && !isThinking && (
             <div className="flex h-full flex-col items-center justify-center gap-4 px-4 text-center">
               <PrometheusMascot className="h-24 w-24 animate-bounce-soft rounded-3xl shadow-md-custom" />
               <div className="space-y-1">
                 <p className="text-base font-semibold">Halo, aku Prometheus!</p>
                 <p className="mx-auto max-w-xs text-xs leading-relaxed text-muted-foreground">
-                  Transaksi, transfer, rekening, dan kategori — cukup tulis
-                  atau bilang saja, langsung kusimpan.
+                  Catat transaksi, transfer, cek budget & rekap — cukup tulis, langsung kusimpan.
                 </p>
               </div>
               <div className="flex max-w-sm flex-wrap justify-center gap-2">
@@ -296,24 +174,17 @@ export const AiAssistantSheet = () => {
               key={m.id}
               className={cn(
                 "flex animate-in fade-in-0 slide-in-from-bottom-1 duration-200",
-                m.role === "user"
-                  ? "justify-end"
-                  : "items-end gap-2 justify-start"
+                m.role === "user" ? "justify-end" : "items-end justify-start gap-2"
               )}
             >
-              {m.role === "assistant" && (
-                <PrometheusMascot className="h-7 w-7 shrink-0 rounded-lg" />
-              )}
+              {m.role === "assistant" && <PrometheusMascot className="h-7 w-7 shrink-0 rounded-lg" />}
               <div
                 className={cn(
                   "max-w-[85%] space-y-2 rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
-                  m.role === "user"
-                    ? "rounded-br-md bg-primary text-primary-foreground"
-                    : "rounded-bl-md bg-accent"
+                  m.role === "user" ? "rounded-br-md bg-primary text-primary-foreground" : "rounded-bl-md bg-accent"
                 )}
               >
                 <p className="whitespace-pre-wrap">{m.text}</p>
-
                 {m.actions && m.actions.length > 0 && (
                   <div className="flex flex-col gap-1.5 pt-1">
                     {m.actions.map((a, i) => (
@@ -324,9 +195,7 @@ export const AiAssistantSheet = () => {
                         <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-income" />
                         <span className="min-w-0">
                           <span className="font-medium">{a.label}</span>
-                          {a.detail && (
-                            <span className="block text-muted-foreground">{a.detail}</span>
-                          )}
+                          {a.detail && <span className="block text-muted-foreground">{a.detail}</span>}
                         </span>
                       </div>
                     ))}
@@ -336,22 +205,19 @@ export const AiAssistantSheet = () => {
             </div>
           ))}
 
-          {isBusy && (
-            <div className="flex items-end gap-2 justify-start">
+          {isThinking && (
+            <div className="flex items-end justify-start gap-2">
               <PrometheusMascot className="h-7 w-7 shrink-0 animate-bounce-soft rounded-lg" />
               <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-accent px-4 py-3.5">
                 <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.3s]" />
                 <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:-0.15s]" />
                 <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50" />
-                <span className="sr-only">
-                  {isProcessingVoice ? "Memproses suara" : "Berpikir"}
-                </span>
+                <span className="sr-only">Berpikir</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Input */}
         <div className="border-t border-border p-3">
           <div className="relative">
             {showScrollDown && (
@@ -363,77 +229,38 @@ export const AiAssistantSheet = () => {
                 <ArrowDown className="h-4 w-4" />
               </button>
             )}
-
-            {isRecording ? (
-              <div className="flex items-center gap-3 rounded-2xl border border-primary/40 bg-primary/5 px-4 py-3">
-                <span className="relative flex h-3 w-3 shrink-0">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-primary" />
-                </span>
-                <span className="flex-1 text-sm text-muted-foreground">
-                  Mendengarkan… bilang saja, terus tekan stop
-                </span>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  className="gap-1.5 rounded-full"
-                  onClick={() => stopRecording(false)}
-                >
-                  <Square className="h-3.5 w-3.5" />
-                  Stop
-                </Button>
-              </div>
-            ) : (
-              <div
-                className={cn(
-                  "flex items-end gap-1 rounded-2xl border border-border bg-accent/40 p-1.5",
-                  "transition-colors focus-within:border-ring focus-within:bg-background"
-                )}
-              >
-                <Textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSend();
-                    }
-                  }}
-                  placeholder="Tulis perintah…"
-                  rows={1}
-                  className="max-h-28 min-h-[38px] flex-1 resize-none border-0 bg-transparent px-2.5 py-2 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
-                  disabled={isBusy || !uid}
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-9 w-9 shrink-0 rounded-xl text-muted-foreground hover:text-foreground"
-                  onClick={() =>
-                    isRecording ? stopRecording(false) : void startRecording()
+            <div
+              className={cn(
+                "flex items-end gap-1 rounded-2xl border border-border bg-accent/40 p-1.5",
+                "transition-colors focus-within:border-ring focus-within:bg-background"
+              )}
+            >
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
                   }
-                  disabled={isBusy || !uid}
-                  aria-label="Rekam suara"
-                  title="Rekam suara"
-                >
-                  <Mic className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  className="h-9 w-9 shrink-0 rounded-xl"
-                  onClick={handleSend}
-                  disabled={!input.trim() || isBusy || !uid}
-                  aria-label="Kirim"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
+                }}
+                placeholder="Tulis perintah…"
+                rows={1}
+                className="max-h-28 min-h-[38px] flex-1 resize-none border-0 bg-transparent px-2.5 py-2 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+                disabled={isThinking || !currentUser}
+              />
+              <Button
+                size="icon"
+                className="h-9 w-9 shrink-0 rounded-xl"
+                onClick={handleSend}
+                disabled={!input.trim() || isThinking || !currentUser}
+                aria-label="Kirim"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-          <p className="mt-1.5 text-center text-[11px] text-muted-foreground">
-            {isRecording
-              ? "Tekan Stop untuk memproses"
-              : "Enter kirim • Shift+Enter baris baru"}
-          </p>
+          <p className="mt-1.5 text-center text-[11px] text-muted-foreground">Enter kirim • Shift+Enter baris baru</p>
         </div>
       </SheetContent>
     </Sheet>

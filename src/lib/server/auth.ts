@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth } from "./firebaseAdmin";
+import { AdminConfigError, adminAuth } from "./firebaseAdmin";
 
 export interface AuthedUser {
   uid: string;
@@ -39,7 +39,9 @@ export async function verifyRequest(
   let decoded: { uid: string; email?: string };
   try {
     decoded = await verify(token);
-  } catch {
+  } catch (error) {
+    // Salah konfigurasi server jangan disamarkan jadi "sesi tidak valid".
+    if (error instanceof AdminConfigError) throw error;
     throw new AuthError(401, "Sesi login tidak valid, coba login ulang");
   }
 
