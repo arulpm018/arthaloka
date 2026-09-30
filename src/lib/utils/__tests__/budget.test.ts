@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   budgetLevel,
+  categorySpendingRows,
   daysLeftInMonth,
   summarizeMonthBudget,
 } from "@/lib/utils/budget";
@@ -94,5 +95,30 @@ describe("summarizeMonthBudget", () => {
     const s = summarizeMonthBudget(categories, {}, new Date(2026, 7, 1), new Date(2026, 8, 21));
     expect(s.daysLeft).toBe(0);
     expect(s.perDay).toBe(0);
+  });
+});
+
+describe("categorySpendingRows", () => {
+  const cats = [
+    { categoryId: "makan", name: "Makan", icon: "utensils", color: "#f00", type: "expense" as const, budgetAmount: 2_000_000 },
+    { categoryId: "transport", name: "Transport", icon: "car", color: "#0f0", type: "expense" as const, budgetAmount: 500_000 },
+    { categoryId: "hiburan", name: "Hiburan", icon: "gamepad", color: "#00f", type: "expense" as const, budgetAmount: 0 },
+    { categoryId: "parkir", name: "Parkir", icon: "car", color: "#999", type: "expense" as const, budgetAmount: 0 },
+    { categoryId: "gaji", name: "Gaji", icon: "wallet", color: "#0a0", type: "income" as const, budgetAmount: 0 },
+    { categoryId: "lain", name: "Lainnya", icon: "package", color: "#555", type: "both" as const, budgetAmount: 100_000 },
+  ];
+  const spending = { makan: 1_700_000, transport: 600_000, hiburan: 300_000, gaji: 9_000_000 };
+
+  it("urut dari pengeluaran terbesar; tanpa pemasukan & tanpa kategori yang nol tanpa limit", () => {
+    const rows = categorySpendingRows(cats, spending);
+    expect(rows.map((r) => r.categoryId)).toEqual(["makan", "transport", "hiburan", "lain"]);
+  });
+
+  it("baris ber-limit membawa persen & status; tanpa limit → level normal, budget 0", () => {
+    const byId = Object.fromEntries(categorySpendingRows(cats, spending).map((r) => [r.categoryId, r]));
+    expect(byId.makan).toMatchObject({ spent: 1_700_000, budget: 2_000_000, percentage: 85, level: "warning" });
+    expect(byId.transport).toMatchObject({ percentage: 120, level: "over" });
+    expect(byId.hiburan).toMatchObject({ spent: 300_000, budget: 0, level: "normal" });
+    expect(byId.lain).toMatchObject({ spent: 0, budget: 100_000, percentage: 0 });
   });
 });

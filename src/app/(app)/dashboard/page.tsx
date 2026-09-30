@@ -8,14 +8,14 @@ import { id as idLocale } from "date-fns/locale";
 import { CalendarRange, ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Logo } from "@/components/shared/Logo";
-import { BudgetHero } from "@/components/dashboard/BudgetHero";
-import { BudgetWatchlist } from "@/components/dashboard/BudgetWatchlist";
-import { BalanceStrip } from "@/components/dashboard/BalanceStrip";
+import { BalanceHero } from "@/components/dashboard/BalanceHero";
+import { CategorySpendingList } from "@/components/dashboard/CategorySpendingList";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useBudgetStatus } from "@/hooks/useBudgetStatus";
 import { budgetMood } from "@/lib/utils/budgetMood";
+import { categorySpendingRows } from "@/lib/utils/budget";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useTransfers } from "@/hooks/useTransfers";
 import { useAccounts } from "@/hooks/useAccounts";
@@ -39,8 +39,11 @@ export default function DashboardPage() {
   }, [openSheet, router]);
 
   const { accounts, isLoading: accountsLoading } = useAccounts();
-  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
-  const { summary, isLoading: budgetLoading } = useBudgetStatus(currentMonth);
+  const { summary, spendingByCategory, categories, isLoading: budgetLoading } = useBudgetStatus(currentMonth);
+  const spendingRows = useMemo(
+    () => categorySpendingRows(categories, spendingByCategory),
+    [categories, spendingByCategory]
+  );
   const { transactions, isLoading: txLoading } = useTransactions({
     startDate: startOfMonth(currentMonth),
     endDate: endOfMonth(currentMonth),
@@ -73,13 +76,12 @@ export default function DashboardPage() {
           <LoadingState variant="page" />
         ) : (
           <>
-            <BudgetHero
-              summary={summary}
-              monthLabel={monthLabel}
+            <BalanceHero
+              accounts={accounts}
               mood={budgetMood(summary, currentMonth)}
               memeSeed={currentMonth.getDate()}
             />
-            <BudgetWatchlist items={summary.items} />
+            <CategorySpendingList rows={spendingRows} monthLabel={monthLabel} />
             <RecentTransactions
               transactions={transactions}
               transfers={transfers}
@@ -88,7 +90,6 @@ export default function DashboardPage() {
               onEditTransfer={(tf) => openSheet("transfer", tf)}
               onDeleteTransfer={(tf) => setDeleteTransferTarget(tf)}
             />
-            <BalanceStrip totalBalance={totalBalance} />
             <Link
               href="/recap"
               className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent/50 active:bg-accent"

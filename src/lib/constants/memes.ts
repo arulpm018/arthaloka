@@ -43,11 +43,11 @@ export const MOOD_EMOJI: Record<BudgetMood, string> = {
 };
 
 export const MOOD_CAPTION: Record<BudgetMood, string> = {
-  hemat: "Hemat banget bulan ini",
-  aman: "Masih aman",
-  boros: "Agak boros nih",
+  hemat: "Budget hemat banget bulan ini",
+  aman: "Budget masih aman",
+  boros: "Pengeluaran agak boros nih",
   mepet: "Budget mepet",
-  boncos: "Boncos!",
+  boncos: "Budget boncos!",
 };
 
 /** Pilih GIF secara stabil untuk `seed` (mis. tanggal) — tidak berganti tiap render. */

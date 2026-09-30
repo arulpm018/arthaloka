@@ -62,5 +62,5 @@ export function useBudgetStatus(month: Date) {
     [categories, spendingByCategory, monthMs]
   );
 
-  return { budgets: summary.items, summary, spendingByCategory, isLoading };
+  return { budgets: summary.items, summary, spendingByCategory, categories, isLoading };
 }

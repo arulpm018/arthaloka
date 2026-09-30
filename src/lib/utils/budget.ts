@@ -69,3 +69,45 @@ export function summarizeMonthBudget(
 
   return { totalBudget, totalSpent, remaining, daysLeft, perDay, items };
 }
+
+export interface CategorySpendingRow {
+  categoryId: string;
+  name: string;
+  icon: string;
+  color: string;
+  spent: number;
+  /** Limit per bulan; 0 = tanpa limit */
+  budget: number;
+  percentage: number;
+  level: BudgetLevel;
+}
+
+type SpendingCategory = Pick<Category, "categoryId" | "name" | "icon" | "color" | "type" | "budgetAmount">;
+
+/**
+ * Baris "pengeluaran per kategori" bulan ini: kategori non-pemasukan yang
+ * ada pengeluarannya atau punya limit, urut dari pengeluaran terbesar.
+ */
+export function categorySpendingRows(
+  categories: SpendingCategory[],
+  spendingByCategory: Record<string, number>
+): CategorySpendingRow[] {
+  return categories
+    .filter((c) => c.type !== "income")
+    .map((c) => {
+      const spent = spendingByCategory[c.categoryId] ?? 0;
+      const budget = c.budgetAmount > 0 ? c.budgetAmount : 0;
+      return {
+        categoryId: c.categoryId,
+        name: c.name,
+        icon: c.icon,
+        color: c.color,
+        spent,
+        budget,
+        percentage: budget > 0 ? Math.round((spent / budget) * 100) : 0,
+        level: budgetLevel(spent, budget),
+      };
+    })
+    .filter((row) => row.spent > 0 || row.budget > 0)
+    .sort((a, b) => b.spent - a.spent || a.name.localeCompare(b.name));
+}
