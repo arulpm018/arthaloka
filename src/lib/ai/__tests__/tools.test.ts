@@ -26,9 +26,35 @@ describe("TOOL_DEFINITIONS", () => {
 });
 
 describe("add_transactions", () => {
-  it("rekening default = rekening pertama milik user, nama default = kategori, nominal string dinormalisasi", async () => {
+  it("rekening tidak disebut → tidak menyimpan apa pun, tawarkan pilihan rekening (milik sendiri dulu)", async () => {
     const { result, ctx } = await run("add_transactions", {
-      items: [{ type: "expense", amount: "25rb", category: "makan siang" }],
+      items: [{ type: "expense", amount: 25000, category: "Makan" }],
+    });
+    expect(result).toMatch(/^Gagal add_transactions: .*rekening belum disebut/);
+    expect(store.transactions).toHaveLength(0);
+    expect(ctx.choice?.options.map((o) => o.label)).toEqual(["BCA (Arul)", "Jago Bersama (Bersama)", "BRI (Fifi)"]);
+    expect(ctx.choice?.options[0].reply).toBe("Pakai rekening BCA (Arul)");
+  });
+
+  it("setelah pencatatan berhasil, tombol pilihan rekening dihapus", async () => {
+    const ctx = makeCtx(store);
+    await executeTool("add_transactions", JSON.stringify({ items: [{ type: "expense", amount: 1000, category: "Makan" }] }), ctx);
+    expect(ctx.choice).toBeDefined();
+    await executeTool("add_transactions", JSON.stringify({ items: [{ type: "expense", amount: 1000, category: "Makan", account: "BCA (Arul)" }] }), ctx);
+    expect(ctx.choice).toBeUndefined();
+  });
+
+  it("rekening pakai label pilihan 'Nama (Pemilik)' → tepat rekening itu walau nama kembar", async () => {
+    store.accounts.push({ id: "a-fifi-bca", name: "BCA", owner: "fifi", type: "bank", balance: 0, order: 3 });
+    await run("add_transactions", {
+      items: [{ type: "expense", amount: 1000, category: "Makan", account: "BCA (Fifi)" }],
+    });
+    expect(store.transactions[0].accountId).toBe("a-fifi-bca");
+  });
+
+  it("nama default = kategori, nominal string dinormalisasi", async () => {
+    const { result, ctx } = await run("add_transactions", {
+      items: [{ type: "expense", amount: "25rb", category: "makan siang", account: "bca" }],
     });
     expect(result).toContain("Tersimpan");
     expect(store.transactions).toHaveLength(1);
@@ -74,7 +100,7 @@ describe("add_transactions", () => {
 
   it("kategori belum ada → dibuat otomatis", async () => {
     const { ctx } = await run("add_transactions", {
-      items: [{ type: "expense", amount: 5000, category: "Parkir" }],
+      items: [{ type: "expense", amount: 5000, category: "Parkir", account: "bca" }],
     });
     expect(store.categories.map((c) => c.name)).toContain("Parkir");
     expect(ctx.actions.map((a) => a.tool)).toEqual(["create_category", "add_transactions"]);
@@ -83,8 +109,8 @@ describe("add_transactions", () => {
   it("satu item invalid → tidak ada yang disimpan", async () => {
     const { result } = await run("add_transactions", {
       items: [
-        { type: "expense", amount: 10_000, category: "Makan" },
-        { type: "expense", amount: "abc", category: "Makan" },
+        { type: "expense", amount: 10_000, category: "Makan", account: "bca" },
+        { type: "expense", amount: "abc", category: "Makan", account: "bca" },
       ],
     });
     expect(result).toMatch(/^Gagal add_transactions: .*item 2/);
@@ -94,8 +120,8 @@ describe("add_transactions", () => {
   it("banyak item → satu ringkasan total", async () => {
     const { result } = await run("add_transactions", {
       items: [
-        { type: "expense", amount: 10_000, category: "Makan" },
-        { type: "expense", amount: 15_000, category: "Makan", date: "2026-09-29" },
+        { type: "expense", amount: 10_000, category: "Makan", account: "bca" },
+        { type: "expense", amount: 15_000, category: "Makan", date: "2026-09-29", account: "bca" },
       ],
     });
     expect(result).toContain("2 transaksi");
@@ -116,6 +142,13 @@ describe("add_transfer", () => {
     await run("add_transfer", { amount: 1000, from: "bca", to: "jago bersama" }, makeCtx(store, { uid: "u-fifi", role: "fifi" }));
     expect(store.transfers[0].from.id).toBe("a-fifi-bca");
   });
+  it("rekening asal tidak disebut → tidak transfer, tawarkan pilihan rekening", async () => {
+    const { result, ctx } = await run("add_transfer", { amount: 1000, to: "jago bersama" });
+    expect(result).toMatch(/^Gagal add_transfer: .*rekening asal belum disebut/);
+    expect(store.transfers).toHaveLength(0);
+    expect(ctx.choice?.options.length).toBeGreaterThan(0);
+  });
+
   it("asal = tujuan → gagal", async () => {
     const { result } = await run("add_transfer", { amount: 1000, from: "BCA", to: "BCA" });
     expect(result).toMatch(/^Gagal add_transfer/);
@@ -124,7 +157,7 @@ describe("add_transfer", () => {
 
 describe("delete_transaction", () => {
   it("hapus yang cocok nama & nominal", async () => {
-    await run("add_transactions", { items: [{ type: "expense", amount: 22_000, category: "Makan", name: "Kopi" }] });
+    await run("add_transactions", { items: [{ type: "expense", amount: 22_000, category: "Makan", name: "Kopi", account: "bca" }] });
     const { result } = await run("delete_transaction", { name: "kopi", amount: 22000 });
     expect(result).toContain("Dihapus");
     expect(store.transactions).toHaveLength(0);
@@ -142,7 +175,7 @@ describe("baca data", () => {
     expect(result).toContain("Jago Bersama (Bersama)");
   });
   it("get_monthly_summary bulan berjalan", async () => {
-    await run("add_transactions", { items: [{ type: "expense", amount: 50_000, category: "Makan" }] });
+    await run("add_transactions", { items: [{ type: "expense", amount: 50_000, category: "Makan", account: "bca" }] });
     const { result } = await run("get_monthly_summary", {});
     expect(result).toContain("September 2026");
     expect(result).toContain("Makan");

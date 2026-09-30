@@ -4,7 +4,7 @@ import { MONTH_NAMES_ID, wibMonthRange, wibParts } from "@/lib/utils/wib";
 import type { AccountType, CategoryType, Owner, TransactionType } from "@/types";
 import type { FinanceStore, NewTransaction, StoreAccount, StoreCategory } from "./financeStore";
 import { normalizeAmount, parseDateInput, pickAccountByName, pickByName } from "./parse";
-import type { AiAction } from "./types";
+import type { AiAction, AiChoice } from "./types";
 
 export interface ToolContext {
   store: FinanceStore;
@@ -16,6 +16,8 @@ export interface ToolContext {
   actions: AiAction[];
   /** Diisi tool: id transaksi baru (untuk notifikasi). */
   createdTransactionIds: string[];
+  /** Diisi tool: pilihan yang perlu dijawab user (tampil sebagai tombol). */
+  choice?: AiChoice;
 }
 
 const DAY_MS = 86_400_000;
@@ -51,7 +53,7 @@ export const TOOL_DEFINITIONS = [
             type: { type: "string", enum: ["expense", "income"] },
             amount: AMOUNT,
             category: { type: "string", description: "Nama kategori; dibuat otomatis kalau belum ada" },
-            account: { type: "string", description: "Nama rekening; kosong = rekening default user" },
+            account: { type: "string", description: "Rekening persis seperti 'Nama (Pemilik)', mis. 'BCA (Arul)'. Kosongkan kalau user tidak menyebut — JANGAN menebak." },
             name: { type: "string", description: "Keterangan singkat (opsional)" },
             date: DATE,
           },
@@ -66,7 +68,7 @@ export const TOOL_DEFINITIONS = [
     "Pindah uang antar rekening.",
     {
       amount: AMOUNT,
-      from: { type: "string", description: "Nama rekening asal" },
+      from: { type: "string", description: "Rekening asal 'Nama (Pemilik)'. Kosongkan kalau user tidak menyebut — JANGAN menebak." },
       to: { type: "string", description: "Nama rekening tujuan" },
       name: { type: "string", description: "Keterangan (opsional)" },
       date: DATE,
@@ -107,10 +109,26 @@ const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 const isBlankAmount = (v: unknown) => v === undefined || v === null || v === "" || v === 0;
 const matchesType = (c: StoreCategory, type: TransactionType) => c.type === type || c.type === "both";
 
-function defaultAccount(accounts: StoreAccount[], role: Owner): StoreAccount {
-  const account = accounts.find((a) => a.owner === role) ?? accounts[0];
-  if (!account) throw new Error("belum ada rekening. Buat rekening dulu.");
-  return account;
+const accountLabel = (a: StoreAccount) => `${a.name} (${OWNER_LABELS[a.owner]})`;
+
+/** Label pilihan "Nama (Pemilik)" persis → rekening itu; selain itu cocokkan nama. */
+function resolveAccount(accounts: StoreAccount[], key: string, role: Owner, kind: string): StoreAccount {
+  const wanted = key.trim().toLowerCase();
+  const exact = accounts.find((a) => accountLabel(a).toLowerCase() === wanted);
+  return exact ?? pickAccountByName(accounts, key, role, kind);
+}
+
+/**
+ * Minta user memilih rekening lewat tombol (milik sendiri dulu, lalu
+ * Bersama, lalu milik pasangan) — rekening tidak pernah ditebak.
+ */
+function offerAccountChoice(ctx: ToolContext, accounts: StoreAccount[], prompt: string): void {
+  const rank = (a: StoreAccount) => (a.owner === ctx.role ? 0 : a.owner === "shared" ? 1 : 2);
+  const ordered = accounts.slice().sort((a, b) => rank(a) - rank(b) || a.order - b.order);
+  ctx.choice = {
+    prompt,
+    options: ordered.map((a) => ({ label: accountLabel(a), reply: `Pakai rekening ${accountLabel(a)}` })),
+  };
 }
 
 function findCategory(categories: StoreCategory[], name: string, type: TransactionType): StoreCategory | undefined {
@@ -124,7 +142,7 @@ function findCategory(categories: StoreCategory[], name: string, type: Transacti
 const list_accounts: Handler = async (_args, ctx) => {
   const accounts = await ctx.store.listAccounts();
   if (accounts.length === 0) return "Belum ada rekening.";
-  return accounts.map((a) => `- ${a.name} (${OWNER_LABELS[a.owner]}): ${formatCurrency(a.balance)}`).join("\n");
+  return accounts.map((a) => `- ${accountLabel(a)}: ${formatCurrency(a.balance)}`).join("\n");
 };
 
 const list_categories: Handler = async (args, ctx) => {
@@ -176,7 +194,9 @@ const add_transactions: Handler = async (args, ctx) => {
   const [accounts, categories] = await Promise.all([ctx.store.listAccounts(), ctx.store.listCategories()]);
 
   // Validasi semua dulu — kalau ada yang salah, tidak ada yang disimpan.
+  if (accounts.length === 0) throw new Error("belum ada rekening. Buat rekening dulu.");
   const problems: string[] = [];
+  const missingAccount: number[] = [];
   const pending: { type: TransactionType; amount: number; account: StoreAccount; categoryName: string; name: string; date: Date }[] = [];
   rawItems.forEach((raw, index) => {
     try {
@@ -184,7 +204,11 @@ const add_transactions: Handler = async (args, ctx) => {
       if (!type) throw new Error("type harus 'expense' atau 'income'");
       const amount = normalizeAmount(raw.amount as number | string);
       const accountName = str(raw.account);
-      const account = accountName ? pickAccountByName(accounts, accountName, ctx.role) : defaultAccount(accounts, ctx.role);
+      if (!accountName) {
+        missingAccount.push(index + 1);
+        return;
+      }
+      const account = resolveAccount(accounts, accountName, ctx.role, "Rekening");
       const categoryName = str(raw.category);
       if (!categoryName) throw new Error("kategori wajib diisi");
       pending.push({ type, amount, account, categoryName, name: str(raw.name), date: parseDateInput(str(raw.date), ctx.now) });
@@ -192,6 +216,12 @@ const add_transactions: Handler = async (args, ctx) => {
       problems.push(`item ${index + 1}: ${(e as Error).message}`);
     }
   });
+  if (missingAccount.length > 0) {
+    offerAccountChoice(ctx, accounts, "Pakai rekening mana?");
+    problems.push(
+      `rekening belum disebut (item ${missingAccount.join(", ")}). Tanyakan singkat ke user mau pakai rekening mana — pilihannya sudah tampil sebagai tombol. Jangan menebak`
+    );
+  }
   if (problems.length > 0) throw new Error(`tidak ada yang disimpan. ${problems.join("; ")}`);
 
   const known = categories.slice();
@@ -208,6 +238,7 @@ const add_transactions: Handler = async (args, ctx) => {
 
   const ids = await ctx.store.addTransactions(items, ctx.uid);
   ctx.createdTransactionIds.push(...ids);
+  ctx.choice = undefined; // rekening sudah jelas — tombol pilihan tidak relevan lagi
   items.forEach((it) =>
     ctx.actions.push({
       tool: "add_transactions",
@@ -227,11 +258,16 @@ const add_transactions: Handler = async (args, ctx) => {
 const add_transfer: Handler = async (args, ctx) => {
   const accounts = await ctx.store.listAccounts();
   const amount = normalizeAmount(args.amount as number | string);
-  const from = pickAccountByName(accounts, str(args.from), ctx.role, "Rekening asal");
-  const to = pickAccountByName(accounts, str(args.to), ctx.role, "Rekening tujuan");
+  if (!str(args.from)) {
+    offerAccountChoice(ctx, accounts, "Transfer dari rekening mana?");
+    throw new Error("rekening asal belum disebut. Tanyakan singkat ke user — pilihannya sudah tampil sebagai tombol. Jangan menebak.");
+  }
+  const from = resolveAccount(accounts, str(args.from), ctx.role, "Rekening asal");
+  const to = resolveAccount(accounts, str(args.to), ctx.role, "Rekening tujuan");
   if (from.id === to.id) throw new Error("rekening asal dan tujuan sama.");
   const name = str(args.name) || "Transfer";
   await ctx.store.addTransfer({ name, amount, from, to, date: parseDateInput(str(args.date), ctx.now) }, ctx.uid);
+  ctx.choice = undefined;
   ctx.actions.push({ tool: "add_transfer", label: `Transfer ${formatCurrency(amount)}`, detail: `${from.name} → ${to.name}` });
   return `Transfer ${formatCurrency(amount)} dari ${from.name} ke ${to.name} tersimpan.`;
 };

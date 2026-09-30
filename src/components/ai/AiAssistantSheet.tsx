@@ -72,7 +72,10 @@ export const AiAssistantSheet = () => {
       setIsThinking(true);
       try {
         const res = await sendChat(history);
-        setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: res.reply, actions: res.actions }]);
+        setMessages((prev) => [
+          ...prev,
+          { id: nextId(), role: "assistant", text: res.reply, actions: res.actions, choice: res.choice },
+        ]);
       } catch (e) {
         const errText = e instanceof Error ? e.message : "AI error";
         setMessages((prev) => [
@@ -161,7 +164,7 @@ export const AiAssistantSheet = () => {
             </div>
           )}
 
-          {messages.map((m) => (
+          {messages.map((m, index) => (
             <div
               key={m.id}
               className={cn(
@@ -177,6 +180,21 @@ export const AiAssistantSheet = () => {
                 )}
               >
                 <p className="whitespace-pre-wrap">{m.text}</p>
+                {m.choice && index === messages.length - 1 && !isThinking && (
+                  <div className="flex flex-wrap gap-1.5 pt-1" role="group" aria-label={m.choice.prompt}>
+                    {m.choice.options.map((opt) => (
+                      <button
+                        key={opt.label}
+                        type="button"
+                        onClick={() => void runAssistant(opt.reply)}
+                        className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary/40 hover:bg-primary/10"
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 {m.actions && m.actions.length > 0 && (
                   <div className="flex flex-col gap-1.5 pt-1">
                     {m.actions.map((a, i) => (

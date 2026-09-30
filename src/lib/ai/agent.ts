@@ -51,7 +51,7 @@ ATURAN:
 4. Nominal di tool: angka Rupiah penuh (25rb = 25000, 1,5jt = 1500000).
 5. Tanggal di tool: 'YYYY-MM-DD' (WIB). "kemarin" = hari ini - 1.
 6. Beberapa transaksi sekaligus → SATU panggilan add_transactions berisi semua item.
-7. Rekening tidak disebut → kosongkan 'account' (otomatis rekening default user).
+7. Rekening tidak disebut → JANGAN menebak: kosongkan 'account'/'from'; tool akan menampilkan tombol pilihan rekening, lalu tanyakan singkat "Pakai rekening mana?". Kalau user menjawab "Pakai rekening X (Pemilik)", isi rekening persis "X (Pemilik)" dan catat item yang tadi.
 8. Kalau tool membalas "Gagal ...", perbaiki argumen lalu coba lagi (maks 2 kali); kalau tetap gagal, minta maaf singkat + inti errornya.
 9. Setelah berhasil, sebutkan singkat apa yang tersimpan.
 
@@ -97,7 +97,7 @@ export async function runAgent(params: {
       // Data dari putaran sebelumnya sudah tersimpan — jangan buang laporannya,
       // supaya user tidak mengirim ulang dan tercatat dobel.
       if (params.ctx.actions.length > 0) {
-        return { reply: PARTIAL_REPLY, actions: params.ctx.actions, model };
+        return { reply: PARTIAL_REPLY, actions: params.ctx.actions, model, choice: params.ctx.choice };
       }
       throw error;
     }
@@ -106,7 +106,7 @@ export async function runAgent(params: {
     messages.push(message);
 
     if (!message.tool_calls || message.tool_calls.length === 0) {
-      return { reply: message.content?.trim() || "Oke.", actions: params.ctx.actions, model };
+      return { reply: message.content?.trim() || "Oke.", actions: params.ctx.actions, model, choice: params.ctx.choice };
     }
 
     // Setiap tool_call WAJIB dibalas satu pesan tool dengan id yang sama.
@@ -120,5 +120,6 @@ export async function runAgent(params: {
     reply: "Maaf, prosesnya kepanjangan. Coba pecah perintahnya jadi lebih pendek.",
     actions: params.ctx.actions,
     model,
+    choice: params.ctx.choice,
   };
 }

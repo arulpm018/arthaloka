@@ -1,4 +1,4 @@
-import type { AiAction, ChatTurn } from "./types";
+import type { AiAction, AiChoice, ChatTurn } from "./types";
 
 /** Pesan di layar chat asisten AI. */
 export interface ChatMessage {
@@ -6,6 +6,8 @@ export interface ChatMessage {
   role: "user" | "assistant";
   text: string;
   actions?: AiAction[];
+  /** Tombol jawaban cepat (mis. pilihan rekening) */
+  choice?: AiChoice;
   /** Pesan gagal/error lokal — tidak dikirim balik ke model. */
   isError?: boolean;
 }

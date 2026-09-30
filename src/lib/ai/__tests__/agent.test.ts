@@ -72,7 +72,7 @@ describe("runAgent", () => {
       .fn<ChatFn>()
       .mockResolvedValueOnce(
         toolCalls(
-          ["add_transactions", { items: [{ type: "expense", amount: 25000, category: "Makan" }] }],
+          ["add_transactions", { items: [{ type: "expense", amount: 25000, category: "Makan", account: "bca" }] }],
           ["list_accounts", {}]
         )
       )
@@ -92,7 +92,7 @@ describe("runAgent", () => {
     const store = new FakeStore();
     const chat = vi
       .fn<ChatFn>()
-      .mockResolvedValueOnce(toolCalls(["add_transactions", { items: [{ type: "expense", amount: 25000, category: "Makan" }] }]))
+      .mockResolvedValueOnce(toolCalls(["add_transactions", { items: [{ type: "expense", amount: 25000, category: "Makan", account: "bca" }] }]))
       .mockRejectedValueOnce(new Error("DeepSeek 503"));
     const res = await runAgent({ history: [{ role: "user", content: "makan 25rb" }], ctx: makeCtx(store), systemPrompt: "SYS", chat });
     expect(res.actions).toHaveLength(1);
@@ -125,6 +125,16 @@ describe("runAgent", () => {
     expect(chat.mock.calls[0][2]).toEqual({ timeoutMs: 50_000 });
     expect(chat.mock.calls[1][2]).toEqual({ timeoutMs: 20_000 });
     expect(res.reply).toMatch(/kepanjangan/);
+  });
+
+  it("tool menawarkan pilihan rekening → pilihan ikut di respons", async () => {
+    const chat = vi
+      .fn<ChatFn>()
+      .mockResolvedValueOnce(toolCalls(["add_transactions", { items: [{ type: "expense", amount: 22000, category: "Makan" }] }]))
+      .mockResolvedValueOnce(reply("Pakai rekening mana?"));
+    const res = await runAgent({ history: [{ role: "user", content: "kopi 22rb" }], ctx: makeCtx(new FakeStore()), systemPrompt: "SYS", chat });
+    expect(res.reply).toBe("Pakai rekening mana?");
+    expect(res.choice?.options.map((o) => o.label)).toContain("BCA (Arul)");
   });
 
   it("berhenti setelah MAX_TOOL_ROUNDS", async () => {
