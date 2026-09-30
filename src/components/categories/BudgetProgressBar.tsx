@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils/cn";
 import { Progress } from "@/components/ui/progress";
+import { budgetLevel } from "@/lib/utils/budget";
 
 interface BudgetProgressBarProps {
   spent: number;
@@ -17,8 +18,7 @@ export const BudgetProgressBar = ({
   icon,
 }: BudgetProgressBarProps) => {
   const percentage = budget > 0 ? Math.round((spent / budget) * 100) : 0;
-  const status =
-    percentage >= 100 ? "over" : percentage >= 75 ? "warning" : "normal";
+  const status = budgetLevel(spent, budget);
 
   const colorClass = {
     normal: "bg-income",

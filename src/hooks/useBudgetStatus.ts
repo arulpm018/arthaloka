@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   collection,
   query,
@@ -9,18 +9,22 @@ import {
   onSnapshot,
   Timestamp,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { Transaction, BudgetStatus } from "@/types";
-import { useCategories } from "./useCategories";
 import { startOfMonth, endOfMonth } from "date-fns";
+import { db } from "@/lib/firebase";
+import { Transaction } from "@/types";
+import { summarizeMonthBudget } from "@/lib/utils/budget";
+import { useCategories } from "./useCategories";
 
+/**
+ * Pengeluaran per kategori di `month` (realtime) + ringkasan budget bulanan.
+ * Budget berlaku sama tiap bulan (limit = `category.budgetAmount`).
+ */
 export function useBudgetStatus(month: Date) {
   const { categories } = useCategories();
-  const [budgets, setBudgets] = useState<BudgetStatus[]>([]);
+  const [spendingByCategory, setSpendingByCategory] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // Use primitive timestamp as dep to avoid re-running on every render when
-  // call sites pass a fresh `Date` instance.
+  // Primitive dep supaya call-site yang kirim `new Date()` tiap render aman.
   const monthMs = month.getTime();
 
   useEffect(() => {
@@ -41,25 +45,7 @@ export function useBudgetStatus(month: Date) {
           const data = doc.data() as Transaction;
           spending[data.categoryId] = (spending[data.categoryId] || 0) + data.amount;
         });
-
-        const statuses: BudgetStatus[] = categories
-          .filter((c) => c.budgetAmount > 0)
-          .map((c) => {
-            const spent = spending[c.categoryId] || 0;
-            const percentage = Math.round((spent / c.budgetAmount) * 100);
-            return {
-              categoryId: c.categoryId,
-              categoryName: c.name,
-              categoryIcon: c.icon,
-              budgetAmount: c.budgetAmount,
-              spent,
-              percentage,
-              status:
-                percentage >= 100 ? "over" : percentage >= 75 ? "warning" : "normal",
-            };
-          });
-
-        setBudgets(statuses);
+        setSpendingByCategory(spending);
         setIsLoading(false);
       },
       (error) => {
@@ -69,7 +55,12 @@ export function useBudgetStatus(month: Date) {
     );
 
     return () => unsubscribe();
-  }, [monthMs, categories]);
+  }, [monthMs]);
 
-  return { budgets, isLoading };
+  const summary = useMemo(
+    () => summarizeMonthBudget(categories, spendingByCategory, new Date(monthMs), new Date()),
+    [categories, spendingByCategory, monthMs]
+  );
+
+  return { budgets: summary.items, summary, spendingByCategory, isLoading };
 }
