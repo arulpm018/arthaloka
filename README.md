@@ -47,6 +47,18 @@ Aplikasi Next.js untuk mencatat pengeluaran, pemasukan, transfer antar akun, bud
 | `npm test` | Jalankan vitest sekali (unit + property tests). |
 | `npm run test:watch` | Vitest watch mode. |
 
+## Rapikan kategori duplikat (sekali, setelah redesign rumah tangga)
+
+Dulu kategori dibuat per pemilik, jadi bisa ada "Makan" versi Arul & Fifi.
+Script ini menggabungkannya (transaksi dipindah, limit ambil yang terbesar):
+
+```bash
+FIREBASE_SERVICE_ACCOUNT=/path/ke/service-account.json node scripts/merge-duplicate-categories.mjs
+FIREBASE_SERVICE_ACCOUNT=/path/ke/service-account.json node scripts/merge-duplicate-categories.mjs --apply
+```
+
+Jalankan dry-run dulu, cek daftar, baru `--apply`.
+
 ## Tech Stack
 
 - **Framework**: Next.js 14 (App Router)
