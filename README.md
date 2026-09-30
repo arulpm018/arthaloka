@@ -85,8 +85,24 @@ dimatikan) dengan tool calling, lalu menulis ke Firestore lewat Admin SDK.
 | `ALLOWED_EMAILS` | Email yang boleh memakai API, dipisah koma |
 | `DEEPSEEK_API_KEY` | API key dari platform.deepseek.com |
 | `DEEPSEEK_MODEL` | Opsional, default `deepseek-flash` |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Public key VAPID (Web Push) |
+| `VAPID_PRIVATE_KEY` | Private key VAPID |
+| `VAPID_SUBJECT` | `mailto:arulpm010@gmail.com` |
+| `CRON_SECRET` | String acak (`openssl rand -hex 32`) — dipakai Vercel Cron |
 
 Variabel `AI_SERVICE_URL`, `AI_SERVICE_KEY`, dan `GEMINI_API_KEY` tidak dipakai lagi — boleh dihapus dari Vercel.
+
+### Push notification
+
+Generate kunci VAPID sekali:
+
+```bash
+npx web-push generate-vapid-keys
+```
+
+Lalu di tiap HP: buka app (Android: dari ikon hasil "Install app" Chrome; iPhone iOS ≥16.4: Share → Add to Home Screen, buka dari ikon) → Pengaturan → nyalakan **Notifikasi di HP ini**.
+
+Jadwal (Vercel Cron, `vercel.json`): pengingat 21:00 WIB setiap hari, rekap bulanan tanggal 1 pukul 08:00 WIB. Di paket Hobby jam eksekusi bisa bergeser dalam jam yang sama.
 
 ## Documentation
 

@@ -5,6 +5,8 @@ import { buildSystemPrompt, runAgent, sanitizeHistory } from "@/lib/ai/agent";
 import { createDeepSeekChat } from "@/lib/ai/deepseek";
 import { createFirestoreFinanceStore } from "@/lib/ai/firestoreFinanceStore";
 import type { ToolContext } from "@/lib/ai/tools";
+import { createNotifyDeps } from "@/lib/notify/deps";
+import { notifyTransactionsCreated } from "@/lib/notify/notifications";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -47,6 +49,14 @@ export async function POST(req: Request) {
       systemPrompt: buildSystemPrompt({ displayName, role, now, accounts, categories }),
       chat: createDeepSeekChat({ apiKey, model: process.env.DEEPSEEK_MODEL || "deepseek-flash" }),
     });
+
+    if (ctx.createdTransactionIds.length > 0) {
+      await notifyTransactionsCreated(createNotifyDeps(), {
+        recorderUid: user.uid,
+        transactionIds: ctx.createdTransactionIds,
+        now,
+      }).catch((error) => console.error("[ai/chat] notifikasi gagal:", error));
+    }
 
     return NextResponse.json(result);
   } catch (error) {

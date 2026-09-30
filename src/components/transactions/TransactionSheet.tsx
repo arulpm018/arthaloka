@@ -38,6 +38,7 @@ import { CategoryGrid } from "@/components/categories/CategoryGrid";
 import { CategoryForm } from "@/components/categories/CategoryForm";
 import { DeleteTransactionDialog } from "@/components/transactions/DeleteTransactionDialog";
 import { EntryTypeTabs } from "@/components/transactions/EntryTypeTabs";
+import { notifyTransactionsCreated } from "@/lib/notifyClient";
 import { CreateTransactionInput, TransactionType } from "@/types";
 
 const VISIBLE_CATEGORIES = 8;
@@ -180,7 +181,8 @@ export const TransactionSheet = () => {
           owner: account.owner,
           ownerUid: currentUser?.uid ?? "",
         };
-        await transactionsService.create(input);
+        const transactionId = await transactionsService.create(input);
+        notifyTransactionsCreated([transactionId]);
         writeLastAccountId(account.accountId);
         toast.success(copy.success);
       }
