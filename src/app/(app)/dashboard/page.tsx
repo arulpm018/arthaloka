@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startOfMonth, endOfMonth, format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { CalendarRange, ChevronRight } from "lucide-react";
+import { CalendarRange } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Logo } from "@/components/shared/Logo";
 import { BalanceHero } from "@/components/dashboard/BalanceHero";
@@ -69,7 +69,16 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Header titleSlot={<Logo size="lg" />} />
+      <Header titleSlot={<Logo size="lg" />}>
+        <Link
+          href="/recap"
+          aria-label="Rekap Bulanan"
+          title="Rekap Bulanan"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <CalendarRange className="h-5 w-5" />
+        </Link>
+      </Header>
 
       <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:max-w-5xl md:p-6">
         {isLoading ? (
@@ -90,19 +99,6 @@ export default function DashboardPage() {
               onEditTransfer={(tf) => openSheet("transfer", tf)}
               onDeleteTransfer={(tf) => setDeleteTransferTarget(tf)}
             />
-            <Link
-              href="/recap"
-              className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent/50 active:bg-accent"
-            >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <CalendarRange className="h-4 w-4 text-primary" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">Rekap Bulanan</p>
-                <p className="text-xs text-muted-foreground">Arus kas, kategori & insight bulan ini</p>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-            </Link>
           </>
         )}
       </div>

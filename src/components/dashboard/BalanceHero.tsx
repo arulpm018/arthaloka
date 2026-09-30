@@ -3,13 +3,22 @@
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { MemeReaction } from "@/components/shared/MemeReaction";
-import { OWNER_LABELS } from "@/lib/constants/labels";
 import { MOOD_CAPTION, MOOD_EMOJI } from "@/lib/constants/memes";
 import { summarizeAccountsByOwner } from "@/lib/utils/accounts";
 import type { BudgetMood } from "@/lib/utils/budgetMood";
-import { formatCompactAmount, formatCurrency } from "@/lib/utils/formatCurrency";
+import { cn } from "@/lib/utils/cn";
+import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { useAppStore } from "@/store/useAppStore";
 import type { Account } from "@/types";
+
+/** Warna chip caption per mood: hijau aman, oranye waspada, merah lewat. */
+const MOOD_CHIP_CLASS: Record<BudgetMood, string> = {
+  hemat: "bg-income/10 text-income",
+  aman: "bg-income/10 text-income",
+  boros: "bg-warning/10 text-warning",
+  mepet: "bg-warning/10 text-warning",
+  boncos: "bg-expense/10 text-expense",
+};
 
 interface BalanceHeroProps {
   accounts: Account[];
@@ -19,47 +28,47 @@ interface BalanceHeroProps {
   memeSeed: number;
 }
 
-/** Kartu utama Beranda: total saldo semua rekening + rincian per pemilik. */
+/** Kartu utama Beranda: total saldo semua rekening + chip & meme kondisi budget. */
 export const BalanceHero = ({ accounts, mood, memeSeed }: BalanceHeroProps) => {
   const hideBalance = useAppStore((s) => s.hideBalance);
   const setHideBalance = useAppStore((s) => s.setHideBalance);
-  const { total, groups } = summarizeAccountsByOwner(accounts);
+  const { total } = summarizeAccountsByOwner(accounts);
 
   return (
     <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5">
-      <div className="flex items-start gap-3">
-        <Link href="/accounts" className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-muted-foreground">Total saldo rekening</p>
-          <p className="mt-1 truncate font-mono text-3xl font-bold tabular-nums tracking-tight">
-            {hideBalance ? "••••••••" : formatCurrency(total)}
-          </p>
-          {mood && (
-            <p className="mt-1 text-xs font-medium text-muted-foreground">
-              {MOOD_EMOJI[mood]} {MOOD_CAPTION[mood]}
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1">
+            <p className="text-xs font-medium text-muted-foreground">Total saldo rekening</p>
+            <button
+              type="button"
+              onClick={() => setHideBalance(!hideBalance)}
+              aria-label={hideBalance ? "Tampilkan saldo" : "Sembunyikan saldo"}
+              className="shrink-0 rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted"
+            >
+              {hideBalance ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+          <Link href="/accounts" className="block">
+            <p className="truncate font-mono text-2xl font-bold tabular-nums tracking-tight md:text-3xl">
+              {hideBalance ? "••••••••" : formatCurrency(total)}
             </p>
-          )}
-        </Link>
+          </Link>
+        </div>
         {mood && <MemeReaction mood={mood} seed={memeSeed} className="h-20 w-20 shrink-0 rounded-xl" />}
       </div>
 
-      <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
-        <div className="flex min-w-0 flex-1 flex-wrap gap-x-3 gap-y-1">
-          {groups.map((g) => (
-            <span key={g.owner}>
-              {OWNER_LABELS[g.owner]}{" "}
-              <span className="font-mono text-foreground">{hideBalance ? "•••" : formatCompactAmount(g.subtotal)}</span>
-            </span>
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={() => setHideBalance(!hideBalance)}
-          aria-label={hideBalance ? "Tampilkan saldo" : "Sembunyikan saldo"}
-          className="shrink-0 rounded-full p-1.5 transition-colors hover:bg-muted"
+      {mood && (
+        <span
+          className={cn(
+            "mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+            MOOD_CHIP_CLASS[mood]
+          )}
         >
-          {hideBalance ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        </button>
-      </div>
+          <span aria-hidden="true">{MOOD_EMOJI[mood]}</span>
+          {MOOD_CAPTION[mood]}
+        </span>
+      )}
     </div>
   );
 };
