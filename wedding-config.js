@@ -209,15 +209,18 @@ window.weddingConfig = {
       { role: 'Dekorasi', name: '[Nama Vendor]' }
     ]
   },
-  // endpoint: URL aplikasi web Google Apps Script (berakhiran /exec). Cara pasang ada di
-  // apps-script/rsvp.gs. Selama endpoint kosong, form tampil dengan tombol nonaktif.
-  // showWishes: tampilkan ucapan tamu di bawah form (bisa disembunyikan per baris di Sheet).
-  rsvp: { enabled: true, endpoint: 'https://script.google.com/macros/s/AKfycbwwp8rIXTyfn6B5VK83NaPTW8-BApSwExFNsZ83EzaHEEVfs3D-j31frmkYSmTXtysjyQ/exec', whatsapp: '', maxGuests: 4, showWishes: true },
+  // endpoint: API undangan (api/rsvp.js) yang menyimpan ke Firestore. Selama endpoint kosong,
+  // form tampil dengan tombol nonaktif.
+  // showWishes: tampilkan ucapan tamu di bawah form (sembunyikan satu ucapan dengan field
+  // hidden: true pada dokumennya di Firebase Console, koleksi wedding_rsvp).
+  rsvp: { enabled: true, endpoint: '/api/rsvp', whatsapp: '', maxGuests: 4, showWishes: true },
   // Amplop digital. bank boleh diisi nama e-wallet (GoPay, DANA, OVO); tombol salin hanya
   // menyalin angka. Hapus satu baris accounts jika tidak dipakai; kosongkan address.text
   // untuk menyembunyikan bagian kirim kado. text: kalimat pengantar (opsional).
+  // confirmEndpoint: API konfirmasi transfer (api/gift.js); kosongkan untuk menyembunyikan formnya.
   gift: {
     enabled: true,
+    confirmEndpoint: '/api/gift',
     accounts: [
       { bank: '[Nama Bank]', number: '[Nomor Rekening]', holder: '[Atas Nama]' },
       { bank: '[Nama Bank/E-wallet]', number: '[Nomor Rekening/HP]', holder: '[Atas Nama]' }

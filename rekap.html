@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#20271B">
+<title>Rekap Undangan</title>
+<style>
+:root{--ivory:#fffaf3;--paper:#f6ecdf;--line:#e2d2bd;--gold:#b8a078;--burgundy:#5c1f33;--ink:#3d2a2c;--muted:#8a7363;--olive:#20271b;
+  --serif:Georgia,'Times New Roman',serif;--sans:system-ui,-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans)}
+[hidden]{display:none!important}
+button,input,select{font:inherit}
+header{background:var(--olive);color:var(--ivory);padding:18px 16px}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{margin:0;font:italic 24px/1.2 var(--serif)}
+.wrap{max-width:900px;margin:0 auto}
+main{padding:18px 16px 48px}
+.btn{border:1px solid var(--burgundy);background:var(--burgundy);color:var(--ivory);border-radius:3px;padding:10px 16px;cursor:pointer}
+.btn.ghost{background:transparent;color:inherit;border-color:#b8a07899}
+.btn:disabled{opacity:.6;cursor:wait}
+.center{text-align:center;padding:60px 0}
+.center p{color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+.tab{border:0;background:none;padding:10px 14px;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--burgundy);border-color:var(--burgundy);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--ivory);border:1px solid var(--line);border-radius:4px;padding:12px 14px}
+.stat b{display:block;font:600 24px/1.2 var(--serif);color:var(--burgundy);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tools input,.tools select{flex:1 1 180px;padding:9px 11px;border:1px solid var(--line);border-radius:3px;background:var(--ivory);color:var(--ink)}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.item{background:var(--ivory);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:3px;padding:12px 14px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.name{font:600 17px/1.35 var(--serif);color:var(--burgundy);overflow-wrap:anywhere}
+.amount{font:600 17px var(--serif);color:var(--burgundy);white-space:nowrap;font-variant-numeric:tabular-nums}
+.meta{font-size:12px;color:var(--muted);margin-top:2px}
+.note{margin-top:6px;white-space:pre-line;overflow-wrap:anywhere}
+.chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.chip.Hadir{background:#e3efd9;color:#2f5a1e}
+.chip.Tidak{background:#f6dcdc;color:#8a2424}
+.chip.Masih{background:#f7e8cc;color:#80520e}
+.empty{color:var(--muted);text-align:center;padding:24px 0}
+.error{color:#8a2424}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Rekap Undangan Fifi &amp; Arul</h1>
+  <div><button class="btn ghost" id="refresh" type="button" hidden>Muat ulang</button> <button class="btn ghost" id="logout" type="button" hidden>Keluar</button></div></div></header>
+<main class="wrap">
+  <section class="center" id="gate">
+    <p id="gate-text">Halaman ini hanya untuk Arul &amp; Fifi.</p>
+    <button class="btn" id="login" type="button">Masuk dengan Google</button>
+  </section>
+
+  <section id="app" hidden>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-rsvp" aria-selected="true" type="button">Kehadiran</button>
+      <button class="tab" role="tab" id="tab-gifts" aria-selected="false" type="button">Tanda Kasih</button>
+    </div>
+
+    <div id="panel-rsvp">
+      <div class="stats" id="rsvp-stats"></div>
+      <div class="tools">
+        <input id="rsvp-search" type="search" placeholder="Cari nama…">
+        <select id="rsvp-filter"><option value="">Semua status</option><option>Hadir</option><option>Tidak dapat hadir</option><option>Masih belum pasti</option></select>
+      </div>
+      <ol class="list" id="rsvp-list"></ol>
+    </div>
+
+    <div id="panel-gifts" hidden>
+      <div class="stats" id="gift-stats"></div>
+      <div class="tools"><input id="gift-search" type="search" placeholder="Cari nama…"></div>
+      <ol class="list" id="gift-list"></ol>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
+
+// Konfigurasi web Firebase (publik, sama dengan app arthafiloka). Akses data dicek di api/rekap.js.
+const auth = getAuth(initializeApp({
+  apiKey: 'AIzaSyCWLUwaLlKpW8hfuHzWE3O2v0qPjwj28Yk',
+  authDomain: 'arthaloka-c4e3a.firebaseapp.com',
+  projectId: 'arthaloka-c4e3a',
+  appId: '1:777982899421:web:6287d986e237baf4715734'
+}));
+
+const $ = id => document.getElementById(id);
+const rupiah = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+const when = iso => new Date(iso).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const el = (tag, cls, text) => { const node = document.createElement(tag); if (cls) node.className = cls; if (text != null) node.textContent = text; return node; };
+let data = { rsvp: [], gifts: [] };
+
+function stats(target, items) {
+  $(target).replaceChildren(...items.map(([value, label]) => { const box = el('div', 'stat'); box.append(el('b', '', value), el('span', '', label)); return box; }));
+}
+
+function renderRsvp() {
+  const rows = data.rsvp, count = status => rows.filter(r => r.attendance === status);
+  const hadir = count('Hadir');
+  stats('rsvp-stats', [
+    [rows.length, 'konfirmasi masuk'],
+    [hadir.reduce((sum, r) => sum + (r.guests || 0), 0), `orang hadir (${hadir.length} konfirmasi)`],
+    [count('Tidak dapat hadir').length, 'tidak dapat hadir'],
+    [count('Masih belum pasti').length, 'masih belum pasti']
+  ]);
+  const q = $('rsvp-search').value.trim().toLowerCase(), status = $('rsvp-filter').value;
+  const shown = rows.filter(r => (!status || r.attendance === status) && r.name.toLowerCase().includes(q));
+  $('rsvp-list').replaceChildren(...shown.map(r => {
+    const item = el('li', 'item'), top = el('div', 'row');
+    top.append(el('span', 'name', r.name), el('span', 'chip ' + r.attendance.split(' ')[0], r.attendance + (r.attendance === 'Hadir' ? ` · ${r.guests} org` : '')));
+    item.append(top, el('div', 'meta', [r.session, when(r.createdAt), r.hidden ? 'ucapan disembunyikan' : ''].filter(Boolean).join(' · ')));
+    if (r.wish) item.append(el('p', 'note', r.wish));
+    return item;
+  }));
+  if (!shown.length) $('rsvp-list').append(el('li', 'empty', rows.length ? 'Tidak ada yang cocok.' : 'Belum ada konfirmasi kehadiran.'));
+}
+
+function renderGifts() {
+  const rows = data.gifts, perAccount = {};
+  rows.forEach(r => { const key = r.account || 'Rekening tidak dipilih'; perAccount[key] = (perAccount[key] || 0) + r.amount; });
+  stats('gift-stats', [
+    [rupiah(rows.reduce((sum, r) => sum + r.amount, 0)), `total dari ${rows.length} konfirmasi`],
+    ...Object.entries(perAccount).map(([account, total]) => [rupiah(total), account])
+  ]);
+  const q = $('gift-search').value.trim().toLowerCase();
+  const shown = rows.filter(r => r.name.toLowerCase().includes(q));
+  $('gift-list').replaceChildren(...shown.map(r => {
+    const item = el('li', 'item'), top = el('div', 'row');
+    top.append(el('span', 'name', r.name), el('span', 'amount', rupiah(r.amount)));
+    item.append(top, el('div', 'meta', [r.account, when(r.createdAt)].filter(Boolean).join(' · ')));
+    if (r.note) item.append(el('p', 'note', r.note));
+    return item;
+  }));
+  if (!shown.length) $('gift-list').append(el('li', 'empty', rows.length ? 'Tidak ada yang cocok.' : 'Belum ada konfirmasi transfer.'));
+}
+
+async function load() {
+  $('refresh').disabled = true;
+  try {
+    const response = await fetch('/api/rekap', { headers: { Authorization: 'Bearer ' + await auth.currentUser.getIdToken() }, cache: 'no-store' });
+    if (response.status === 403) { gate('Akun ini tidak punya akses ke rekap.'); return; }
+    if (!response.ok) throw new Error(response.status);
+    data = await response.json();
+    $('gate').hidden = true; $('app').hidden = false; $('refresh').hidden = false;
+    renderRsvp(); renderGifts();
+  } catch { gate('Data belum bisa dimuat. Coba muat ulang.'); }
+  finally { $('refresh').disabled = false; }
+}
+
+function gate(message) {
+  $('app').hidden = true; $('gate').hidden = false; $('refresh').hidden = true;
+  $('gate-text').textContent = message; $('gate-text').classList.toggle('error', !!auth.currentUser);
+  $('login').hidden = !!auth.currentUser;
+}
+
+function selectTab(name) {
+  ['rsvp', 'gifts'].forEach(tab => { $('tab-' + tab).setAttribute('aria-selected', String(tab === name)); $('panel-' + tab).hidden = tab !== name; });
+}
+
+$('login').onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(() => gate('Login dibatalkan atau gagal. Coba lagi.'));
+$('logout').onclick = () => signOut(auth);
+$('refresh').onclick = load;
+$('tab-rsvp').onclick = () => selectTab('rsvp');
+$('tab-gifts').onclick = () => selectTab('gifts');
+$('rsvp-search').oninput = $('rsvp-filter').onchange = renderRsvp;
+$('gift-search').oninput = renderGifts;
+onAuthStateChanged(auth, user => {
+  $('logout').hidden = !user;
+  if (user) load(); else gate('Halaman ini hanya untuk Arul & Fifi.');
+});
+</script>
+</body>
+</html>

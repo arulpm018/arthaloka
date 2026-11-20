@@ -54,3 +54,9 @@
 @media (hover:hover) and (pointer:fine) {
   .rsvp-card .gift-copy:not(:disabled):hover { background: #b8a0781f; }
 }
+
+/* Transfer confirmation sits under the envelope, in the same form style as the RSVP card. */
+.gift-form { margin-top: 6px; text-align: left; }
+.gift-form h3.script { text-align: center; }
+.gift-form-note { margin-top: 6px; text-align: center; font: italic 17px/1.6 var(--serif); color: #6b4a3d; }
+.rsvp-card #gift-status { font: 13px/1.7 var(--sans); margin-top: 14px; }

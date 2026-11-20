@@ -238,7 +238,7 @@
     if(suppliedGuest)form.elements.name.value=suppliedGuest;
     form.elements.attendance.addEventListener('change',()=>{const present=form.elements.attendance.value==='Hadir';$('#guests-field').hidden=!present;form.elements.guests.required=present;});
     const whatsapp=String(config.rsvp.whatsapp||'').replace(/\D/g,'');
-    const endpoint=safeURL(config.rsvp.endpoint,true);
+    const endpoint=safeURL(config.rsvp.endpoint,!String(config.rsvp.endpoint||'').startsWith('/'));
     // Wishes come back from the same endpoint (GET, see apps-script/rsvp.gs) and render as plain text.
     const wishes=$('#rsvp-wishes'), wishList=$('#rsvp-wish-list');
     async function loadWishes(){
@@ -335,6 +335,35 @@
       text('#gift-address-text',address.text);
       $('#gift-copy-address').disabled=/^\[.*\]$/.test(address.text.trim());
       $('#gift-copy-address').addEventListener('click',()=>copy([address.recipient,address.phone,address.text].filter(Boolean).join('\n'),'Alamat telah disalin.'));
+    }
+    // Transfer confirmation: guests tell us who sent how much, saved via api/gift.js.
+    const giftEndpoint=safeURL(gift.confirmEndpoint,!String(gift.confirmEndpoint||'').startsWith('/'));
+    if(giftEndpoint&&!after){
+      const giftForm=$('#gift-form'),giftSubmit=giftForm.querySelector('button[type="submit"]'),amount=giftForm.elements.amount;
+      giftForm.hidden=false;
+      if(suppliedGuest)giftForm.elements.name.value=suppliedGuest;
+      const accounts=(gift.accounts||[]).filter(account=>account?.number).map(account=>[account.bank,account.holder].filter(Boolean).join(' a.n. '));
+      giftForm.elements.account.replaceChildren(...['',...accounts].map(label=>{const option=document.createElement('option');option.value=label;option.textContent=label||'Pilih rekening';return option;}));
+      $('#gift-account-field').hidden=accounts.length<2;
+      if(accounts.length===1)giftForm.elements.account.value=accounts[0];
+      amount.addEventListener('input',()=>{const digits=amount.value.replace(/\D/g,'').slice(0,10);amount.value=digits?Number(digits).toLocaleString('id-ID'):'';});
+      giftForm.addEventListener('submit',async event=>{
+        event.preventDefault();if(!giftForm.reportValidity())return;
+        const payload={name:giftForm.elements.name.value.trim(),amount:Number(amount.value.replace(/\D/g,'')),account:giftForm.elements.account.value,note:giftForm.elements.note.value.trim()};
+        if(!payload.name){text('#gift-status','Mohon isi nama Anda.');giftForm.elements.name.focus();return;}
+        if(!(payload.amount>=1000)){text('#gift-status','Mohon isi nominal transfer.');amount.focus();return;}
+        giftSubmit.disabled=true;text('#gift-status','Mengirim konfirmasi…');
+        const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+        try{
+          const response=await fetch(giftEndpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),signal:controller.signal});
+          if(!response.ok)throw new Error('server');
+          if((await response.json()).saved!==true)throw new Error('not-persisted');
+          text('#gift-status','Terima kasih atas tanda kasih Anda. Konfirmasi telah kami terima.');giftForm.reset();
+          if(suppliedGuest)giftForm.elements.name.value=suppliedGuest;
+          if(accounts.length===1)giftForm.elements.account.value=accounts[0];
+        }catch{text('#gift-status','Konfirmasi belum tersimpan. Silakan coba kembali.');}
+        finally{clearTimeout(timeout);giftSubmit.disabled=false;}
+      });
     }
   }
 

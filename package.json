@@ -1,0 +1,10 @@
+{
+  "name": "undangan-fifi-arul",
+  "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "firebase-admin": "13.10.0"
+  }
+}
