@@ -45,15 +45,9 @@
 .gift-holder:empty { display: none; }
 .gift-recipient { margin-top: 8px; font: 600 18px/1.6 var(--serif); color: var(--burgundy); }
 .gift-address-text { margin-top: 4px; font: 17px/1.7 var(--serif); color: #4b2b30; white-space: pre-line; }
-.rsvp-card .gift-copy {
-  margin-top: 16px; min-width: 0; min-height: 44px; padding: 10px 22px; gap: 9px;
-  font-size: 11px; color: var(--burgundy); background: transparent; border-color: #b8a078;
-}
+.rsvp-card .gift-copy { margin-top: 16px; min-width: 0; gap: 9px; }
 .rsvp-card .gift-copy svg { width: 16px; height: 16px; }
 .rsvp-card .gift-copy:disabled { opacity: .45; cursor: not-allowed; }
-@media (hover:hover) and (pointer:fine) {
-  .rsvp-card .gift-copy:not(:disabled):hover { background: #b8a0781f; }
-}
 
 /* Transfer confirmation sits under the envelope, in the same form style as the RSVP card. */
 .gift-form { margin-top: 6px; text-align: left; }

@@ -42,7 +42,7 @@
   const ribbon = { eve: 'Besok kami menikah', day: 'Hari ini kami menikah' }[phase];
   if (ribbon) { text('#phase-ribbon', ribbon); $('#phase-ribbon').hidden = false; }
   if (after) {
-    text('.cover-top > .eyebrow', 'WITH LOVE & GRATITUDE'); text('#cover-title', 'Thank You'); text('.cover-subtitle', 'for being part of our day');
+    text('#cover-title', 'Thank You'); text('.cover-subtitle', 'for being part of our day');
   }
   text('#opening-text', after && config.after?.openingText || config.openingText);
   text('#closing-text', after && config.after?.closingText || config.closingText);
@@ -86,13 +86,13 @@
   }
   if(config.verse.translation?.trim())text('#verse-translation', config.verse.translation);
 
-  const eventValue = config.date || config.akad.start || config.reception.start;
+  const eventValue = config.date || config.reception.start;
   const eventDate = dates.countdownDate(eventValue,config.timeZone);
   const fmt = (value,options) => dates.formatDate(value,config.timeZone,options);
   if(eventDate){
     text('.date-short',fmt(eventValue,{day:'2-digit',month:'long',year:'numeric'}));
   }
-  const calendarWeek = dates.calendarWeek(config.date || config.akad.start || config.reception.start || config.calendar?.date, config.timeZone);
+  const calendarWeek = dates.calendarWeek(config.date || config.reception.start || config.calendar?.date, config.timeZone);
   if (calendarWeek) {
     text('#date-calendar-month', calendarWeek.month);
     $('#date-calendar').setAttribute('aria-label', `Kalender pernikahan, ${calendarWeek.fullDate}`);
@@ -106,8 +106,8 @@
     });
   }
   const timezoneLabel = config.timeZoneLabel || 'WIB';
-  for(const key of ['akad','reception']){
-    const event=config[key];
+  {
+    const key='reception', event=config[key];
     const start=dates.validDate(event.start);
     const end=dates.validDate(event.end);
     const day = event.start || event.date || eventValue;
@@ -125,21 +125,11 @@
     if(target){window.open(target,'_blank','noopener,noreferrer');}
     else notify('Lokasi acara akan segera diumumkan.');
   }
-  text('#akad-title',config.akad.title || 'Akad Nikah');
   text('#reception-title',config.reception.title || 'Resepsi Pernikahan');
   text('#reception-subtitle',config.reception.subtitle || '');$('#reception-subtitle-line').hidden=!config.reception.subtitle;
-  text('#venue-name',config.reception.venue || config.akad.venue);
-  text('#venue-address',config.reception.address || config.akad.address);
-  $('#view-location').addEventListener('click',()=>openMap(config.reception.mapUrl || config.akad.mapUrl));
-  const differentVenues = config.akad.venue !== config.reception.venue || config.akad.address !== config.reception.address;
-  if(differentVenues){
-    const area=$('#akad-separate-venue');area.hidden=false;area.className='separate-venue';
-    const venue=document.createElement('p');venue.textContent=config.akad.venue;
-    const address=document.createElement('p');address.textContent=config.akad.address;
-    const button=document.createElement('button');button.type='button';button.className='button outline-button';button.textContent='Lokasi Akad';button.addEventListener('click',()=>openMap(config.akad.mapUrl));
-    area.append(venue,address,button);
-    $('#view-location').lastChild.textContent='Lokasi Resepsi';
-  }
+  text('#venue-name',config.reception.venue);
+  text('#venue-address',config.reception.address);
+  $('#view-location').addEventListener('click',()=>openMap(config.reception.mapUrl));
   // Live stream: announced before, highlighted on the day, a recording (if any) afterwards.
   const live = config.live || {}, liveURL = after ? safeURL(live.recordingUrl, true) : safeURL(live.url, true);
   if(liveURL){
@@ -150,22 +140,6 @@
       : `Bagi keluarga dan sahabat yang berhalangan hadir, pernikahan kami dapat disaksikan secara langsung${via} ${phase === 'eve' ? 'besok' : 'pada hari H'}.`);
     text('#live-link span:last-child', after ? 'Tonton Rekaman' : phase === 'day' ? 'Tonton Sekarang' : 'Buka Tautan Siaran');
     if(phase === 'day'){ $('#cover-live').href=liveURL; $('#cover-live').hidden=false; }
-  }
-  // Dress code swatches in the invitation's own palette; no longer needed once the wedding is over.
-  const dress = config.dressCode || {};
-  const swatches = (dress.colors || []).filter(color => color?.name && window.CSS?.supports?.('color', color.hex || ''));
-  if(dress.enabled !== false && swatches.length && !after){
-    $('#dress-code').hidden=false;
-    text('#dress-title', dress.title || 'Dress Code'); text('#dress-note', dress.note || '');
-    $('#dress-note').hidden=!dress.note;
-    $('#dress-swatches').style.setProperty('--dress-count', String(swatches.length));
-    $('#dress-swatches').replaceChildren(...swatches.map((color,index)=>{
-      const item=document.createElement('li'); item.style.setProperty('--i', String(index));
-      const chip=document.createElement('span'); chip.className='dress-chip'; chip.style.setProperty('--chip', color.hex); chip.setAttribute('aria-hidden','true');
-      const name=document.createElement('span'); name.className='dress-name'; name.textContent=color.name;
-      item.append(chip,name); return item;
-    }));
-    if(dress.extra?.trim()){ text('#dress-extra', dress.extra.trim()); $('#dress-extra').hidden=false; }
   }
   // Saving the date only makes sense before the day itself.
   $('#save-date').hidden = phase === 'day' || after;
@@ -195,6 +169,7 @@
   function syncMusic(){const playing=!audio.paused&&!audio.ended;musicButton.setAttribute('aria-pressed',String(playing));musicButton.setAttribute('aria-label',playing?'Jeda musik':'Putar musik');}
   async function playMusic(showError=false){
     if(!musicURL){if(showError)notify('Musik belum tersedia.');return;}
+    if(!audio.played.length&&!audio.currentTime&&config.music.startAt>0)audio.currentTime=config.music.startAt;
     try{await audio.play();}catch{if(showError)notify('Musik belum dapat diputar. Silakan coba lagi.');syncMusic();}
   }
   ['playing','pause','ended','error','emptied'].forEach(event=>audio.addEventListener(event,syncMusic));

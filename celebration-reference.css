@@ -81,15 +81,7 @@
   animation: vvVenueFloat 7s ease-in-out -1.4s infinite;
 }
 #celebration .venue-details h3 { padding-bottom: 4px; }
-#celebration #view-location {
-  border: 1px solid #d5aa70; border-radius: 999px; background: #2f111a40;
-  color: #fdf5e6; font: 500 clamp(1rem,3.8vw,1.2rem)/1.5 var(--serif);
-  text-transform: none; letter-spacing: .02em; padding: 13px 28px;
-  min-height: 48px; margin-top: 26px; gap: 13px;
-}
-#celebration #view-location svg { flex-basis: 22px; width: 22px; height: 26px; }
-#celebration .separate-venue { margin-top: 16px; }
-#celebration .separate-venue p { font: 1rem/1.8 var(--serif); color: #fdf5e6; }
+#celebration #view-location { margin-top: 26px; }
 @keyframes vvCelebrationRoseSway {
   0%,100% { transform: translate3d(0,1px,0) rotate(-1deg); }
   50% { transform: translate3d(1px,-3px,0) rotate(1deg); }

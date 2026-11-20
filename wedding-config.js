@@ -1,11 +1,10 @@
 /** Ganti isi di sini. Tidak perlu mengubah komponen atau layout.
  * Tanggal tanpa jam: YYYY-MM-DD. Waktu acara: ISO dengan offset, misalnya +07:00.
- * Biarkan jam dan lokasi kosong sampai detail acara sudah pasti.
  */
 window.weddingConfig = {
   // title: sebutan adat Minang di atas nama lengkap (kosongkan untuk menyembunyikan).
-  bride: { nickname: 'Fifi', fullName: 'Fifi Mufida Syamra', title: 'Anak Daro', childOrder: '[pertama/kedua]', father: '[Nama Ayah]', mother: '[Nama Ibu]' },
-  groom: { nickname: 'Arul', fullName: 'Hasrul Malik Putra Mashun', title: 'Marapulai', childOrder: '[pertama/kedua]', father: '[Nama Ayah]', mother: '[Nama Ibu]' },
+  bride: { nickname: 'Fifi', fullName: 'Fifi Mufida Syamra, S.Pd', title: 'Anak Daro', childOrder: 'kedua', father: 'Syamsurizal, S. AT', mother: 'Chandrawati, SE' },
+  groom: { nickname: 'Arul', fullName: 'Hasrul Malik Putra Mashun, S.Kom', title: 'Marapulai', childOrder: 'pertama', father: 'Mashun Asro, S.I.P', mother: 'Henny Herlina, M.Pd' },
   monogram: 'F & A',
   // Alamat undangan setelah online, misalnya 'https://fifi-arul.netlify.app/'.
   // Dipakai kirim-undangan.html untuk membuat link pribadi tiap tamu (?to=Nama).
@@ -17,16 +16,12 @@ window.weddingConfig = {
   calendar: { date: '2026-12-26' },
   timeZone: 'Asia/Jakarta',
   timeZoneLabel: 'WIB',
-  // title/subtitle: nama acara di undangan dan di file kalender. Baralek = pesta pernikahan adat Minang.
-  akad: { title: 'Akad Nikah', start: null, end: null, venue: '[Nama Venue]', address: '[Alamat Lengkap]', mapUrl: 'https://maps.app.goo.gl/vn1mMLRZdnRBQqss7' },
-  reception: { title: 'Baralek', subtitle: 'Resepsi Pernikahan', start: null, end: null, venue: '[Nama Venue]', address: '[Alamat Lengkap]', mapUrl: 'https://maps.app.goo.gl/vn1mMLRZdnRBQqss7',
-    // Sesi resepsi (opsional). Tamu dengan link ...&sesi=2 melihat jam sesi ke-2 di undangan
-    // dan di file kalender. Link tanpa &sesi tetap menampilkan jam resepsi di atas.
-    // Isi start/end seperti format jam acara. Kosongkan daftar ini jika resepsi tidak dibagi sesi.
-    sessions: [
-      { name: 'Sesi 1', start: null, end: null },
-      { name: 'Sesi 2', start: null, end: null }
-    ] },
+  // Satu acara: akad dan resepsi dalam satu rentang waktu. title/subtitle: nama acara di
+  // undangan dan di file kalender (subtitle boleh kosong).
+  reception: { title: 'Akad Nikah & Resepsi', subtitle: '', start: '2026-12-26T09:00:00+07:00', end: '2026-12-26T17:00:00+07:00',
+    venue: 'STIE GICI Business School Bogor',
+    address: 'Jl. Kapten Yusuf No.269, Kota Batu, Kec. Ciomas, Kabupaten Bogor, Jawa Barat 16610',
+    mapUrl: 'https://maps.app.goo.gl/vn1mMLRZdnRBQqss7' },
   illustrations: {
     venueSketch: 'assets/illustrations/venue-sketch-landscape.jpg',
     // Kartu di dalam amplop. Pita nama di atas karpetnya dipasang khusus untuk gambar ini
@@ -53,28 +48,14 @@ window.weddingConfig = {
     envelopeBouquet: 'assets/decorations/cover-art/bouquet.webp',
     envelopeCrest: 'assets/decorations/cover-art/crest.webp'
   },
-  music: { src: 'assets/music/wedding-backsound-v2.mp3', volume: 0.45 },
+  // startAt: detik pembuka lagu yang dilewati (awal lagu ini pelan), supaya musik langsung terdengar.
+  music: { src: 'assets/music/wedding-backsound-v2.mp3', volume: 0.45, startAt: 3.5 },
   verse: {"reference": "QS. Ar-Rum: 21", "arabic": "وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗ اِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ ۝٢١", "arabicLines": ["وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا", "لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗ", "اِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ ۝٢١"], "translation": "Di antara tanda-tanda (kebesaran)-Nya ialah bahwa Dia menciptakan pasangan-pasangan untukmu dari (jenis) dirimu sendiri agar kamu merasa tenteram kepadanya. Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.", "verifiedSource": "https://quran.nu.or.id/ar-rum/21", "translationSource": "https://quran.kemenag.go.id/quran/per-ayat/surah/30?from=21&to=21"},
   openingText: 'Dengan memohon rahmat dan rida Allah SWT, kami bermaksud menyelenggarakan pernikahan putra-putri kami:',
   closingText: 'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir serta memberikan doa restu bagi pernikahan kami.',
   countdown: { enabled: true },
-  // Dress code di bagian Acara. colors: nama + kode warna (diambil dari palet undangan).
-  // extra: catatan tambahan (opsional). Disembunyikan otomatis setelah acara selesai.
-  dressCode: {
-    enabled: true,
-    title: 'Dress Code',
-    note: 'Kami akan sangat senang apabila Bapak/Ibu/Saudara/i berkenan mengenakan busana bernuansa warna berikut:',
-    colors: [
-      { name: 'Burgundy', hex: '#5a1f36' },
-      { name: 'Dusty Rose', hex: '#c58a98' },
-      { name: 'Champagne', hex: '#d9bf8c' },
-      { name: 'Ivory', hex: '#f3e8d8' },
-      { name: 'Olive', hex: '#5d6b45' }
-    ],
-    extra: ''
-  },
   // Undangan berubah sendiri sesuai tanggal (zona waktu di atas): H-1, hari H, lalu mode
-  // terima kasih setelah acara (setelah jam selesai akad/resepsi, atau pukul 00.00 esoknya).
+  // terima kasih setelah acara (setelah jam selesai acara, atau pukul 00.00 esoknya).
   // Pratinjau kapan saja: tambahkan ?fase=h-1, ?fase=hari-h, atau ?fase=selesai di link.
   // live.url: link siaran langsung (YouTube, Instagram, Zoom). recordingUrl: rekaman untuk
   // setelah acara. Kosongkan untuk menyembunyikan bagian siaran.
@@ -198,15 +179,29 @@ window.weddingConfig = {
 ]
   },
   // Credit penutup ala film setelah salam penutup. Nama mempelai dan orang tua diambil dari
-  // atas. inviters: daftar "Turut Mengundang". thanks: ucapan terima kasih (vendor, panitia);
-  // hapus baris yang tidak dipakai. Setelah credit selesai, tirai menutup dengan ucapan terima kasih.
+  // atas. invitersNote: kalimat adat di bawah judul "Turut Mengundang" (boleh kosong).
+  // inviters: daftar keluarga yang turut mengundang, per kelompok (title + names).
+  // Setelah credit selesai, tirai menutup dengan ucapan terima kasih.
   credits: {
     enabled: true,
-    inviters: ['[Keluarga Besar ...]', '[Keluarga Besar ...]', '[Keluarga Besar ...]'],
-    thanks: [
-      { role: 'Fotografi', name: '[Nama Vendor]' },
-      { role: 'Busana & Rias', name: '[Nama Vendor]' },
-      { role: 'Dekorasi', name: '[Nama Vendor]' }
+    invitersNote: 'Hormat Kami Nan Mananti Silang Nan Sapangka Karakok Nan Bajunjuang',
+    inviters: [
+      { title: 'Keluarga Besar', names: [
+        'Kel. Bpk. Syamsurizal, S. AT & Ibu Chandrawati, SE',
+        'Kel. Bpk. H. Albert Ambo & Ibu Hertina Susanti',
+        'Kel. Bpk. Safri Vega & Ibu Feby',
+        'Kel. Bpk. Ramli Darwis & Ibu Susi',
+        'Kel. Bpk. H. Muliadi & Ibu Hj. Epa',
+        'Kel. Bpk. Erwil Muklis & Ibu Wis',
+        'Kel. Bpk. Nemi & Ibu Sulis'
+      ] },
+      { title: 'Keluarga Besar', names: [
+        'Kel. Bpk. Mashun Asro, S.I.P & Ibu Henny Herlina, M.Pd',
+        'Kel. Bpk. H. Kamarudin (Alm) · Bengkulu',
+        'Kel. Bpk. H. Luhip B · Arga Makmur',
+        'Kel. Bpk. Sahrul. ST (Opa) · Palembang',
+        'Kel. Bpk. Ir. Mukhlis MBJ Rumah Organik · Bogor'
+      ] }
     ]
   },
   // endpoint: API undangan (api/rsvp.js) yang menyimpan ke Firestore. Selama endpoint kosong,
@@ -215,16 +210,14 @@ window.weddingConfig = {
   // hidden: true pada dokumennya di Firebase Console, koleksi wedding_rsvp).
   rsvp: { enabled: true, endpoint: '/api/rsvp', whatsapp: '', maxGuests: 4, showWishes: true },
   // Amplop digital. bank boleh diisi nama e-wallet (GoPay, DANA, OVO); tombol salin hanya
-  // menyalin angka. Hapus satu baris accounts jika tidak dipakai; kosongkan address.text
-  // untuk menyembunyikan bagian kirim kado. text: kalimat pengantar (opsional).
+  // menyalin angka. Hapus satu baris accounts jika tidak dipakai. text: kalimat pengantar (opsional).
   // confirmEndpoint: API konfirmasi transfer (api/gift.js); kosongkan untuk menyembunyikan formnya.
   gift: {
     enabled: true,
     confirmEndpoint: '/api/gift',
     accounts: [
-      { bank: '[Nama Bank]', number: '[Nomor Rekening]', holder: '[Atas Nama]' },
-      { bank: '[Nama Bank/E-wallet]', number: '[Nomor Rekening/HP]', holder: '[Atas Nama]' }
-    ],
-    address: { recipient: '[Nama Penerima]', phone: '', text: '[Alamat Lengkap Pengiriman Kado]' }
+      { bank: 'Bank Jago', number: '108521108397', holder: 'Fifi Mufida Syamra' },
+      { bank: 'BRI', number: '7604 0102 9091 532', holder: 'Fifi Mufida Syamra' }
+    ]
   }
 };

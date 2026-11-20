@@ -69,7 +69,7 @@
     if (!key) return 'before';
     const dayStart = countdownDate(key, config.timeZone), eveStart = countdownDate(addDays(key, -1), config.timeZone);
     const sessionEnds = (config.reception?.sessions || []).map(session => session?.end);
-    const ends = [config.akad?.end, config.reception?.end, ...sessionEnds].map(validDate).filter(end => end && end > dayStart);
+    const ends = [config.reception?.end, ...sessionEnds].map(validDate).filter(end => end && end > dayStart);
     const dayEnd = ends.length ? new Date(Math.max(...ends)) : countdownDate(addDays(key, 1), config.timeZone);
     return now >= dayEnd ? 'after' : now >= dayStart ? 'day' : now >= eveStart ? 'eve' : 'before';
   };
@@ -89,7 +89,7 @@
     const base = isDateOnly(config.date) ? null : validDate(config.date);
     // Event names follow the invitation, e.g. "Baralek (Resepsi Pernikahan)".
     const named = (event, fallback) => event?.title ? event.title + (event.subtitle ? ` (${event.subtitle})` : '') : fallback;
-    const events = [['akad',named(config.akad,'Akad Nikah')],['reception',named(config.reception,'Resepsi Pernikahan')]].flatMap(([key,title],i) => {
+    const events = [['reception',named(config.reception,'Resepsi Pernikahan')]].flatMap(([key,title],i) => {
       const event = config[key] || {};
       const start = validDate(event.start) || (i === 0 ? base : null);
       if (!start) return [];

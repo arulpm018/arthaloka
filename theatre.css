@@ -55,23 +55,18 @@ html.invitation-locked #cover .cover-top { text-shadow: 0 2px 14px #1a0509; }
 .site-header :is(.header-note, .edition) { transition: opacity .8s ease 1.9s; }
 html.invitation-locked .site-header :is(.header-note, .edition) { opacity: 0; transition: none; }
 
-/* End credits: a calm roll inside a softly masked screen. */
+/* End credits: a calm roll inside a softly masked screen; credits.js scrolls it, and the guest
+   can scroll it too. */
 #credits { justify-content: center; gap: 22px; }
 .credits-screen {
   position: relative; width: min(520px, 100%); height: min(62svh, 540px); overflow: hidden;
   -webkit-mask: linear-gradient(transparent, #000 13%, #000 87%, transparent);
   mask: linear-gradient(transparent, #000 13%, #000 87%, transparent);
 }
-.credits-roll {
-  text-align: center; will-change: transform;
-  transform: translateY(var(--credits-from, 600px));
-}
-.credits-roll.is-rolling { animation: credits-roll var(--credits-duration, 40s) linear both; }
-.credits-roll.is-paused { animation-play-state: paused; }
-@keyframes credits-roll {
-  from { transform: translateY(var(--credits-from, 600px)); }
-  to { transform: translateY(var(--credits-to, -1500px)); }
-}
+.credits-screen { overflow-y: auto; scrollbar-width: none; touch-action: pan-y; }
+.credits-screen::-webkit-scrollbar { display: none; }
+/* A screen of empty space before and after, so the roll enters from below and leaves at the top. */
+.credits-roll { text-align: center; padding-block: min(62svh, 540px); }
 .credits-roll :is(p, h3, ul) { margin: 0; }
 .credits-block { padding: 0 10px 62px; }
 .credits-block:last-child { padding-bottom: 0; }
@@ -82,11 +77,9 @@ html.invitation-locked .site-header :is(.header-note, .edition) { opacity: 0; tr
 .credits-roll .credits-note { margin-top: 2px; font: italic 16px/1.55 var(--serif); color: #e4d6c5c7; }
 .credits-roll .credits-list { list-style: none; padding: 0; margin-top: 8px; display: grid; gap: 6px; }
 .credits-list li { font: 500 19px/1.45 var(--serif); color: #faf1e8; overflow-wrap: anywhere; }
-.credits-list .credits-role { display: block; font: 500 9px/1.8 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: #c9a96eb3; }
-.credits-list .credits-role + span { display: block; margin-bottom: 8px; }
 .credits-controls { min-height: 44px; }
-.credits-static .credits-screen { height: auto; -webkit-mask: none; mask: none; }
-.credits-static .credits-roll { transform: none; animation: none; }
+.credits-static .credits-screen { height: auto; overflow: visible; -webkit-mask: none; mask: none; }
+.credits-static .credits-roll { padding-block: 0; }
 
 /* Curtain call over the credits: thanks, then an invitation to raise the curtain again. The thanks
    sit mid-curtain, so the shade gathers there too. */

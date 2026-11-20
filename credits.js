@@ -1,4 +1,5 @@
-/* End credits: a slow film-style roll, then the curtain closes with a thank-you. */
+/* End credits: a slow film-style roll the guest can also scroll, then the curtain closes with a
+   thank-you. */
 (() => {
   'use strict';
   const SPEED = 42; // px per second, a calm credits pace
@@ -29,13 +30,10 @@
         person(bride.title || 'Mempelai Wanita', bride, 'Putri'),
         person(groom.title || 'Mempelai Pria', groom, 'Putra')
       ];
-      const inviters = (config.inviters || []).filter(Boolean);
-      if (inviters.length) blocks.push(block(node('p', 'credits-label', 'Turut Mengundang'), list(inviters.map(name => node('li', '', name)))));
-      const thanks = (config.thanks || []).filter(item => item?.name);
-      if (thanks.length) {
-        blocks.push(block(node('p', 'credits-label', 'Dengan Terima Kasih Kepada'), list(thanks.map(item => {
-          const li = node('li'); li.append(node('span', 'credits-role', item.role || ''), node('span', '', item.name)); return li;
-        }))));
+      const inviters = (config.inviters || []).filter(group => group?.names?.length);
+      if (inviters.length) {
+        blocks.push(block(node('p', 'credits-label', 'Turut Mengundang'), ...(config.invitersNote ? [node('p', 'credits-note', config.invitersNote)] : [])));
+        inviters.forEach(group => blocks.push(block(node('p', 'credits-label', group.title || ''), list(group.names.map(name => node('li', '', name))))));
       }
       blocks.push(block(node('p', 'credits-label', 'Bintang Tamu Istimewa'),
         node('p', 'credits-name', guest || 'Seluruh keluarga, sahabat, dan tamu undangan')));
@@ -43,31 +41,37 @@
       blocks.push(block(node('p', 'credits-note', farewell), node('p', 'credits-label', monogram)));
       roll.replaceChildren(...blocks);
 
-      // ---- Roll playback: runs only while the screen is in view ----
+      // ---- Roll playback: the screen is a real scroll area. It rolls by itself while in view and
+      // steps aside whenever the guest scrolls it, picking up again from where they left it. ----
+      const HOLD = 2500; // ms of quiet after the guest's last touch before the roll resumes
       let started = false, finished = false, visible = false, userPaused = false, timer = 0;
+      let position = 0, last = 0, heldUntil = 0, frame = 0;
       const still = () => reducedMotion.matches;
-      function measure() {
-        const from = screen.clientHeight, height = roll.offsetHeight;
-        roll.style.setProperty('--credits-from', `${from}px`);
-        roll.style.setProperty('--credits-to', `${-height}px`);
-        roll.style.setProperty('--credits-duration', `${((from + height) / SPEED).toFixed(1)}s`);
+      const end = () => screen.scrollHeight - screen.clientHeight;
+      function step(now) {
+        frame = 0;
+        if (still() || !visible || userPaused || finished) return;
+        if (now >= heldUntil) {
+          // After the guest scrolled, continue from their position.
+          if (Math.abs(screen.scrollTop - position) > 2) position = screen.scrollTop;
+          position = Math.min(end(), position + SPEED * Math.min(now - last, 100) / 1000);
+          screen.scrollTop = position;
+        }
+        last = now;
+        if (screen.scrollTop >= end() - 1) { finished = true; sync(); closeCurtain(); return; }
+        frame = requestAnimationFrame(step);
       }
       function sync() {
         section.classList.toggle('credits-static', still());
         toggle.hidden = still() || !started || finished;
         toggle.setAttribute('aria-pressed', String(userPaused));
         toggle.querySelector('span').textContent = userPaused ? 'Lanjutkan credit' : 'Jeda credit';
-        roll.classList.toggle('is-paused', !visible || userPaused);
-        if (!still() && visible && !started && !finished) {
-          started = true; measure();
-          roll.classList.remove('is-rolling'); void roll.offsetWidth; roll.classList.add('is-rolling');
-          sync();
-        }
+        if (!still() && visible && !started && !finished) { started = true; position = screen.scrollTop = 0; }
+        if (!frame && started) { last = performance.now(); frame = requestAnimationFrame(step); }
       }
-      roll.addEventListener('animationend', event => {
-        if (event.target !== roll) return;
-        finished = true; sync(); closeCurtain();
-      });
+      const hold = () => { heldUntil = performance.now() + HOLD; };
+      ['wheel', 'touchstart', 'touchmove', 'pointerdown', 'keydown'].forEach(type => screen.addEventListener(type, hold, { passive: true }));
+      screen.tabIndex = 0;
       toggle.addEventListener('click', () => { userPaused = !userPaused; sync(); });
       new IntersectionObserver(([entry]) => { visible = entry.isIntersecting && entry.intersectionRatio >= .5; sync(); },
         { threshold: [0, .5, 1] }).observe(screen);

@@ -88,7 +88,7 @@
 #gallery .vv-booth-florals img { width: 100%; height: auto; transform-origin: 50% 90%; animation: vvGalleryFloralSway 6.8s ease-in-out infinite; }
 @keyframes vvGalleryFloralSway { 0%,100% { transform: translateY(2px) rotate(-1.2deg); } 50% { transform: translateY(-3px) rotate(1.2deg); } }
 #gallery .vv-gallery-controls { min-height: 48px; margin-top: 14px; display: flex; align-items: center; justify-content: center; }
-#gallery .vv-gallery-controls .button { min-width: 140px; min-height: 44px; padding: 10px 19px; font-size: 11px; border-radius: 24px; }
+#gallery .vv-gallery-controls .button { min-width: 140px; }
 #gallery .vv-gallery-controls svg { width: 16px; height: 16px; }
 #gallery .vv-gallery-status { min-height: 24px; max-width: 360px; margin: 10px auto 0; padding: 0 8px; font: 11px/1.8 var(--sans); color: #d3c4af; text-align: center; }
 #gallery .vv-gallery-signoff { margin: 22px auto 0; color: #bba483; font: italic 17px var(--serif); }

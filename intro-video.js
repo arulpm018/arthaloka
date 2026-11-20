@@ -12,6 +12,15 @@
   const PUSH = 'transform 2.8s cubic-bezier(.45,.05,.25,1)';
   const PUSH_IN = 1.12;
   const STILL_FADE = 'opacity .7s ease';
+  // The film plays faster than it was rendered; the keyframes below stay in film time.
+  const SPEED = 1.5;
+  // Name captions above each closeup: [film second, x, y] of the caption's centre as fractions
+  // of the frame, following the head as the shot drifts. Shown between the first and last key.
+  const NAME_TRACKS = {
+    bride: [[14.4, .66, .2], [15, .64, .19], [15.5, .615, .18], [16, .595, .172], [16.5, .575, .165], [17, .575, .162], [17.3, .6, .162], [17.6, .66, .162], [17.9, .73, .162]],
+    groom: [[19.5, .3, .19], [19.6, .34, .19], [19.8, .4, .19], [20, .444, .19], [20.2, .475, .19], [20.4, .494, .19], [20.6, .503, .19], [20.8, .503, .187], [21, .503, .172], [21.2, .503, .157]]
+  };
+  const NAME_FADE = .35;
 
   // Homography taking the four src points onto the four dst points (row-major 3x3).
   function homography(src, dst) {
@@ -51,6 +60,22 @@
       const skipLink = document.querySelector('.skip-link');
       if (!film || !video || !still || !plate || !stage || !start || !skip || !open) return null;
       const media = [video, still, plate];
+      const names = [...film.querySelectorAll('[data-intro-name]')].map(node => ({ node, track: NAME_TRACKS[node.dataset.introName] }));
+      let nameFrame = 0;
+      // Each caption sits on its track at the film's current time and fades at both ends.
+      function placeNames() {
+        const t = video.currentTime;
+        names.forEach(({ node, track }) => {
+          const first = track[0][0], last = track[track.length - 1][0];
+          if (phase !== 'video' || t <= first || t >= last) { node.style.opacity = 0; return; }
+          const i = track.findIndex(key => key[0] > t), [t0, x0, y0] = track[i - 1], [t1, x1, y1] = track[i];
+          const f = (t - t0) / (t1 - t0);
+          node.style.left = `${(x0 + (x1 - x0) * f) * 100}%`;
+          node.style.top = `${(y0 + (y1 - y0) * f) * 100}%`;
+          node.style.opacity = Math.min(1, (t - first) / NAME_FADE, (last - t) / NAME_FADE);
+        });
+        nameFrame = phase === 'video' ? requestAnimationFrame(placeNames) : 0;
+      }
       // A guest whose connection cannot keep the film going this long gets the envelope instead.
       const STALL_LIMIT = 8000;
       let phase, stallTimer, handoffTimers = [];
@@ -127,6 +152,7 @@
         skip.hidden = true;
         open.hidden = false;
         setPhase('envelope');
+        placeNames();
         handOff();
         pointSkipLink(open, 'Ke tombol Buka Undangan');
         open.focus({ preventScroll: true });
@@ -141,7 +167,9 @@
         load(still);
         load(plate);
         watchStall();
+        video.playbackRate = SPEED;
         video.play().catch(toEnvelope);
+        if (!nameFrame) placeNames();
       }
 
       setPhase('curtain');
@@ -149,6 +177,7 @@
       start.hidden = false;
       pointSkipLink(start, 'Ke tombol Buka Tirai');
       // Reduced motion never plays the film, so it is not downloaded either.
+      video.defaultPlaybackRate = SPEED;
       if (!reducedMotion.matches) video.src = video.dataset.src;
 
       start.addEventListener('click', () => {

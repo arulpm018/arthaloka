@@ -1,6 +1,4 @@
 /* Time-based states: the H-1 / hari H ribbon and the live-stream invitation. */
-/* On H-1 and hari H the ribbon takes the eyebrow's place, keeping the cover's height. */
-#cover .phase-ribbon:not([hidden]) + .eyebrow { display: none; }
 #cover .phase-ribbon {
   display: flex; width: fit-content; align-items: center; gap: 9px; margin: 0 auto 16px; padding: 7px 16px 7px 14px;
   border: 1px solid #c9a96e; border-radius: 999px; background: #2b081266; backdrop-filter: blur(4px);
@@ -12,8 +10,6 @@
 html[data-phase='day'] #cover .phase-ribbon::before { animation: phase-glow 1.8s ease-in-out infinite; }
 #cover .cover-live { display: flex; width: fit-content; margin: 12px auto 0; }
 #cover .cover-live[hidden] { display: none; }
-/* The live button replaces the small note under "Buka Undangan" on the day. */
-#cover .cover-live:not([hidden]) + .little-note { display: none; }
 
 .live-dot {
   width: 8px; height: 8px; flex: none; border-radius: 50%; background: #e0475b; box-shadow: 0 0 0 0 #e0475b88;

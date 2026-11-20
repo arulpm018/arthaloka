@@ -20,6 +20,45 @@
   left: 89.706%; top: 32.162%; width: 10.196%; transform-origin: 8% 100%;
   animation-duration: 8.4s; animation-delay: -3.2s; animation-direction: alternate-reverse;
 }
+/* Ciluk ba: Fifi and Arul rise together, slowly, from behind the top edge of the card (phones
+   have room above the card, not beside it), then sway a little. No fade: the card itself hides
+   them until they are up. --peek-hide: how far a bust sinks (in % of its own height) to vanish
+   behind the card. Positions come from .claude/peek-build.py. */
+#names .names-peek-bust {
+  position: absolute; z-index: 1; width: 60%; height: auto; transform-origin: 50% 60%;
+  animation: vvPeekRise 2.6s cubic-bezier(.22,.61,.36,1) 1.3s backwards, vvPeekSway 6s ease-in-out 3.9s infinite;
+}
+#names .names-peek-bride { left: -.98%; top: -23.08%; --peek-hide: 51%; }
+#names .names-peek-groom { left: 38.73%; top: -23.53%; --peek-hide: 52%; animation-direction: normal, reverse; }
+/* Until the card is on screen they stay behind it, so they rise again on every visit. */
+.js #names .names-art:not(.is-visible) .names-peek-bust { animation: none; transform: translateY(var(--peek-hide)); }
+@keyframes vvPeekRise { from { transform: translateY(var(--peek-hide)); } }
+@keyframes vvPeekSway {
+  0%, 100% { transform: none; }
+  30% { transform: rotate(1.2deg); }
+  70% { transform: rotate(-1.2deg); }
+}
+/* More flowers around the card: sprigs and roses behind its sides, a garland along the foot of
+   the envelope. Every flower outside the card blooms (grows from nothing, with a little
+   overshoot) once the card is on screen, one after another, then sways. Bloom uses `scale` and
+   the new flowers sway with `rotate`, so neither disturbs the other or the older `transform`
+   sway. Layout numbers match .claude/flowers-preview.py. */
+#names .names-bloom {
+  z-index: 1; rotate: var(--angle, 0deg); scale: var(--flip, 1) 1;
+  animation: vvBloomSway 7.5s ease-in-out var(--sway-delay, 0s) infinite;
+}
+#names :is(.names-bloom, .names-art-out) { transition: scale 1.6s cubic-bezier(.34,1.45,.64,1) var(--bloom-delay, 1.2s); }
+.js #names .names-art:not(.is-visible) :is(.names-bloom, .names-art-out) { scale: 0; transition: none; }
+#names .names-bloom-right { --flip: -1; }
+#names .names-bloom-sprig { width: 30%; left: -8%; top: 17%; --angle: -14deg; --bloom-delay: .9s; }
+#names .names-bloom-sprig.names-bloom-right { left: 78%; --angle: 14deg; --bloom-delay: 1.05s; --sway-delay: -3s; }
+#names .names-bloom-rose { width: 34%; left: -15%; top: 47%; --bloom-delay: 1.5s; --sway-delay: -1.5s; }
+#names .names-bloom-rose.names-bloom-right { left: 81%; --bloom-delay: 1.65s; --sway-delay: -5s; }
+#names .names-bloom-garland { z-index: 3; width: 84%; left: 8%; top: 84.5%; --bloom-delay: 2s; --sway-delay: -2s; }
+@keyframes vvBloomSway {
+  0%,100% { rotate: calc(var(--angle, 0deg) - 1.5deg); }
+  50% { rotate: calc(var(--angle, 0deg) + 1.5deg); }
+}
 /* vines printed on the card */
 #names .names-art-vine { z-index: 3; animation: vvArtVine 9s ease-in-out infinite; }
 #names .names-art-vine-left { left: 10.196%; top: 33.059%; width: 21.471%; transform-origin: 18% 100%; }
@@ -72,5 +111,5 @@
   50% { transform: rotate(.55deg); }
 }
 @media (prefers-reduced-motion:reduce) {
-  #names .names-art-layer { animation: none !important; }
+  #names .names-art-layer { animation: none !important; transition: none !important; }
 }

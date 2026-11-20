@@ -10,7 +10,7 @@
 /* The whole frame, sized to cover one viewport and centred on it; the film clips what spills
    over. It never rescales when the cover grows for the envelope; anything below it falls into
    the film's own dark ground. */
-.intro-film :is(video, .intro-still, .intro-plate) {
+.intro-film :is(video, .intro-still, .intro-plate, .intro-names) {
   position: absolute; object-fit: cover; object-position: 50% 50%; max-width: none;
   width: max(100%, 56.25vh); width: max(100%, 56.25svh);
   height: max(100vh, 177.78vw); height: max(100svh, 177.78vw);
@@ -26,13 +26,31 @@
 /* Wide screens: the portrait film stands as a centred column that fades into the dark
    (centred with margins, so transform stays free for the push-in). */
 @media (min-aspect-ratio: 2/3) {
-  .intro-film :is(video, .intro-still, .intro-plate) {
+  .intro-film :is(video, .intro-still, .intro-plate, .intro-names) {
     top: 0; left: 0; right: 0; margin: 0 auto; width: auto; max-width: 100%; aspect-ratio: 9 / 16;
     height: 100vh; height: 100svh;
     -webkit-mask: linear-gradient(90deg, #0000, #000 9%, #000 91%, #0000);
     mask: linear-gradient(90deg, #0000, #000 9%, #000 91%, #0000);
   }
 }
+/* Name captions over the film: the layer has the frame's exact box, so intro-video.js places
+   each caption in frame fractions and it follows the closeup. Sized with the frame. */
+.intro-film .intro-names { container-type: inline-size; -webkit-mask: none; mask: none; }
+.intro-names .intro-name {
+  position: absolute; left: 50%; top: 20%; margin: 0; opacity: 0; transform: translate(-50%, -50%);
+  display: grid; justify-items: center; white-space: nowrap; will-change: left, top, opacity;
+  font: 400 15vw/1.1 var(--script); font-size: 15cqw; color: #5c0f22; padding: 0 .3em;
+  text-shadow: 0 1px 0 #fff3d299, 0 0 18px #ffedbfcc;
+}
+.intro-names .intro-name small {
+  margin-top: -.1em; padding-left: .34em;
+  font: 600 2.8vw/1.4 var(--serif); font-size: 2.8cqw; letter-spacing: .34em; text-transform: uppercase; color: #6b1a2a;
+}
+.intro-names .intro-name small::before, .intro-names .intro-name small::after {
+  content: ''; display: inline-block; vertical-align: middle; width: 2.2em; height: 1px; margin: 0 .8em .15em;
+  background: linear-gradient(90deg, #6b1a2a00, #6b1a2a);
+}
+.intro-names .intro-name small::after { background: linear-gradient(90deg, #6b1a2a, #6b1a2a00); }
 /* Dimmed behind the envelope so the copy reads; the foot melts into the film's ground. */
 .intro-film::after {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100vh; height: 100svh;
@@ -76,14 +94,9 @@
 }
 #cover.intro-envelope #cover-title { font-size: clamp(40px, 7svh, 88px); }
 #cover.intro-envelope .cover-subtitle { font-size: clamp(21px, 3.3svh, 32px); }
-#cover.intro-envelope .cover-top > .eyebrow { margin-bottom: clamp(6px, 1.4svh, 16px); }
 /* The bouquet rises about a quarter of the envelope's width above it. */
 #cover.intro-envelope .opening-stage { width: var(--env-w); margin: calc(var(--env-w) * .25) auto clamp(6px, 1.6svh, 28px); }
 #cover.intro-envelope .cover-bottom .button { margin-top: clamp(8px, 1.6svh, 25px); }
-#cover.intro-envelope .little-note { margin-top: clamp(4px, 1.2svh, 16px); }
-@media (max-height: 740px) {
-  #cover.intro-envelope .little-note { display: none; }
-}
 @media (max-height: 600px) {
   #cover.intro-envelope { --env-w: min(440px, 78vw, 32vh); --env-w: min(440px, 78vw, 32svh); padding-top: calc(var(--header-safe-top, 124px) - 30px); }
   #cover.intro-envelope #cover-title { font-size: 34px; }
