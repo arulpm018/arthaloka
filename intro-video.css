@@ -1,0 +1,102 @@
+/* Opening film (intro-video.js): the curtain parts on it, and it ends on the burgundy envelope
+   lying on the table. #cover moves through .intro-curtain -> .intro-video -> .intro-envelope;
+   the film's picture keeps the push-in transform intro-video.js sets on it. */
+#cover .intro-film {
+  position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none;
+  background: radial-gradient(90% 70% at 50% 40%, #3a0d1c, #14050a 78%);
+  opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility 0s .8s;
+}
+#cover:is(.intro-curtain, .intro-video, .intro-envelope) .intro-film { opacity: 1; visibility: visible; transition: none; }
+/* The whole frame, sized to cover one viewport and centred on it; the film clips what spills
+   over. It never rescales when the cover grows for the envelope; anything below it falls into
+   the film's own dark ground. */
+.intro-film :is(video, .intro-still, .intro-plate) {
+  position: absolute; object-fit: cover; object-position: 50% 50%; max-width: none;
+  width: max(100%, 56.25vh); width: max(100%, 56.25svh);
+  height: max(100vh, 177.78vw); height: max(100svh, 177.78vw);
+  left: calc(50% - max(50%, 28.125vh)); left: calc(50% - max(50%, 28.125svh));
+  top: calc(50vh - max(50vh, 88.89vw)); top: calc(50svh - max(50svh, 88.89vw));
+}
+.intro-film :is(.intro-still, .intro-plate) { opacity: 0; transition: opacity .7s ease; }
+#cover.intro-envelope .intro-still.is-ready { opacity: 1; }
+/* Once the envelope lifts off, the table behind it is the same frame without card or envelope,
+   out of focus. */
+.intro-film .intro-plate { transition: opacity 1.1s ease; }
+#cover.intro-envelope:not(.intro-handoff) .intro-plate.is-ready { opacity: 1; }
+/* Wide screens: the portrait film stands as a centred column that fades into the dark
+   (centred with margins, so transform stays free for the push-in). */
+@media (min-aspect-ratio: 2/3) {
+  .intro-film :is(video, .intro-still, .intro-plate) {
+    top: 0; left: 0; right: 0; margin: 0 auto; width: auto; max-width: 100%; aspect-ratio: 9 / 16;
+    height: 100vh; height: 100svh;
+    -webkit-mask: linear-gradient(90deg, #0000, #000 9%, #000 91%, #0000);
+    mask: linear-gradient(90deg, #0000, #000 9%, #000 91%, #0000);
+  }
+}
+/* Dimmed behind the envelope so the copy reads; the foot melts into the film's ground. */
+.intro-film::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100vh; height: 100svh;
+  background: linear-gradient(180deg, #14050acc 0%, #14050a73 26%, #14050a59 52%, #14050ab3 80%, #14050a 100%);
+  opacity: 0; transition: opacity 1.2s ease;
+}
+#cover.intro-envelope .intro-film::after { opacity: 1; }
+/* A quiet gold pulse while the film buffers, instead of a frozen frame. */
+.intro-film::before {
+  content: ''; position: absolute; z-index: 1; left: 50%; top: 50%; width: 34px; height: 34px; margin: -17px;
+  border: 1px solid #c9a96e40; border-top-color: #e7c886; border-radius: 50%;
+  opacity: 0; transition: opacity .3s ease;
+}
+.intro-film.is-buffering::before { opacity: 1; animation: intro-buffering .9s linear infinite; }
+@keyframes intro-buffering { to { transform: rotate(1turn); } }
+
+/* While the film plays the cover copy steps aside; only "Lewati animasi" stays. */
+#cover.intro-video :is(.cover-top, .cover-bottom, .cover-corner) {
+  opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .5s ease, visibility 0s .5s;
+}
+#cover #skip-intro { text-shadow: 0 1px 8px #14050a; }
+/* Corners would otherwise sink behind the film once the gate opens. */
+#cover .cover-corner { z-index: 2; }
+
+/* Hand-off: the cover envelope fades in laid exactly over the one in the last frame (pose set
+   by intro-video.js), lying still and without its own shadow... */
+#cover.intro-handoff .opening-stage { animation: intro-envelope-in .5s ease both; }
+#cover.intro-handoff :is(.opening-envelope, .envelope-bouquet) { animation: none; }
+#cover.intro-handoff .opening-envelope { filter: none; }
+@keyframes intro-envelope-in { from { opacity: 0; } }
+/* ...then lifts off: its shadow grows and it sways as on the original cover. */
+#cover.intro-envelope .opening-envelope { transition: filter 1.8s ease; }
+/* The envelope screen fits one viewport, laptop or phone, so "Buka Undangan" never needs a
+   scroll: the envelope, the title and the spacing scale with the screen's height. */
+#cover.intro-envelope {
+  --env-w: min(440px, 78vw, 36vh); --env-w: min(440px, 78vw, 36svh);
+  min-height: 100vh; min-height: 100svh;
+  padding-top: calc(var(--header-safe-top, 124px) - 18px);
+  padding-bottom: max(16px, 2.5svh, env(safe-area-inset-bottom));
+  gap: clamp(6px, 1.6svh, 18px);
+}
+#cover.intro-envelope #cover-title { font-size: clamp(40px, 7svh, 88px); }
+#cover.intro-envelope .cover-subtitle { font-size: clamp(21px, 3.3svh, 32px); }
+#cover.intro-envelope .cover-top > .eyebrow { margin-bottom: clamp(6px, 1.4svh, 16px); }
+/* The bouquet rises about a quarter of the envelope's width above it. */
+#cover.intro-envelope .opening-stage { width: var(--env-w); margin: calc(var(--env-w) * .25) auto clamp(6px, 1.6svh, 28px); }
+#cover.intro-envelope .cover-bottom .button { margin-top: clamp(8px, 1.6svh, 25px); }
+#cover.intro-envelope .little-note { margin-top: clamp(4px, 1.2svh, 16px); }
+@media (max-height: 740px) {
+  #cover.intro-envelope .little-note { display: none; }
+}
+@media (max-height: 600px) {
+  #cover.intro-envelope { --env-w: min(440px, 78vw, 32vh); --env-w: min(440px, 78vw, 32svh); padding-top: calc(var(--header-safe-top, 124px) - 30px); }
+  #cover.intro-envelope #cover-title { font-size: 34px; }
+  #cover.intro-envelope .cover-subtitle { font-size: 18px; }
+}
+/* The last frame holds a beat with the copy away... */
+#cover.intro-holding :is(.cover-top, .cover-bottom) { opacity: 0; visibility: hidden; }
+/* ...then the shot settles while the copy arrives; "Buka Undangan" lands with it. */
+#cover.intro-arriving .cover-top { animation: intro-rise 1.1s var(--vv-ease) .6s both; }
+#cover.intro-arriving .cover-bottom { animation: intro-rise 1.1s var(--vv-ease) 1.3s both; }
+@keyframes intro-rise { from { opacity: 0; transform: translate3d(0, 26px, 0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  #cover.intro-arriving :is(.cover-top, .cover-bottom) { animation: none; }
+  .intro-film.is-buffering::before { animation: none; }
+}

@@ -1,0 +1,85 @@
+/* Keep the letter compact: a softly arched border has fixed-height end caps. */
+#names .names-composition { --names-pocket-height: clamp(160px,50vw,240px); }
+#names .names-card { padding: 24px 24px calc(var(--names-pocket-height) * .72); }
+#names .names-oval { padding-block: 48px; margin-top: 19px; }
+#names .oval-rule, #names .oval-rule::after { border-radius: 50% / 60px; }
+#names .names-copy .eyebrow { margin-bottom: 16px; }
+#names .names-copy h2 { line-height: 1.25; }
+#names .names-date-divider { margin: 14px auto 8px; }
+
+/* Give each full name the width of the card, instead of a narrow column. */
+#couple .profile-pair { grid-template-columns: minmax(0,1fr); gap: 30px; }
+#couple .profile-amp { position: static; transform: none; margin: 0 auto; }
+#couple .profile-portrait { width: min(170px,65%); }
+#couple .profile-copy h3 {
+  font-size: clamp(1.75rem,6.5vw,2.25rem); line-height: 1.65;
+  white-space: nowrap; overflow-wrap: normal; padding-inline: 8px;
+}
+#couple .profile-copy [data-fullname] {
+  white-space: nowrap; overflow-wrap: normal; max-width: none;
+}
+#couple .profile-copy [data-fullname='groom'] { word-spacing: .22em; }
+/* Short oval caps let the paper follow its content without a tall empty ellipse. */
+#verse .verse-card {
+  width: min(720px,100%); min-height: 0; height: auto;
+  padding: clamp(80px,14vw,116px) 0;
+}
+#verse .verse-copy { width: calc(100% - clamp(48px,12vw,120px)); }
+#verse .verse-card h2 { margin-top: 10px; }
+#verse .verse-card .small-rule { margin: 15px auto; }
+#verse #verse-arabic {
+  font-family: 'Noto Naskh Arabic','Amiri','Traditional Arabic',Tahoma,serif;
+  font-size: clamp(.875rem,4.6vw,1.75rem); line-height: 2;
+  direction: rtl; unicode-bidi: isolate; letter-spacing: normal;
+  word-break: normal; overflow-wrap: normal; text-align: center;
+  width: 100%;
+}
+#verse .verse-arabic-line { display: block; white-space: nowrap; }
+#verse .verse-wrap-lines .verse-arabic-line { white-space: normal; }
+#verse #verse-translation { font-size: 1rem; line-height: 1.8; margin-top: 18px; }
+#verse .verse-end { margin-top: 16px; }
+#verse .verse-reference-florals { width: 66%; max-width: 420px; }
+#verse .verse-reference-top { left: auto; right: -11%; top: -24px; }
+#verse .verse-reference-bottom { left: -11%; bottom: -28px; }
+
+/* The artwork is fetched early and has one entrance, then remains available. */
+#invitation-content #forever .closing-art[data-vv-motion].motion-visible {
+  animation-duration: .8s; animation-delay: 0s;
+}
+#forever .closing-flowers.floral-anchor {
+  width: 92%; max-width: 460px; bottom: -20px;
+  --floral-duration: 7.4s; --floral-phase: -2s;
+}
+#forever .closing-art { margin-bottom: 46px; }
+
+/* Remove only dark paper pigment; the original building and clouds remain. */
+#celebration .venue-artwork {
+  background: transparent; isolation: isolate;
+  -webkit-mask-image: radial-gradient(ellipse farthest-side at center,#000 82%,transparent 100%);
+  mask-image: radial-gradient(ellipse farthest-side at center,#000 82%,transparent 100%);
+}
+#celebration .venue-art {
+  filter: url('#venue-ink-filter'); mix-blend-mode: normal; opacity: 1;
+}
+.venue-filter-definitions { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+
+@media (max-width:600px) {
+  #verse { padding-inline: 12px; }
+  #couple .profile-panel .panel-content { padding-inline: 30px; }
+  #couple .profile-copy h3 { padding-inline: 4px; }
+  #names .names-card { padding: 20px 16px calc(var(--names-pocket-height) * .72); }
+  #names .names-oval { padding-block: 40px; }
+  #names .oval-rule, #names .oval-rule::after { border-radius: 50% / 48px; }
+}
+@media (prefers-reduced-motion:no-preference) {
+  #date-title > .celebration-drift,
+  #celebration-title > .celebration-drift {
+    transform-origin: 50% 65%;
+    animation: vvFeatureTitleSway 4.4s ease-in-out -.6s infinite;
+  }
+  #celebration-title > .celebration-drift { animation-delay: -2.2s; animation-duration: 4.8s; }
+  @keyframes vvFeatureTitleSway {
+    0%,100% { transform: translateY(3px) rotate(-2deg); }
+    50% { transform: translateY(-5px) rotate(2deg); }
+  }
+}

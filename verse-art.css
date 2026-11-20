@@ -1,0 +1,109 @@
+/* Written in the Stars, painted edition: the reference card rebuilt from image slices.
+   Source canvas is 1200 px wide; --u is one source pixel at the current card width.
+   Top cap + repeating middle + bottom cap let the card grow with the text, so the
+   verse stays readable on phones while wide screens keep the reference proportions. */
+#verse .verse-art {
+  --u: calc(100cqw / 1200);
+  position: relative; width: min(860px, 100%); max-width: 100%; margin-inline: auto;
+  container-type: inline-size; isolation: isolate;
+}
+#verse .verse-art-frame { position: absolute; inset: 0; z-index: 0; pointer-events: none; filter: drop-shadow(0 16px 24px #0000008c); }
+#verse .verse-art-frame > i { position: absolute; left: 0; right: 0; display: block; }
+#verse .vaf-top { top: 0; height: calc(260 * var(--u)); background: url('assets/decorations/verse-art/frame-top.webp') 0 0 / 100% 100% no-repeat; }
+#verse .vaf-bottom { bottom: 0; height: calc(248 * var(--u)); background: url('assets/decorations/verse-art/frame-bottom.webp') 0 0 / 100% 100% no-repeat; }
+#verse .vaf-mid {
+  top: calc(260 * var(--u) - 1px); bottom: calc(248 * var(--u) - 1px);
+  background: url('assets/decorations/verse-art/frame-tile.webp') 0 0 / 100% auto;
+  background-repeat: no-repeat round;
+}
+#verse .verse-art-frame > .vaf-side {
+  top: 50%; right: auto; width: calc(116 * var(--u)); height: calc(144 * var(--u));
+  background: url('assets/decorations/verse-art/frame-side.webp') 0 0 / 100% 100% no-repeat;
+  transform: translateY(-50%);
+}
+#verse .verse-art-frame > .vaf-side-right { left: auto; right: 0; transform: translateY(-50%) scaleX(-1); }
+
+/* Bouquets on two corners, swaying from where they are tied to the card */
+#verse .verse-art-flowers { position: absolute; z-index: 2; height: auto; max-width: none; pointer-events: none; will-change: transform; }
+#verse .verse-art-flowers-tr {
+  left: 70.417%; top: calc(8 * var(--u)); width: 33.417%;
+  transform-origin: 69.3% 43%; animation: vvVerseBouquet 8s ease-in-out -2s infinite;
+}
+#verse .verse-art-flowers-bl {
+  left: -1.5%; bottom: calc(15 * var(--u)); width: 29%;
+  transform-origin: 44.8% 65.7%; animation: vvVerseBouquet 9s ease-in-out -5.5s infinite reverse;
+}
+
+/* Live lettering */
+#verse .verse-art-copy {
+  position: relative; z-index: 3; width: auto; margin: 0;
+  padding: calc(165 * var(--u)) calc(124 * var(--u)) calc(232 * var(--u));
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+#verse .verse-art-copy > .eyebrow {
+  font: 600 clamp(10px, calc(19 * var(--u)), 14px)/1.4 'Cormorant Garamond', var(--serif);
+  letter-spacing: .28em; text-indent: .28em; text-transform: uppercase; color: #43342f; margin: 0;
+}
+#verse .verse-art-rule { display: block; height: auto; background: center / 100% 100% no-repeat; }
+#verse .verse-art-rule-long {
+  width: calc(361 * var(--u)); min-width: 150px; aspect-ratio: 361 / 26;
+  margin: max(4px, calc(8 * var(--u))) 0 max(6px, calc(16 * var(--u)));
+  background-image: url('assets/decorations/verse-art/rule-long.webp');
+}
+#verse .verse-art-rule-short {
+  width: calc(213 * var(--u)); min-width: 96px; aspect-ratio: 213 / 31;
+  margin: max(4px, calc(12 * var(--u))) 0 max(8px, calc(20 * var(--u)));
+  background-image: url('assets/decorations/verse-art/rule-short.webp');
+}
+#verse .verse-art-title { margin: 0; }
+#verse .verse-art-copy #verse-title {
+  font: 500 clamp(23px, calc(44 * var(--u)), 33px)/1.15 'Cormorant Garamond', var(--serif);
+  color: #6b2539; letter-spacing: .01em; margin: 0; overflow-wrap: normal;
+}
+#verse .verse-art-copy #verse-arabic {
+  width: 100%; margin: 0; color: #1c1815; text-align: center;
+  font-family: 'Noto Naskh Arabic', 'Traditional Arabic', serif; font-weight: 600;
+  font-size: clamp(19px, calc(56 * var(--u)), 40px); line-height: 1.95;
+}
+#verse .verse-art-copy .verse-arabic-line { display: block; white-space: nowrap; }
+#verse .verse-art-copy .verse-wrap-lines .verse-arabic-line { white-space: normal; }
+#verse .verse-ayah {
+  display: inline-grid; place-items: center; width: 1.62em; height: 1.66em;
+  margin-inline-start: .3em; vertical-align: -.42em; font-size: .7em; line-height: 1; font-weight: 600;
+  background: url('assets/decorations/verse-art/ayah-ring.webp') center / contain no-repeat;
+}
+#verse .verse-art-copy #verse-translation {
+  font: 400 clamp(14.5px, calc(24 * var(--u)), 17.5px)/1.88 'EB Garamond', 'Cormorant Garamond', var(--serif);
+  color: #3a2d2a; margin: max(10px, calc(30 * var(--u))) 0 0; max-width: 62em;
+}
+
+/* gentle drift: each line moves on its own clock */
+#verse .verse-float, #verse .verse-art-copy .verse-arabic-line { display: block; animation: vvVerseDrift 7.2s ease-in-out infinite; }
+#verse .verse-art-copy > .eyebrow .verse-float { display: inline-block; animation-delay: -1.1s; }
+#verse #verse-title.verse-float { animation-duration: 6.6s; animation-delay: -3s; }
+#verse .verse-arabic-line:nth-child(1) { animation-duration: 7.6s; animation-delay: -.6s; }
+#verse .verse-arabic-line:nth-child(2) { animation-duration: 8.2s; animation-delay: -3.4s; }
+#verse .verse-arabic-line:nth-child(3) { animation-duration: 7.9s; animation-delay: -5.2s; }
+#verse #verse-translation.verse-float { animation: vvVerseDriftSoft 9s ease-in-out -2.4s infinite; }
+
+/* narrow cards: keep the last lines clear of the lower bouquet */
+@container (max-width: 620px) {
+  #verse .verse-art-copy { padding-inline: calc(118 * var(--u)); padding-bottom: calc(372 * var(--u)); }
+}
+
+@keyframes vvVerseBouquet {
+  0%,100% { transform: rotate(-1.7deg); }
+  50% { transform: rotate(1.5deg) translateY(-1px); }
+}
+@keyframes vvVerseDrift {
+  0%,100% { transform: translateY(1.5px) rotate(-.35deg); }
+  50% { transform: translateY(-3px) rotate(.35deg); }
+}
+@keyframes vvVerseDriftSoft {
+  0%,100% { transform: translateY(1px); }
+  50% { transform: translateY(-2.5px); }
+}
+.js #verse:not(.in-view) :is(.verse-art-flowers, .verse-float, .verse-arabic-line) { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  #verse :is(.verse-art-flowers, .verse-float, .verse-arabic-line) { animation: none !important; }
+}

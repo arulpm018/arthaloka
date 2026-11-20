@@ -1,0 +1,8 @@
+/* Minang touches: adat titles above the names and the Baralek subtitle. */
+#couple .profile-copy .profile-role {
+  margin: 0 0 2px; padding-left: .3em;
+  font: 500 10px/1.8 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: #d9bf8c;
+}
+#invitation-content #celebration .event-block > .event-subtitle {
+  margin: -6px auto 4px; font: italic clamp(.95rem, 3.4vw, 1.05rem)/1.6 var(--serif); color: #e9d8bf;
+}

@@ -1,0 +1,76 @@
+/* The Beginning, painted edition: the reference artwork split into layers.
+   Flowers behind the card and the vines printed on it sway from their stems;
+   the lettering is live text (names/date come from wedding-config.js) and floats.
+   Canvas = 1020 x 1337 px of the source art; all positions are % of it. */
+#names .names-art {
+  position: relative; width: min(470px,100%); max-width: 100%;
+  aspect-ratio: 1020 / 1337; margin-inline: auto;
+  container-type: inline-size; isolation: isolate;
+}
+#names .names-art img { display: block; max-width: none; pointer-events: none; user-select: none; }
+#names .names-art-base {
+  position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2;
+  filter: drop-shadow(0 14px 22px #0000008c);
+}
+#names .names-art-layer { position: absolute; height: auto; will-change: transform; }
+/* flowers outside the card stay behind it */
+#names .names-art-out { z-index: 1; animation: vvArtSway 7.5s ease-in-out infinite; }
+#names .names-art-out-left { left: 1.569%; top: 32.162%; width: 8.333%; transform-origin: 92% 100%; }
+#names .names-art-out-right {
+  left: 89.706%; top: 32.162%; width: 10.196%; transform-origin: 8% 100%;
+  animation-duration: 8.4s; animation-delay: -3.2s; animation-direction: alternate-reverse;
+}
+/* vines printed on the card */
+#names .names-art-vine { z-index: 3; animation: vvArtVine 9s ease-in-out infinite; }
+#names .names-art-vine-left { left: 10.196%; top: 33.059%; width: 21.471%; transform-origin: 18% 100%; }
+#names .names-art-vine-right {
+  left: 68.235%; top: 33.059%; width: 21.275%; transform-origin: 82% 100%;
+  animation-duration: 10s; animation-delay: -4.4s; animation-direction: alternate-reverse;
+}
+
+/* Live lettering laid exactly over the blank stationery */
+#names .names-art-copy { position: absolute; inset: 0; z-index: 4; width: auto; margin: 0; padding: 0; }
+#names .names-art-copy > * {
+  position: absolute; left: 0; right: .5%; height: 0; margin: 0; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; white-space: nowrap; overflow: visible;
+}
+/* `top` puts each word's ink centre on the source lettering; `right` nudges the
+   optical centre (script capitals overhang to the left). */
+#names .names-art-copy > .names-art-eyebrow {
+  top: 15.98%; right: .45%; font: 500 2.32cqw/1 var(--serif); letter-spacing: .21em; text-indent: .21em;
+  text-transform: uppercase; color: #8f6c41;
+}
+#names .names-art-copy > h2 {
+  font-family: 'Pinyon Script','Great Vibes',var(--script); font-weight: 400;
+  line-height: 1; letter-spacing: 0; color: #5a1525;
+  -webkit-text-stroke: .012em #5a1525; text-shadow: 0 1px 0 #fff9;
+}
+#names .names-art-copy > .name-bride { top: 29.05%; right: 3.73%; font-size: 16.5cqw; }
+#names .names-art-copy > .name-groom { top: 51.91%; right: 7.06%; font-size: 15cqw; }
+#names .names-art-copy > .couple-amp {
+  top: 40.73%; right: 1.67%; gap: 0; font: 400 8cqw/1 'Great Vibes',var(--script); color: #ad8443;
+}
+#names .names-art-copy > .couple-amp > span {
+  background: linear-gradient(170deg,#dcbd7e 15%,#a87d3c 60%,#8a6229); -webkit-background-clip: text;
+  background-clip: text; -webkit-text-fill-color: transparent; padding: .1em .08em;
+}
+#names .names-art-copy > .couple-amp::before, #names .names-art-copy > .couple-amp::after { content: none; }
+#names .names-art-copy > .names-date-line { top: 64.98%; right: .31%; }
+#names .names-art-copy .date-short {
+  font: 500 2.32cqw/1 var(--serif); letter-spacing: .18em; text-indent: .18em;
+  text-transform: uppercase; color: #8f6c41; padding: 0;
+}
+#names .names-art-copy .names-script-float { padding-inline: .1em; }
+
+@keyframes vvArtSway {
+  0%,100% { transform: rotate(-1.8deg); }
+  50% { transform: rotate(1.6deg) translateY(-1px); }
+}
+@keyframes vvArtVine {
+  0%,100% { transform: rotate(-.55deg); }
+  50% { transform: rotate(.55deg); }
+}
+@media (prefers-reduced-motion:reduce) {
+  #names .names-art-layer { animation: none !important; }
+}

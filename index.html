@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#20271B">
+<title>The Wedding of Fifi &amp; Arul</title>
+<meta name="description" content="Sebuah undangan, sebuah awal. Dengan cinta dan rasa syukur, kami mengundang Anda untuk merayakan hari bahagia kami.">
+<!-- Preview link WhatsApp/Telegram/Facebook. Pengirim preview tidak menjalankan JavaScript,
+     jadi tanggal di sini ditulis langsung. Setelah undangan online, ganti og:image dengan
+     alamat lengkap (WhatsApp tidak membaca alamat relatif), misalnya
+     https://domain-kamu/assets/og/preview.jpg, dan isi og:url dengan alamat undangan. -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="id_ID">
+<meta property="og:site_name" content="The Wedding of Fifi &amp; Arul">
+<meta property="og:title" content="The Wedding of Fifi &amp; Arul">
+<meta property="og:description" content="Sabtu, 26 Desember 2026. Dengan cinta dan rasa syukur, kami mengundang Anda untuk merayakan hari bahagia kami.">
+<meta property="og:image" content="assets/og/preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ilustrasi Fifi dan Arul berbusana adat burgundy di depan tirai beludru, bertuliskan The Wedding of Fifi &amp; Arul, Sabtu 26 Desember 2026">
+<!-- <meta property="og:url" content="https://domain-kamu/"> -->
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23401426'/%3E%3Cpath d='M12 23h40v27H12zM12 23l20 15 20-15' fill='none' stroke='%23B8A078' stroke-width='2'/%3E%3Cpath d='M25 15c0-7 7-5 7-1 0-4 7-6 7 1 0 4-7 8-7 8s-7-4-7-8' fill='%23FAF1E8'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/decorations/stage.webp" as="image"><link rel="preload" href="assets/decorations/songket/tirai.webp" as="image" media="(max-aspect-ratio: 3/4)"><link rel="preload" href="assets/decorations/songket/tirai-lebar.webp" as="image" media="(min-aspect-ratio: 3/4)">
+<link rel="preload" href="assets/illustrations/closing-fifi-arul-portraits.webp" as="image" fetchpriority="low">
+<link rel="preload" href="assets/decorations/closing-orchid-garland.webp" as="image" fetchpriority="low">
+<link crossorigin="anonymous" href="assets/fonts/sacramento-regular.ttf" type="font/ttf" as="font" rel="preload"><link rel="stylesheet" href="styles.css?v=20261014-opening-heading"><style id="velvet-reference-motion">
+/* Reference rhythm: rising stationery, staggered handwriting, quiet flowers. */
+@font-face {
+  font-family: 'Sacramento';
+  src: url('assets/fonts/sacramento-regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+:root { --script: 'Sacramento', 'Great Vibes', cursive; --vv-ease: cubic-bezier(.22,.61,.36,1); }
+.script, #cover-title { font-family: var(--script); font-weight: 400; letter-spacing: 0; }
+#couple .profile-copy h3 { font-size: clamp(29px, 3.2vw, 38px); line-height: 1.35; }
+#couple-title { font-size: clamp(29px, 3.6vw, 40px); overflow-wrap: anywhere; }
+#date-title, #celebration-title { font-size: clamp(43px, 5vw, 57px); line-height: 1.3; }
+#date-weekday, #date-month, .event-block h3, .venue-details h3 { font-weight: 600; }
+#date-weekday { font-style: normal; }
+#date-number { font-weight: 500; font-variant-numeric: lining-nums; }
+#invitation-content :is(.intro-text, .greeting, .parents, .event-block > p, .venue-details > p, #closing-text, .closing-greeting) {
+  color: #FDF5E6; font-size: 15px; line-height: 1.8;
+}
+#invitation-content .ivory-paper p { color: var(--burgundy); }
+#verse-translation { font-size: 17px; line-height: 1.8; }
+.event-block h3 { padding-bottom: 13px; margin-bottom: 0; }
+.profile-copy h3 { padding-bottom: 6px; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate3d(0,72px,0); }
+  to { opacity: 1; transform: translate3d(0,0,0); }
+}
+@keyframes vvTextRise {
+  from { opacity: 0; transform: translate3d(0,20px,0); }
+  to { opacity: 1; transform: translate3d(0,0,0); }
+}
+@keyframes vvPortraitReveal {
+  from { opacity: 0; transform: translate3d(0,18px,0) scale(.95); }
+  to { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes vvFade { from { opacity: 0; } to { opacity: 1; } }
+
+
+/* Page-load fallback also works when the observer enhancement is unavailable. */
+#invitation-content .reveal { animation: fadeInUp 1.4s var(--vv-ease) both; }
+.js #invitation-content .reveal { animation: none; transition: none; opacity: 1; transform: none; }
+.js #invitation-content .reveal.is-visible { animation: fadeInUp 1.4s var(--vv-ease) both; }
+.js #invitation-content .reveal:not(.is-visible) { opacity: 0; }
+
+[data-vv-motion='text'], .vv-line { animation: vvTextRise 1s var(--vv-ease) var(--vv-delay,0s) backwards; }
+[data-vv-motion='portrait'] { animation: vvPortraitReveal 1.4s var(--vv-ease) var(--vv-delay,.15s) backwards; transform-origin: center bottom; }
+[data-vv-motion='fade'] { animation: vvFade 1s ease var(--vv-delay,0s) backwards; }
+.vv-motion-ready #invitation-content [data-vv-motion], .vv-motion-ready #invitation-content .vv-line { animation: none; }
+.vv-motion-ready #invitation-content [data-vv-motion]:not([data-vv-motion='sequence']):not(.motion-visible),
+.vv-motion-ready #invitation-content [data-vv-motion='sequence']:not(.motion-visible) > .vv-line { opacity: 0; }
+.vv-motion-ready #invitation-content [data-vv-motion='text'].motion-visible,
+.vv-motion-ready #invitation-content [data-vv-motion='sequence'].motion-visible > .vv-line {
+  animation: vvTextRise 1s var(--vv-ease) var(--vv-delay,0s) backwards;
+}
+.vv-motion-ready #invitation-content [data-vv-motion='portrait'].motion-visible {
+  animation: vvPortraitReveal 1.4s var(--vv-ease) var(--vv-delay,.15s) backwards;
+}
+.vv-motion-ready #invitation-content [data-vv-motion='fade'].motion-visible { animation: vvFade 1s ease var(--vv-delay,0s) backwards; }
+/* Remove the earlier profile transition so one timeline owns each portrait. */
+.js #couple .profile-panel :is(.profile-portrait, .profile-copy) { transition: none; transform: none; }
+.js #couple .profile-panel .profile-copy { opacity: 1; }
+.js #couple .profile-panel .profile-amp { transition: none; }
+
+#cover:not(.is-opening) .cover-top h1 { animation: vvTextRise 1.2s var(--vv-ease) 1.1s both; }
+#cover:not(.is-opening) .cover-subtitle { animation: vvTextRise 1.1s var(--vv-ease) 1.35s both; }
+.js #invitation-content .scene:not(.in-view) *,
+.motion-suspended #invitation-content *, .motion-suspended #cover * { animation-play-state: paused !important; }
+
+.btn, .button, button { transition: all .3s ease; }
+.button:focus-visible, .btn:focus-visible, button:focus-visible { box-shadow: 0 4px 15px rgba(212,175,55,.4); }
+@media (hover:hover) and (pointer:fine) {
+  .button:not(:disabled):hover, .btn:not(:disabled):hover, button:not(:disabled):hover {
+    transform: translateY(-3px); box-shadow: 0 4px 15px rgba(212,175,55,.4);
+  }
+}
+button:not(:disabled):active, .button:active { transform: translateY(0); }
+@media (max-width:370px) {
+  #couple .profile-copy h3 { font-size: 26px; }
+  #date-title, #celebration-title { font-size: 39px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #invitation-content *, #cover .cover-top > * { animation: none !important; }
+  .js #invitation-content .reveal,
+  .vv-motion-ready #invitation-content [data-vv-motion],
+  .vv-motion-ready #invitation-content [data-vv-motion='sequence'] > .vv-line,
+  .js #couple .profile-panel :is(.profile-portrait, .profile-copy, .profile-amp) { opacity: 1 !important; }
+  .js #invitation-content .reveal, #invitation-content [data-vv-motion='text'],
+  #invitation-content [data-vv-motion='portrait'], #invitation-content .vv-line { transform: none !important; }
+  .button:not(:disabled):hover, .btn:not(:disabled):hover, button:not(:disabled):hover { transform: none; }
+}
+
+/* Reading-tour control stays separate from music and clear of card content. */
+html.vv-auto-scrolling, html.vv-auto-scrolling * { scroll-behavior: auto !important; }
+.auto-scroll-toggle {
+  position: fixed; left: max(15px, env(safe-area-inset-left));
+  bottom: max(18px, env(safe-area-inset-bottom)); z-index: 26;
+  min-height: 44px; padding: 10px 15px; display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid #d5c3a585; border-radius: 24px;
+  background: #20271be8; backdrop-filter: blur(8px); color: #faf1e8;
+  font: 11px/1.4 var(--sans); box-shadow: 0 4px 18px #0003;
+}
+.auto-scroll-toggle svg { width: 16px; height: 16px; stroke: #d6bf94; stroke-width: 1.6; }
+.auto-scroll-toggle .auto-pause, .auto-scroll-toggle[aria-pressed='true'] .auto-play { display: none; }
+.auto-scroll-toggle[aria-pressed='true'] .auto-pause { display: block; }
+
+
+/* Position belongs to the anchor; only its image sways. */
+#invitation-content .floral-anchor {
+  position: absolute; display: block; height: auto; max-height: none;
+  pointer-events: none; z-index: 2; line-height: 0;
+  transform: rotate(var(--floral-angle, 0deg)) scaleX(var(--floral-mirror, 1));
+  transform-origin: center; animation: none;
+}
+#invitation-content .floral-anchor > .floral-sway {
+  display: block; position: static; width: 100%; max-width: none; height: auto;
+  object-fit: contain; pointer-events: none;
+  transform-origin: 30% 35%;
+  animation: vvFloralSway var(--floral-duration, 9s) ease-in-out var(--floral-phase, 0s) infinite;
+}
+@keyframes vvFloralSway {
+  0%, 100% { transform: translate3d(-1px,0,0) rotate(-2.2deg); }
+  50% { transform: translate3d(2px,-4px,0) rotate(2.2deg); }
+}
+
+/* Bouquets sit on the stationery edge, away from reading and action areas. */
+#names .names-envelope-bouquet.floral-anchor {
+  width: 108%; max-width: none; left: -4%; bottom: 94px; z-index: 1;
+  --floral-duration: 6.8s; --floral-phase: -3s;
+}
+#verse .verse-flower-top.floral-anchor {
+  width: 32%; right: -2%; top: 26px;
+  --floral-angle: 8deg; --floral-duration: 6.2s; --floral-phase: -1.5s;
+}
+#verse .verse-flower-bottom.floral-anchor {
+  width: 32%; left: -2%; bottom: 22px;
+  --floral-angle: -8deg; --floral-mirror: -1; --floral-duration: 6.8s; --floral-phase: -5s;
+}
+#verse .verse-card { padding-bottom: 120px; }
+#couple .panel-flower.floral-anchor {
+  width: 26%; max-width: 148px; top: 22px; right: 4%;
+  --floral-angle: 6deg; --floral-duration: 5.9s; --floral-phase: -2s;
+}
+#couple .profile-panel .panel-content { padding-top: 120px; }
+
+#date .date-flower-top.floral-anchor,
+#date .date-flower-bottom.floral-anchor { width: min(190px, 52%); left: 0; right: 0; margin-inline: auto; }
+#date .date-flower-top.floral-anchor {
+  top: -24px; --floral-angle: -5deg; --floral-duration: 5.3s; --floral-phase: -1s;
+}
+#date .date-flower-bottom.floral-anchor {
+  bottom: 4px; --floral-angle: 5deg; --floral-mirror: -1;
+  --floral-duration: 6.2s; --floral-phase: -4s;
+}
+#date .date-panel .panel-content { padding-top: 100px; padding-bottom: 100px; }
+#date .date-actions { margin-top: 94px; position: relative; z-index: 4; }
+
+#celebration .event-flower.floral-anchor {
+  width: 36%; max-width: 168px; top: 44px; right: 4%;
+  --floral-angle: 6deg; --floral-duration: 6.5s; --floral-phase: -3s;
+}
+#celebration .event-flower-left.floral-anchor {
+  width: 36%; max-width: 168px; top: 16px; left: 4%;
+  --floral-angle: -6deg; --floral-mirror: -1; --floral-duration: 5.6s; --floral-phase: -6s;
+}
+#celebration .event-panel .panel-content { padding-top: 150px; }
+
+#forever .closing-flowers.floral-anchor {
+  width: min(300px, 74%); left: 0; right: 0; margin-inline: auto; bottom: -18px; z-index: 3;
+  --floral-duration: 7.4s; --floral-phase: -2s;
+}
+#forever .closing-art { margin-bottom: 40px; }
+
+@media (max-width:760px) {
+  #names .names-envelope-bouquet.floral-anchor { bottom: 89px; }
+  #verse .verse-flower-top.floral-anchor { top: 22px; }
+  #verse .verse-card { padding-bottom: 108px; }
+  #couple .panel-flower.floral-anchor { width: 30%; top: 18px; right: 5%; }
+  #couple .profile-panel .panel-content { padding-top: 100px; }
+  #date .date-flower-top.floral-anchor { top: -20px; }
+  #date .date-flower-bottom.floral-anchor { bottom: 6px; }
+  #date .date-panel .panel-content { padding-top: 86px; padding-bottom: 86px; }
+  #date .date-actions { margin-top: 86px; }
+  #celebration .event-flower.floral-anchor { top: 32px; }
+  #celebration .event-flower-left.floral-anchor { top: 12px; }
+  #celebration .event-panel .panel-content { padding-top: 122px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #invitation-content .floral-anchor > .floral-sway { animation: none !important; transform: none; }
+}
+
+/* Continuous paper-illustration motion is separate from entrance animation. */
+#couple .vv-sway-profile {
+  display: flow-root; position: relative; transform-origin: 50% 86%;
+  animation: vvProfileRock 5.8s ease-in-out -.7s infinite;
+}
+#couple .groom-profile .vv-sway-profile { animation-duration: 6.4s; animation-delay: -2.8s; }
+#forever .vv-sway-couple {
+  display: block; position: relative; width: 100%; z-index: 2;
+  transform-origin: 50% 96%;
+  animation: vvCoupleRock 6.8s ease-in-out -1.2s infinite;
+}
+#forever-title > span {
+  display: inline-block; max-width: 100%; transform-origin: 50% 70%;
+  animation: vvNameFloat 5.6s ease-in-out -.4s infinite;
+}
+#forever-title > [data-name='groom'] { animation-delay: -2.5s; animation-duration: 6.2s; }
+#forever-title > .closing-amp { animation-delay: -1.6s; }
+#celebration .venue-artwork {
+  /* Move the complete composited artwork, never the blended image alone. */
+  transform-origin: 50% 75%;
+  animation: vvVenueFloat 7s ease-in-out -1.4s infinite;
+}
+@keyframes vvProfileRock {
+  0%, 100% { transform: translate3d(-2px,0,0) rotate(-1.5deg); }
+  50% { transform: translate3d(2px,-3px,0) rotate(1.5deg); }
+}
+@keyframes vvCoupleRock {
+  0%, 100% { transform: translate3d(-2px,0,0) rotate(-.9deg); }
+  50% { transform: translate3d(2px,-3px,0) rotate(.9deg); }
+}
+@keyframes vvNameFloat {
+  0%, 100% { transform: translate3d(0,1px,0) rotate(-.35deg); }
+  50% { transform: translate3d(0,-3px,0) rotate(.35deg); }
+}
+@keyframes vvVenueFloat {
+  0%, 100% { transform: translate(-1px,0) rotate(-.45deg); }
+  50% { transform: translate(1px,-3px) rotate(.45deg); }
+}
+@media (prefers-reduced-motion:reduce) {
+  #couple .vv-sway-profile, #forever .vv-sway-couple,
+  #forever-title > span, #celebration .venue-artwork { animation: none !important; transform: none; }
+}
+
+/* Entry gate: short screens can scroll the cover to reach the open button. */
+html.invitation-locked, html.invitation-locked body { height: 100%; overflow: hidden; }
+html.invitation-locked main {
+  height: 100vh; height: 100dvh; overflow-x: hidden; overflow-y: auto;
+  overscroll-behavior-y: contain; scroll-behavior: auto;
+}
+html.invitation-locked #invitation-content,
+html.invitation-locked #scene-nav,
+html.invitation-locked #auto-scroll-toggle { display: none !important; }
+
+/* Text wraps and cards grow; borders never hide or truncate the wording. */
+main, #invitation-content, .scene { min-width: 0; max-width: 100%; }
+.scene :is(h1,h2,h3,p,label,figcaption,.eyebrow,.button) {
+  min-width: 0; max-width: 100%; white-space: normal;
+  overflow-wrap: anywhere; word-break: normal;
+}
+.scene :is(.script,h1) { padding-inline: .18em; }
+.scene :is(.cover-top,.cover-bottom,.panel-content,.profile-pair,.profile-copy,.closing-copy,.section-intro,.date-actions) {
+  min-width: 0; max-width: 100%;
+}
+.scene-number { width: calc(100% - 56px); text-align: center; white-space: normal; line-height: 1.7; }
+.scene .button { min-width: min(175px,100%); max-width: 100%; padding-inline: clamp(12px,3vw,26px); }
+.scene .button svg { flex: 0 0 18px; }
+#cover .cover-top, #cover .cover-bottom { width: min(100%,560px); }
+#cover-title { font-size: clamp(44px,8vw,88px); }
+#cover .opening-decorative-card .opening-card-heading { left: 12%; right: 12%; }
+#cover .opening-card-heading .script { font-size: clamp(18px,4.5vw,24px); overflow-wrap: anywhere; }
+
+/* Preserve the original die-cut artwork. Fixed end caps keep its narrow
+   crown and foot out of the text area, even on very long family/event cards. */
+#invitation-content .ornamental { max-width: 100%; height: auto; }
+#invitation-content .ornamental:before {
+  inset: 0; background: none;
+  border: solid transparent; border-width: 120px 30px 110px;
+  border-image-source: url('assets/decorations/ornamental.svg');
+  border-image-slice: 150 60 150 60 fill;
+  border-image-width: 120px 30px 110px;
+  border-image-repeat: stretch;
+}
+#couple .profile-panel .panel-content,
+#date .date-panel .panel-content,
+#celebration .event-panel .panel-content {
+  padding: 150px 46px 140px;
+}
+#date-title, #celebration-title { font-size: clamp(32px,6.2vw,53px); }
+#couple-title { font-size: clamp(28px,4vw,38px); }
+#couple .profile-copy h3 { font-size: clamp(28px,3.2vw,35px); }
+#couple .profile-pair { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 28px; }
+#couple .profile-amp { width: 28px; text-align: center; left: calc(50% - 14px); transform: none; }
+#date .date-number { font-size: clamp(64px,15vw,110px); }
+#celebration .event-block, #celebration .venue-details { min-width: 0; }
+#celebration .event-block h3 { font-size: clamp(24px,5.5vw,28px); }
+
+/* Flow-based name card: its paper and envelope extend with the full text. */
+#names .names-composition {
+  width: min(440px,100%); max-width: 100%; height: auto; padding-bottom: 60px;
+}
+#names .names-card {
+  position: relative; left: auto; top: auto; width: 88%; margin-inline: auto;
+  min-height: 0; height: auto; padding: 28px 20px 160px;
+}
+#names .names-oval { position: relative; padding-block: var(--ellipse-pad,140px); }
+#names .oval-rule { inset: 0; border-radius: 50%; }
+#names .names-copy { width: 72%; margin-inline: auto; padding: 0; }
+#names .names-copy h2 { font-size: clamp(32px,7.2vw,50px); line-height: 1.3; }
+#names .names-copy .eyebrow { margin-bottom: 20px; letter-spacing: .12em; }
+#names .date-short { font-size: clamp(12px,2.7vw,14px); letter-spacing: .04em; }
+#names .couple-amp { margin: 10px auto; }
+
+/* The oval grows around its central text block, including the full verse. */
+#verse .verse-card {
+  width: min(470px,calc(100% - 24px)); max-width: 100%; min-height: 0;
+  height: auto; padding: var(--ellipse-pad,140px) 0; display: block;
+}
+#verse .verse-copy { position: relative; width: 70%; margin-inline: auto; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+#verse .arabic-text { font-size: clamp(22px,4.5vw,27px); line-height: 2.1; }
+#verse-title { overflow-wrap: normal; }
+#forever .closing-copy { width: min(100%,535px); padding-inline: 12px; }
+#forever-title { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; font-size: clamp(34px,7vw,53px); line-height: 1.4; }
+#forever-title > span { min-width: 0; max-width: calc(100% - 12px); padding-inline: .15em; }
+#forever .closing-art, #forever footer { max-width: 100%; }
+#rsvp .rsvp-card { max-width: 100%; padding: 85px clamp(22px,5vw,42px) 56px; }
+#rsvp .rsvp-card h2 { font-size: clamp(32px,6vw,43px); }
+#rsvp form, #rsvp input, #rsvp select, #rsvp textarea { min-width: 0; max-width: 100%; }
+#rsvp textarea { resize: vertical; }
+
+@media (max-width:600px) {
+  #couple .profile-pair { grid-template-columns: minmax(0,1fr); gap: 30px; margin-top: 58px; }
+  #couple .profile-portrait { width: min(154px,80%); }
+  #couple .profile-amp { position: static; width: auto; margin: 0 auto; transform: none; }
+  #couple .profile-copy h3 { font-size: clamp(28px,6.5vw,34px); }
+  #invitation-content .ornamental:before { border-width: 100px 24px; border-image-width: 100px 24px; }
+  #couple .profile-panel .panel-content,
+  #date .date-panel .panel-content,
+  #celebration .event-panel .panel-content { padding: 128px 28px 128px; }
+  #names .names-card { width: 92%; padding-inline: 14px; }
+  #names .names-copy { width: 72%; }
+  #verse .verse-copy { width: 70%; }
+}
+@media (max-width:370px) {
+  .scene { padding-inline: 20px; }
+  #couple .profile-panel .panel-content,
+  #date .date-panel .panel-content,
+  #celebration .event-panel .panel-content { padding-inline: 28px; }
+}
+
+/* Reference oval: live text, round paper lace, independently swaying florals. */
+#verse .verse-card {
+  width: min(500px,calc(100% - 12px)); background: none; border: 0;
+  outline: 0; border-radius: 0; box-shadow: none; isolation: isolate;
+  padding: var(--ellipse-pad,180px) 0;
+}
+#verse .verse-lace-frame {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  z-index: -1; pointer-events: none; overflow: visible;
+}
+#verse .verse-copy { width: 62%; z-index: 1; }
+#verse .verse-copy p { color: #342720; }
+#verse .verse-end { display: block; margin-top: 24px; font-size: 30px; color: #655239; }
+#verse .verse-reference-florals {
+  position: absolute; left: -4%; width: 108%; aspect-ratio: 1122 / 1402;
+  pointer-events: none; z-index: 2;
+}
+#verse .verse-reference-top {
+  top: 0;
+  clip-path: polygon(0 0,100% 0,100% 60%,60% 60%,60% 27%,0 27%);
+}
+#verse .verse-reference-bottom {
+  bottom: 0;
+  clip-path: polygon(0 27%,60% 27%,60% 60%,100% 60%,100% 100%,0 100%);
+}
+#verse .verse-reference-florals img { width: 100%; height: 100%; object-fit: contain; }
+#verse .verse-reference-top img {
+  transform-origin: 78% 20%; animation: vvVerseOrchidSway 6.4s ease-in-out -1.2s infinite;
+}
+#verse .verse-reference-bottom img {
+  transform-origin: 28% 78%; animation: vvVerseRoseSway 7.2s ease-in-out -3s infinite;
+}
+@keyframes vvVerseOrchidSway {
+  0%,100% { transform: translate(0,1px) rotate(-1.1deg); }
+  50% { transform: translate(2px,-3px) rotate(1.1deg); }
+}
+@keyframes vvVerseRoseSway {
+  0%,100% { transform: translate(0,0) rotate(.9deg); }
+  50% { transform: translate(-2px,-3px) rotate(-.9deg); }
+}
+@media (prefers-reduced-motion:reduce) {
+  #verse .verse-reference-florals img { animation: none !important; transform: none; }
+}
+
+/* Slide 03 only: a softly shaped burgundy card with botanical end garlands.
+   Fixed-height end caps keep the live text inside the border as the card grows. */
+#couple .profile-panel {
+  background: none; border: 0; box-shadow: none; isolation: isolate;
+}
+#invitation-content #couple .profile-panel:before {
+  inset: 0; background: none; border-radius: 0;
+  border: solid transparent; border-width: 160px 32px;
+  border-image-source: url('assets/decorations/profile-reference-frame.svg');
+  border-image-slice: 210 54 210 54 fill;
+  border-image-width: 160px 32px; border-image-repeat: stretch;
+}
+#couple .profile-panel:after { display: none; }
+#couple .profile-panel .panel-content { padding: 190px 46px 240px; }
+#couple .profile-reference-florals {
+  position: absolute; left: 0; width: 100%; aspect-ratio: 2 / 3;
+  pointer-events: none; z-index: 2;
+}
+#couple .profile-reference-top { top: -18px; clip-path: inset(0 0 50% 0); }
+#couple .profile-reference-bottom { bottom: -18px; clip-path: inset(50% 0 0 0); }
+#couple .profile-reference-florals img { width: 100%; height: 100%; object-fit: contain; }
+#couple .profile-reference-top img {
+  transform-origin: 50% 12%; animation: vvProfileGarlandTop 6.8s ease-in-out -1.4s infinite;
+}
+#couple .profile-reference-bottom img {
+  transform-origin: 50% 90%; animation: vvProfileGarlandBottom 7.6s ease-in-out -3.2s infinite;
+}
+@keyframes vvProfileGarlandTop {
+  0%,100% { transform: translateY(1px) rotate(-.6deg); }
+  50% { transform: translateY(-3px) rotate(.6deg); }
+}
+@keyframes vvProfileGarlandBottom {
+  0%,100% { transform: translateY(-1px) rotate(.5deg); }
+  50% { transform: translateY(2px) rotate(-.5deg); }
+}
+@media (max-width:600px) {
+  #invitation-content #couple .profile-panel:before {
+    border-width: 120px 24px; border-image-width: 120px 24px;
+  }
+  #couple .profile-panel .panel-content {
+    padding: max(146px,calc(45vw - 34px)) 28px max(154px,calc(50vw - 36px));
+  }
+  #couple .profile-reference-top { top: -12px; }
+  #couple .profile-reference-bottom { bottom: -12px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #couple .profile-reference-florals img { animation: none !important; transform: none; }
+}
+/* Responsive type safety: text stays live and cards grow with their content. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+.site-header {
+  display: grid; grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 16px; height: auto; min-height: 100px; padding-block: 20px;
+}
+.site-header .brand {
+  /* Size the circle with its type, including browser text enlargement. */
+  font-size: clamp(1rem,.8rem + .4vw,1.125rem);
+  width: max-content; height: auto; min-width: 3.75em; min-height: 3.75em;
+  aspect-ratio: 1; padding: .5em; flex: none; justify-self: start;
+}
+.site-header .brand .monogram {
+  display: block; width: max-content; max-width: none; margin: 0;
+  font-size: 1em; line-height: 1; white-space: nowrap;
+  overflow-wrap: normal; word-break: normal; text-align: center;
+}
+.monogram { white-space: nowrap; line-height: 1.2; }
+.site-header .header-note {
+  position: static; transform: none; justify-self: center; text-align: center;
+}
+.site-header .edition { justify-self: end; text-align: right; }
+.site-header :is(.header-note,.edition) {
+  min-width: 0; max-width: 100%; white-space: normal;
+  overflow-wrap: anywhere; line-height: 1.8;
+}
+#cover { padding-top: max(125px,var(--header-safe-top,0px)); }
+.scene :is(h1,h2,h3,p,label,figcaption,.eyebrow,.scroll-hint,.text-button),
+.toast,.skip-link,.noscript-note {
+  overflow-wrap: break-word; overflow-wrap: anywhere; word-break: normal;
+}
+.scene :is(.profile-person,.event-block,.venue-details,.names-copy,.verse-copy,footer) {
+  min-width: 0; max-width: 100%;
+}
+/* Give the handwritten strokes and multiline titles room above and below. */
+.scene :is(h1,h2,h3,.script) { height: auto; min-width: 0; }
+#cover-title { line-height: 1.35; }
+#verse-title { overflow-wrap: anywhere; line-height: 1.5; }
+.scene .scroll-hint { max-width: 100%; }
+.scene .button {
+  height: auto; white-space: normal; text-align: center; line-height: 1.65;
+}
+.scene .button > span { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.scene .button > svg { align-self: center; }
+.auto-scroll-toggle {
+  max-width: calc(100% - 104px - env(safe-area-inset-left) - env(safe-area-inset-right));
+  height: auto; white-space: normal; text-align: left;
+}
+.auto-scroll-toggle > span { min-width: 0; overflow-wrap: anywhere; }
+.auto-scroll-toggle > svg { flex: 0 0 16px; }
+.scene-nav a span {
+  width: max-content; max-width: min(240px,calc(100vw - 104px));
+  white-space: normal; overflow-wrap: anywhere; line-height: 1.6;
+}
+.skip-link { max-width: calc(100% - 40px); }
+@media (max-width:760px) {
+  .site-header { grid-template-columns: auto minmax(0,1fr); min-height: 85px; }
+  .site-header .header-note { justify-self: end; text-align: right; }
+  .site-header .edition { display: none; }
+  #cover { padding-top: max(117px,var(--header-safe-top,0px)); }
+}
+</style><link rel="stylesheet" href="gallery.css?v=20261024-flash"><link rel="stylesheet" href="date-calendar.css?v=20261012-calendar"><link rel="stylesheet" href="names-reference.css?v=20261014-title-focus"><link rel="stylesheet" href="celebration-reference.css?v=20261014-damask"><link rel="stylesheet" href="matched-stationery.css?v=20261014-damask"><link rel="stylesheet" href="motion-intensity.css?v=20261014-visible-sway"><link rel="stylesheet" href="reading-refinements.css?v=20261014-verse-closing"><link rel="stylesheet" href="gallery-lightbox.css?v=20261014-vintage-frame"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Noto+Naskh+Arabic:wght@500;600&family=Pinyon+Script&display=swap"><link rel="stylesheet" href="names-frame.css?v=20261024-image-layers"><link rel="stylesheet" href="cover-art.css?v=20261118-penutup-2"><link rel="stylesheet" href="verse-art.css?v=20261024-verse-layers-2"><link rel="stylesheet" href="rsvp-gift.css?v=20261024-rsvp-gift"><link rel="stylesheet" href="theatre.css?v=20261118-penutup-2"><link rel="stylesheet" href="minang.css?v=20261115-tanpa-pantun"><link rel="stylesheet" href="phase.css?v=20261024-phase-2"><link rel="stylesheet" href="dress-code.css?v=20261024-dress-row-2"><link rel="stylesheet" href="intro-video.css?v=20261029-satu-layar-4">
+<script src="invitation-gate.js?v=20261029-intro-film"></script><script src="wedding-config.js?v=20261115-volume-45" defer></script><script src="dates.js?v=20261024-sesi" defer></script><script src="motion.js?v=20261029-intro-envelope" defer></script><script src="auto-scroll.js?v=20261029-intro-film" defer></script><script src="gallery-lightbox.js?v=20261014-review" defer></script><script src="gallery.js?v=20261024-eight-photos" defer></script><script src="gallery-sound.js?v=20261024-flash-only" defer></script><script src="curtain.js?v=20261029-intro-film" defer></script><script src="intro-video.js?v=20261029-goyang" defer></script><script src="credits.js?v=20261024-velvet" defer></script><script src="app.js?v=20261115-tanpa-pantun" defer></script>
+<script defer src="frame-layout.js?v=20261014-verse-closing"></script></head>
+<body>
+<div class="stage" aria-hidden="true"></div><div class="stage-shade" aria-hidden="true"></div>
+<div class="loader" aria-hidden="true"><span class="monogram">F &amp; A</span><i></i></div>
+<a class="skip-link" href="#open-invitation">Ke tombol Buka Undangan</a>
+<header class="site-header"><a href="#cover" class="brand" aria-label="Kembali ke sampul"><span class="monogram">F &amp; A</span></a><span class="header-note">A LETTER OF LOVE</span><span class="edition">THE WEDDING INVITATION</span></header>
+<main>
+<section class="scene cover" id="cover" aria-labelledby="cover-title" data-nav="Sampul">
+  <div class="theatre-curtain" aria-hidden="true"><div class="curtain-panel curtain-left"><i class="curtain-fringe"></i></div><div class="curtain-panel curtain-right"><i class="curtain-fringe"></i></div><div class="curtain-valance"><i></i><i></i><i></i><i></i><i></i><b></b><b></b><b></b><b></b><span class="curtain-plaque">A Letter of Love</span></div></div>
+  <div class="intro-film" aria-hidden="true"><video muted playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback tabindex="-1" poster="assets/video/animasi-pembuka-poster.webp" data-src="assets/video/animasi-pembuka.mp4?v=20261031-bersih"></video><img class="intro-still" data-src="assets/video/animasi-pembuka-akhir.webp?v=20261031-bersih" alt="" decoding="async"><img class="intro-plate" data-src="assets/video/animasi-pembuka-latar.webp?v=20261029-halus" alt="" decoding="async"></div>
+  <div class="cover-top"><p class="phase-ribbon" id="phase-ribbon" hidden></p><span class="eyebrow">WITH LOVE, WE INVITE YOU</span><h1 id="cover-title">You’re Invited</h1><p class="script cover-subtitle">to our wedding</p><span class="fine-rule"></span></div>
+  <div class="opening-stage" aria-label="Amplop undangan burgundy bertekstur, dengan buket bunga dan ornamen kipas emas">
+    <div class="opening-envelope">
+      <img class="envelope-bouquet" data-decoration="envelopeBouquet" alt="" aria-hidden="true"><div class="opening-pocket-back"></div><div class="opening-flap"></div>
+      <div class="opening-card-clip"><article class="opening-card opening-decorative-card"><img class="opening-scene-art" data-asset="opening" alt="Ilustrasi kartun pasangan berkacamata dalam busana ivory, di dua bingkai oval pink dengan payung emas"><div class="opening-card-border"></div><svg class="opening-ribbon" viewBox="0 0 1086 1448" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><defs><linearGradient id="ribbon-satin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e0815"/><stop offset=".16" stop-color="#7a2440"/><stop offset=".32" stop-color="#a6486a"/><stop offset=".5" stop-color="#6e1d38"/><stop offset=".82" stop-color="#4a1026"/><stop offset="1" stop-color="#26050f"/></linearGradient><linearGradient id="ribbon-sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".4"/><stop offset=".27" stop-color="#000" stop-opacity=".42"/><stop offset=".32" stop-color="#fff" stop-opacity=".06"/><stop offset=".42" stop-color="#000" stop-opacity=".16"/><stop offset=".53" stop-color="#fff" stop-opacity=".1"/><stop offset=".64" stop-color="#000" stop-opacity=".14"/><stop offset=".69" stop-color="#fff" stop-opacity=".04"/><stop offset=".745" stop-color="#000" stop-opacity=".42"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient><filter id="ribbon-shadow" x="-5%" y="-60%" width="110%" height="220%"><feGaussianBlur stdDeviation="7"/></filter><filter id="ribbon-letter" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1a0408" flood-opacity=".85"/></filter></defs><path d="M-20 1348 C250 1342 420 1354 543 1352 S860 1342 1106 1348 L1106 1414 C860 1408 700 1420 543 1418 S250 1408 -20 1414 Z" fill="#1a0408" opacity=".5" filter="url(#ribbon-shadow)"/><path d="M-20 1336 C250 1330 420 1342 543 1340 S860 1330 1106 1336 L1106 1402 C860 1396 700 1408 543 1406 S250 1396 -20 1402 Z" fill="url(#ribbon-satin)"/><path d="M-20 1336 C250 1330 420 1342 543 1340 S860 1330 1106 1336 L1106 1402 C860 1396 700 1408 543 1406 S250 1396 -20 1402 Z" fill="url(#ribbon-sheen)"/><path d="M-20 1343 C250 1337 420 1349 543 1347 S860 1337 1106 1343 M1106 1395 C860 1389 700 1401 543 1399 S250 1389 -20 1395" fill="none" stroke="#d9b977" stroke-width="2" stroke-dasharray="7 5" opacity=".8"/><text x="543" y="1385" text-anchor="middle" font-family="Sacramento, 'Great Vibes', cursive" font-size="56" fill="#fff6ea" filter="url(#ribbon-letter)"><tspan data-name="bride">Fifi</tspan><tspan fill="#e7c886" font-size="44" dx="6"> &amp; </tspan><tspan data-name="groom" dx="4">Arul</tspan></text><image href="assets/illustrations/opening-card-front.webp" x="0" y="1318" width="1086" height="106"/></svg></article></div>
+      <div class="opening-front"><span class="envelope-line"></span></div><div class="opening-front-fold"></div>
+      <div class="wax-seal envelope-gold-emblem"><img data-decoration="envelopeCrest" alt="" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="cover-bottom"><p class="guest-label">Kepada Yth.</p><p class="guest-name" id="guest-name">Bapak/Ibu/Saudara/i</p><button class="button gold-button" id="open-curtain" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20M4 4v16M20 4v16M4 4c5 0 6 6 3.5 9.5C6 16 5 18 4 20M20 4c-5 0-6 6-3.5 9.5C18 16 19 18 20 20" /></svg><span>Buka Tirai</span></button><button aria-expanded="false" aria-controls="invitation-content" class="button gold-button" id="open-invitation"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1" /><path d="m3 6 9 7 9-7" /></svg><span>Buka Undangan</span></button><a class="button outline-button cover-live" id="cover-live" target="_blank" rel="noopener" hidden><span class="live-dot" aria-hidden="true"></span><span>Tonton Siaran Langsung</span></a><p class="little-note">A beautiful beginning, just for you.</p></div>
+  <button class="skip-animation text-button" id="skip-animation" hidden>Lewati animasi</button>
+  <button class="skip-animation text-button" id="skip-intro" hidden>Lewati animasi</button>
+  <div class="cover-corner corner-left" aria-hidden="true">AN INVITATION<br>TO OUR FOREVER</div><div class="cover-corner corner-right" aria-hidden="true">WITH LOVE<br>&amp; GRATITUDE</div>
+</section>
+<div id="invitation-content">
+<section class="scene names-scene" id="names" aria-labelledby="names-title" data-nav="Mempelai">
+ <div class="scene-number">01 / THE BEGINNING</div>
+ <div class="names-art reveal">
+  <img class="names-art-layer names-art-out names-art-out-left" src="assets/decorations/names-art/out-left.webp" width="85" height="427" alt="" aria-hidden="true" decoding="async">
+  <img class="names-art-layer names-art-out names-art-out-right" src="assets/decorations/names-art/out-right.webp" width="104" height="611" alt="" aria-hidden="true" decoding="async">
+  <img class="names-art-base" src="assets/decorations/names-art/base.webp" width="1020" height="1337" alt="" aria-hidden="true" decoding="async">
+  <img class="names-art-layer names-art-vine names-art-vine-left" src="assets/decorations/names-art/vine-left.webp" width="219" height="565" alt="" aria-hidden="true" decoding="async">
+  <img class="names-art-layer names-art-vine names-art-vine-right" src="assets/decorations/names-art/vine-right.webp" width="217" height="565" alt="" aria-hidden="true" decoding="async">
+  <div data-vv-motion="sequence" class="names-copy names-art-copy">
+   <p style="--vv-delay:0.2s" class="eyebrow vv-line names-art-eyebrow" id="names-title"><span>The Wedding of</span></p>
+   <h2 style="--vv-delay:0.45s" class="script name-bride vv-line"><span class="names-script-float" data-name="bride">Fifi</span></h2>
+   <span style="--vv-delay:0.7s" class="couple-amp vv-line"><span>&amp;</span></span>
+   <h2 style="--vv-delay:0.95s" class="script name-groom vv-line"><span class="names-script-float" data-name="groom">Arul</span></h2>
+   <p style="--vv-delay:1.2s" class="names-date-line vv-line"><span class="date-short">26 Desember 2026</span></p>
+  </div>
+ </div>
+ <a href="#verse" class="scroll-hint"><span>Scroll to unfold our story</span><i></i></a>
+</section>
+<section class="scene verse-scene" id="verse" aria-labelledby="verse-title" data-nav="Tentang Cinta">
+ <div class="scene-number">02 / WRITTEN BY HIS WILL</div>
+ <article class="verse-art reveal"><div class="verse-art-frame" aria-hidden="true"><i class="vaf-top"></i><i class="vaf-mid"></i><i class="vaf-bottom"></i><i class="vaf-side vaf-side-left"></i><i class="vaf-side vaf-side-right"></i></div><img class="verse-art-flowers verse-art-flowers-tr" src="assets/decorations/verse-art/flowers-tr.webp" width="401" height="435" alt="" aria-hidden="true" decoding="async"><img class="verse-art-flowers verse-art-flowers-bl" src="assets/decorations/verse-art/flowers-bl.webp" width="348" height="359" alt="" aria-hidden="true" decoding="async"><div data-vv-motion="sequence" class="verse-copy verse-art-copy"><span style="--vv-delay:0.15s" class="eyebrow vv-line"><span class="verse-float">IN HIS PERFECT PLAN</span></span><i style="--vv-delay:0.25s" class="verse-art-rule verse-art-rule-long vv-line" aria-hidden="true"></i><div style="--vv-delay:0.4s" class="vv-line verse-art-title"><h2 id="verse-title" class="verse-float">QS. Ar-Rum: 21</h2></div><i style="--vv-delay:0.5s" class="verse-art-rule verse-art-rule-short vv-line" aria-hidden="true"></i><p style="--vv-delay:0.65s" id="verse-arabic" class="arabic-text vv-line" lang="ar" dir="rtl"><span class="verse-arabic-line">وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا</span> <span class="verse-arabic-line">لِّتَسْكُنُوْٓا اِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۗ</span> <span class="verse-arabic-line">اِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ <span class="verse-ayah">٢١</span></span></p><div style="--vv-delay:0.9s" class="vv-line"><p id="verse-translation" class="verse-translation verse-float">Di antara tanda-tanda (kebesaran)-Nya ialah bahwa Dia menciptakan pasangan-pasangan untukmu dari (jenis) dirimu sendiri agar kamu merasa tenteram kepadanya. Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.</p></div></div></article>
+</section>
+<section class="scene profile-scene" id="couple" aria-labelledby="couple-title" data-nav="Kedua Mempelai">
+ <div class="scene-number">03 / TWO HEARTS, ONE STORY</div>
+ <article class="ornamental profile-panel matched-stationery reveal">
+  <i class="celebration-crest celebration-crest-top" aria-hidden="true"></i>
+  <i class="celebration-crest celebration-crest-bottom" aria-hidden="true"></i>
+  <span class="celebration-bouquet celebration-bouquet-left" aria-hidden="true"><img src="assets/decorations/celebration-rose-corner.webp" data-decoration="celebrationFlorals" width="512" height="768" alt="" decoding="async"></span>
+  <span class="celebration-bouquet celebration-bouquet-right" aria-hidden="true"><img src="assets/decorations/celebration-rose-corner.webp" data-decoration="celebrationFlorals" width="512" height="768" alt="" decoding="async"></span>
+<div class="panel-content"><p style="--vv-delay:0.2s" data-vv-motion="text" class="script bismillah" id="couple-title"><span class="celebration-drift">Bismillahirrahmanirrahim</span></p><span class="celebration-flourish" aria-hidden="true"></span><p style="--vv-delay:0.35s" data-vv-motion="text" class="greeting">Assalamu’alaikum Warahmatullahi Wabarakatuh</p><p style="--vv-delay:0.5s" data-vv-motion="text" class="intro-text" id="opening-text"></p><div class="profile-pair"><div class="profile-person bride-profile"><div class="vv-sway-profile"><div style="--vv-delay:0.15s" data-vv-motion="portrait" class="profile-portrait bride-crop"><div class="profile-image-window"><div class="profile-figure"><img data-asset="profileCouple" alt="Ilustrasi mempelai wanita tanpa detail wajah, berhijab dan berbusana burgundy bersulam emas dalam bingkai bulat emas"></div></div></div></div><div data-vv-motion="sequence" class="profile-copy"><p style="--vv-delay:0.2s" class="profile-role vv-line" data-role="bride">Anak Daro</p><h3 style="--vv-delay:0.3s" class="script vv-line"><span class="celebration-drift" data-fullname="bride"></span></h3><p style="--vv-delay:0.6s" class="parents vv-line" data-parents="bride"></p></div></div><p style="--vv-delay:0.5s" data-vv-motion="fade" class="profile-amp" aria-hidden="true">&amp;</p><div class="profile-person groom-profile"><div class="vv-sway-profile"><div style="--vv-delay:0.15s" data-vv-motion="portrait" class="profile-portrait groom-crop"><div class="profile-image-window"><div class="profile-figure"><img data-asset="profileCouple" alt="Ilustrasi mempelai pria tanpa detail wajah, mengenakan saluak dan busana burgundy bersulam emas dalam bingkai bulat emas"></div></div></div></div><div data-vv-motion="sequence" class="profile-copy"><p style="--vv-delay:0.2s" class="profile-role vv-line" data-role="groom">Marapulai</p><h3 style="--vv-delay:0.3s" class="script vv-line"><span class="celebration-drift" data-fullname="groom"></span></h3><p style="--vv-delay:0.6s" class="parents vv-line" data-parents="groom"></p></div></div></div></div></article>
+</section>
+<section class="scene date-scene" id="date" aria-labelledby="date-title" data-nav="Tanggal Bahagia">
+ <div class="scene-number">04 / A DAY TO REMEMBER</div>
+ <article class="ornamental date-panel matched-stationery reveal">
+  <i class="celebration-crest celebration-crest-top" aria-hidden="true"></i>
+  <i class="celebration-crest celebration-crest-bottom" aria-hidden="true"></i>
+  <span class="celebration-bouquet celebration-bouquet-left" aria-hidden="true"><img src="assets/decorations/celebration-rose-corner.webp" data-decoration="celebrationFlorals" width="512" height="768" alt="" decoding="async"></span>
+  <span class="celebration-bouquet celebration-bouquet-right" aria-hidden="true"><img src="assets/decorations/celebration-rose-corner.webp" data-decoration="celebrationFlorals" width="512" height="768" alt="" decoding="async"></span>
+
+
+  <div data-vv-motion="sequence" class="panel-content">
+   <h2 style="--vv-delay:0.2s" class="script vv-line" id="date-title"><span class="vv-date-title-sway celebration-drift">Save the Date</span></h2>
+   <span class="celebration-flourish" aria-hidden="true"></span>
+   <div class="date-calendar" id="date-calendar" aria-label="Kalender pernikahan, Sabtu, 26 Desember 2026">
+    <p data-vv-motion="text" class="vv-date-month" style="--vv-delay:0.5s"><span id="date-calendar-month">Desember 2026</span></p>
+    <div data-vv-motion="text" style="--vv-delay:0.8s">
+     <table class="vv-date-week" aria-labelledby="date-calendar-month"><thead><tr><th scope="col" style="--date-phase:-0.00s"><abbr title="Senin">Sen</abbr></th><th scope="col" style="--date-phase:-0.45s"><abbr title="Selasa">Sel</abbr></th><th scope="col" style="--date-phase:-0.90s"><abbr title="Rabu">Rab</abbr></th><th scope="col" style="--date-phase:-1.35s"><abbr title="Kamis">Kam</abbr></th><th scope="col" style="--date-phase:-1.80s"><abbr title="Jumat">Jum</abbr></th><th scope="col" style="--date-phase:-2.25s"><abbr title="Sabtu">Sab</abbr></th><th scope="col" style="--date-phase:-2.70s"><abbr title="Minggu">Min</abbr></th></tr></thead><tbody><tr><td data-calendar-day class="" style="--date-phase:-0.00s;--date-cycle:5.4s"><time datetime="2026-12-21" aria-label="Senin, 21 Desember 2026"><svg class="vv-date-heart" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 88C38 75 8 59 9 34C10 9 36 9 49 29C59 7 88 9 91 31C96 54 67 77 50 88Z" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vv-date-numeral">21</span></time></td><td data-calendar-day class="" style="--date-phase:-0.50s;--date-cycle:5.6s"><time datetime="2026-12-22" aria-label="Selasa, 22 Desember 2026"><svg class="vv-date-heart" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 88C38 75 8 59 9 34C10 9 36 9 49 29C59 7 88 9 91 31C96 54 67 77 50 88Z" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vv-date-numeral">22</span></time></td><td data-calendar-day class="" style="--date-phase:-1.00s;--date-cycle:5.8s"><time datetime="2026-12-23" aria-label="Rabu, 23 Desember 2026"><svg class="vv-date-heart" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 88C38 75 8 59 9 34C10 9 36 9 49 29C59 7 88 9 91 31C96 54 67 77 50 88Z" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vv-date-numeral">23</span></time></td><td data-calendar-day class="" style="--date-phase:-1.50s;--date-cycle:6.0s"><time datetime="2026-12-24" aria-label="Kamis, 24 Desember 2026"><svg class="vv-date-heart" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 88C38 75 8 59 9 34C10 9 36 9 49 29C59 7 88 9 91 31C96 54 67 77 50 88Z" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vv-date-numeral">24</span></time></td><td data-calendar-day class="" style="--date-phase:-2.00s;--date-cycle:6.2s"><time datetime="2026-12-25" aria-label="Jumat, 25 Desember 2026"><svg class="vv-date-heart" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 88C38 75 8 59 9 34C10 9 36 9 49 29C59 7 88 9 91 31C96 54 67 77 50 88Z" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vv-date-numeral">25</span></time></td><td data-calendar-day class="is-wedding-day" style="--date-phase:-2.50s;--date-cycle:6.4s"><time datetime="2026-12-26" aria-label="Sabtu, 26 Desember 2026, hari pernikahan"><svg class="vv-date-heart" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 88C38 75 8 59 9 34C10 9 36 9 49 29C59 7 88 9 91 31C96 54 67 77 50 88Z" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vv-date-numeral">26</span></time></td><td data-calendar-day class="" style="--date-phase:-3.00s;--date-cycle:6.6s"><time datetime="2026-12-27" aria-label="Minggu, 27 Desember 2026"><svg class="vv-date-heart" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 88C38 75 8 59 9 34C10 9 36 9 49 29C59 7 88 9 91 31C96 54 67 77 50 88Z" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vv-date-numeral">27</span></time></td></tr></tbody></table>
+    </div>
+   </div>
+   <p style="--vv-delay:1.1s" class="date-bottom-label vv-line">THE START OF OUR FOREVER</p>
+  </div>
+
+ </article>
+ <div class="date-actions reveal"><button class="button outline-button" id="save-date"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M8 3v4m8-4v4M4 11h16m-12 4h3" /></svg><span>Simpan Tanggal</span></button><p id="countdown" class="countdown" aria-live="off">Menanti hari bahagia kami.</p></div>
+</section>
+<section class="scene event-scene" id="celebration" aria-labelledby="celebration-title" data-nav="Acara">
+ <div class="scene-number">05 / COME CELEBRATE WITH US</div>
+ <article class="ornamental event-panel reveal">
+  <i class="celebration-crest celebration-crest-top" aria-hidden="true"></i>
+  <i class="celebration-crest celebration-crest-bottom" aria-hidden="true"></i>
+  <span class="celebration-bouquet celebration-bouquet-left" aria-hidden="true"><img src="assets/decorations/celebration-rose-corner.webp" data-decoration="celebrationFlorals" width="512" height="768" alt="" decoding="async"></span>
+  <span class="celebration-bouquet celebration-bouquet-right" aria-hidden="true"><img src="assets/decorations/celebration-rose-corner.webp" data-decoration="celebrationFlorals" width="512" height="768" alt="" decoding="async"></span>
+  <div class="panel-content">
+   <header class="celebration-heading">
+    <p class="eyebrow" data-vv-motion="text"><span class="celebration-drift">YOU ARE PART OF OUR STORY</span></p>
+    <div class="celebration-divider celebration-divider-small" aria-hidden="true">✧</div>
+    <h2 style="--vv-delay:0.2s" data-vv-motion="text" class="script" id="celebration-title"><span class="celebration-drift">The Celebration</span></h2>
+    <span class="celebration-flourish" aria-hidden="true"></span>
+   </header>
+   <div data-vv-motion="sequence" class="event-block">
+    <h3 style="--vv-delay:0.15s" class="vv-line"><span class="celebration-drift" id="akad-title">Akad Nikah</span></h3>
+    <p style="--vv-delay:0.45s" class="vv-line"><span class="celebration-drift" id="akad-date">Sabtu, 26 Desember 2026</span></p>
+    <p style="--vv-delay:0.75s" class="vv-line"><span class="celebration-drift" id="akad-time">Pukul [JAM MULAI]–[JAM SELESAI] WIB</span></p>
+    <div style="--vv-delay:1.05s" class="vv-line" id="akad-separate-venue" hidden></div>
+   </div>
+   <div class="celebration-divider" aria-hidden="true">✣</div>
+   <div data-vv-motion="sequence" class="event-block">
+    <h3 style="--vv-delay:0.15s" class="vv-line"><span class="celebration-drift" id="reception-title">Baralek</span></h3>
+    <p style="--vv-delay:0.3s" class="vv-line event-subtitle" id="reception-subtitle-line"><span class="celebration-drift" id="reception-subtitle">Resepsi Pernikahan</span></p>
+    <p style="--vv-delay:0.45s" class="vv-line"><span class="celebration-drift" id="reception-date">Sabtu, 26 Desember 2026</span></p>
+    <p style="--vv-delay:0.75s" class="vv-line"><span class="celebration-drift" id="reception-time">Pukul [JAM MULAI]–[JAM SELESAI] WIB</span></p>
+   </div>
+   <div class="celebration-divider" aria-hidden="true">✣</div>
+   <figure class="venue-artwork"><img class="venue-art" data-asset="venueSketch" src="assets/illustrations/venue-sketch-landscape.jpg" alt="Sketsa gedung lokasi pernikahan" width="1024" height="765" loading="eager" fetchpriority="high" decoding="async"></figure>
+   <div class="celebration-divider" aria-hidden="true">✣</div>
+   <div data-vv-motion="sequence" class="venue-details">
+    <h3 style="--vv-delay:0.15s" class="vv-line"><span class="celebration-drift" id="venue-name">[Nama Venue]</span></h3>
+    <p style="--vv-delay:0.45s" class="vv-line"><span class="celebration-drift" id="venue-address">[Alamat Lengkap]</span></p>
+    <button style="--vv-delay:0.75s" class="button outline-button vv-line" id="view-location"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" /><circle cx="12" cy="10" r="2" /></svg><span>Lihat Lokasi</span></button>
+   </div>
+   <div class="dress-code" id="dress-code" data-vv-motion="sequence" hidden>
+    <div class="celebration-divider vv-line" aria-hidden="true">✣</div>
+    <h3 style="--vv-delay:0.15s" class="vv-line"><span class="celebration-drift" id="dress-title">Dress Code</span></h3>
+    <p style="--vv-delay:0.35s" class="vv-line dress-note" id="dress-note"></p>
+    <ul style="--vv-delay:0.55s" class="vv-line dress-swatches" id="dress-swatches" aria-label="Warna busana yang disarankan"></ul>
+    <p style="--vv-delay:0.75s" class="vv-line dress-extra" id="dress-extra" hidden></p>
+   </div>
+   <div class="live-stream" id="live-stream" data-vv-motion="sequence" hidden>
+    <div class="celebration-divider vv-line" aria-hidden="true">✣</div>
+    <h3 style="--vv-delay:0.15s" class="vv-line"><span class="live-badge">Live</span><span class="celebration-drift">Siaran Langsung</span></h3>
+    <p style="--vv-delay:0.4s" class="vv-line live-note" id="live-note"></p>
+    <a style="--vv-delay:0.65s" class="button outline-button vv-line" id="live-link" target="_blank" rel="noopener"><span class="live-dot" aria-hidden="true"></span><span>Tonton Siaran Langsung</span></a>
+   </div>
+  </div>
+ </article>
+</section>
+<section class="scene gallery-scene photobooth-gallery" id="gallery" data-nav="Momen Kami" data-auto-scroll-stop="true" aria-labelledby="gallery-title">
+ <div class="scene-number">06 / LITTLE MOMENTS, BIG LOVE</div>
+ <div class="vv-flash-screen" aria-hidden="true"></div>
+ <header class="vv-gallery-heading"><span class="eyebrow">A LITTLE KEEPSAKE OF US</span><h2 class="script" id="gallery-title">Our Moments</h2><p>A few moments, a lifetime of meaning.</p></header>
+ <div class="vv-booth-stage">
+  <div class="vv-printer" aria-hidden="true"><img class="vv-camera-art" data-decoration="galleryCamera" src="assets/decorations/gallery-vintage-camera.webp" width="1536" height="1024" alt="" loading="eager" decoding="async" fetchpriority="low"><span class="vv-flash-glow"></span><span class="vv-flash-burst"></span><span class="vv-lens-glint"></span></div>
+  <div class="vv-print-window"><ol class="vv-photo-paper" aria-label="Delapan foto kenangan, sesuai urutan pengiriman">
+<li class="vv-shot has-image" data-photo-order="1"><figure><div class="vv-photo"><img src="assets/photos/MASPIC-290.webp" width="1440" height="961" alt="Pasangan duduk berdampingan di antara dekorasi bunga pink dan putih." loading="eager" decoding="async" fetchpriority="low"></div><figcaption class="vv-photo-description">Foto 1 — Pasangan duduk berdampingan di antara dekorasi bunga pink dan putih.</figcaption></figure></li>
+<li class="vv-shot has-image" data-photo-order="2"><figure><div class="vv-photo"><img src="assets/photos/MASPIC-297.webp" width="1440" height="961" alt="Mempelai wanita duduk dan mempelai pria berdiri di sampingnya." loading="eager" decoding="async" fetchpriority="low"></div><figcaption class="vv-photo-description">Foto 2 — Mempelai wanita duduk dan mempelai pria berdiri di sampingnya.</figcaption></figure></li>
+<li class="vv-shot has-image" data-photo-order="3"><figure><div class="vv-photo"><img src="assets/photos/MASPIC-305.webp" width="1440" height="961" alt="Mempelai pria duduk dengan buket, mempelai wanita berdiri di sampingnya." loading="eager" decoding="async" fetchpriority="low"></div><figcaption class="vv-photo-description">Foto 3 — Mempelai pria duduk dengan buket, mempelai wanita berdiri di sampingnya.</figcaption></figure></li>
+<li class="vv-shot has-image" data-photo-order="4"><figure><div class="vv-photo"><img src="assets/photos/MASPIC-203.webp" width="1440" height="961" alt="Pasangan saling memandang sambil membawa buket bunga di taman." loading="eager" decoding="async" fetchpriority="low"></div><figcaption class="vv-photo-description">Foto 4 — Pasangan saling memandang sambil membawa buket bunga di taman.</figcaption></figure></li>
+<li class="vv-shot has-image" data-photo-order="5"><figure><div class="vv-photo"><img src="assets/photos/MASPIC-188.webp" width="1440" height="961" alt="Mempelai wanita membawa buket dengan mempelai pria berdiri di belakangnya di taman." loading="eager" decoding="async" fetchpriority="low"></div><figcaption class="vv-photo-description">Foto 5 — Mempelai wanita membawa buket dengan mempelai pria berdiri di belakangnya di taman.</figcaption></figure></li>
+<li class="vv-shot has-image" data-photo-order="6"><figure><div class="vv-photo"><img src="assets/photos/MASPIC-235.webp" width="1440" height="961" alt="Pasangan berpose di samping dinding batu dan tanaman hijau." loading="eager" decoding="async" fetchpriority="low"></div><figcaption class="vv-photo-description">Foto 6 — Pasangan berpose di samping dinding batu dan tanaman hijau.</figcaption></figure></li>
+<li class="vv-shot has-image" data-photo-order="7"><figure><div class="vv-photo"><img src="assets/photos/MASPIC-194.webp" width="1440" height="961" alt="Pasangan berpelukan dengan buket bunga di taman." loading="eager" decoding="async" fetchpriority="low"></div><figcaption class="vv-photo-description">Foto 7 — Pasangan berpelukan dengan buket bunga di taman.</figcaption></figure></li>
+<li class="vv-shot has-image" data-photo-order="8"><figure><div class="vv-photo"><img src="assets/photos/MASPIC-189.webp" width="1440" height="961" alt="Pasangan berdiri berdekatan membawa buket di halaman taman." loading="eager" decoding="async" fetchpriority="low"></div><figcaption class="vv-photo-description">Foto 8 — Pasangan berdiri berdekatan membawa buket di halaman taman.</figcaption></figure></li>
+  </ol></div>
+  <div class="vv-booth-florals" aria-hidden="true"><img data-decoration="galleryFlorals" src="assets/decorations/gallery-songket-florals.webp" width="1774" height="887" alt="" loading="eager" decoding="async" fetchpriority="low"></div>
+ </div>
+ <div class="vv-gallery-controls">
+  <button class="button outline-button" type="button" data-gallery-pause aria-label="Jeda cetak foto" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg><span>Jeda</span></button>
+  <button class="button outline-button" type="button" data-gallery-replay hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 0 5M4 4v6h6"/></svg><span>Putar Ulang</span></button>
+ </div>
+ <p class="vv-gallery-status" role="status" aria-live="polite">Delapan momen, satu cerita. Gulir untuk melihat semuanya.</p>
+ <p class="vv-gallery-hint">Ketuk foto untuk melihat layar penuh.</p>
+ <p class="vv-gallery-signoff">Made of moments. Held with love.</p>
+</section>
+<section class="scene rsvp-scene" id="rsvp" data-nav="Konfirmasi" aria-labelledby="rsvp-title" hidden><div class="scene-number">07 / KINDLY REPLY</div><article class="rsvp-card ivory-paper reveal"><span class="eyebrow">SAVE A SEAT, SHARE A WISH</span><h2 class="script" id="rsvp-title">Your Presence<br>Means So Much</h2><p>Mohon konfirmasikan kehadiran Anda dan tinggalkan doa terbaik untuk kami.</p><form id="rsvp-form"><label>Nama<input name="name" autocomplete="name" required maxlength="120"></label><label>Status kehadiran<select name="attendance" required><option value="">Pilih kehadiran</option><option value="Hadir">Hadir</option><option value="Tidak dapat hadir">Tidak dapat hadir</option><option value="Masih belum pasti">Masih belum pasti</option></select></label><label id="guests-field" hidden>Jumlah tamu<input type="number" name="guests" min="1" value="1"></label><label>Ucapan dan doa<textarea name="wish" rows="4" maxlength="1500" aria-describedby="rsvp-wish-hint"></textarea><small class="rsvp-hint" id="rsvp-wish-hint" hidden>Ucapan Anda akan ditampilkan di undangan ini.</small></label><button class="button burgundy-button" type="submit">Kirim Konfirmasi</button><p id="rsvp-status" role="status"></p></form><div class="rsvp-wishes" id="rsvp-wishes" hidden><span class="rsvp-wishes-rule" aria-hidden="true"></span><h3 class="script" id="rsvp-wishes-title">Doa &amp; Ucapan</h3><p class="rsvp-wish-empty" id="rsvp-wish-empty"></p><ol class="rsvp-wish-list" id="rsvp-wish-list" aria-labelledby="rsvp-wishes-title" tabindex="0"></ol></div></article></section>
+<section class="scene gift-scene" id="gift" data-nav="Tanda Kasih" aria-labelledby="gift-title" hidden><div class="scene-number">08 / WITH GRATITUDE</div><article class="rsvp-card gift-card ivory-paper reveal"><span class="eyebrow">A TOKEN OF LOVE</span><h2 class="script" id="gift-title">Tanda Kasih</h2><p id="gift-text"></p><button class="button burgundy-button" id="gift-toggle" type="button" aria-expanded="false" aria-controls="gift-details"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1" /><path d="m3 6 9 7 9-7" /></svg><span>Buka Amplop Digital</span></button><div class="gift-details" id="gift-details" hidden><ul class="gift-accounts" id="gift-accounts"></ul><div class="gift-address" id="gift-address" hidden><span class="gift-rule" aria-hidden="true"></span><h3 class="script">Kirim Kado</h3><p class="gift-recipient" id="gift-recipient"></p><p class="gift-address-text" id="gift-address-text"></p><button class="button outline-button gift-copy" id="gift-copy-address" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="1" /><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" /></svg><span>Salin Alamat</span></button></div></div></article></section>
+<section class="scene closing-scene" id="forever" aria-labelledby="forever-title" data-nav="Dengan Cinta"><div class="scene-number">09 / WITH LOVE, FOREVER</div><div data-vv-motion="sequence" class="closing-copy reveal"><p style="--vv-delay:0.15s" class="vv-line" id="closing-text"></p><p style="--vv-delay:0.45s" class="closing-greeting vv-line">Wassalamu’alaikum Warahmatullahi Wabarakatuh</p><p style="--vv-delay:0.75s" class="eyebrow vv-line">Kami yang berbahagia,</p><h2 style="--vv-delay:1.05s" class="script vv-line" id="forever-title"><span data-name="bride"></span><span class="closing-amp">&amp;</span><span data-name="groom"></span></h2></div><div class="closing-art" data-vv-motion="portrait" data-vv-once="true" style="--vv-delay:0s"><div class="couple-glow"></div><div class="vv-sway-couple"><img class="closing-couple" data-asset="closing" src="assets/illustrations/closing-fifi-arul-portraits.webp" width="941" height="1672" loading="eager" fetchpriority="low" decoding="async" alt="Ilustrasi Fifi berhijab burgundy dan Arul berkacamata saling menatap, mengenakan busana burgundy bersulam emas dan kain songket"></div><span aria-hidden="true" class="closing-flowers floral-anchor"><img height="724" width="2172" class="floral-sway" data-decoration="closingFlorals" src="assets/decorations/closing-orchid-garland.webp" loading="eager" fetchpriority="low" decoding="async" alt="" aria-hidden="true"></span></div><footer><p>Together, with love and gratitude.</p><span class="monogram">F &amp; A</span><span class="footer-rule"></span></footer></section>
+<section class="scene credits-scene" id="credits" data-nav="Terima Kasih" aria-label="Credit penutup" hidden>
+ <div class="scene-number">11 / THE END CREDITS</div>
+ <div class="credits-screen"><div class="credits-roll" id="credits-roll"></div></div>
+ <div class="credits-controls"><button class="button outline-button" id="credits-toggle" type="button" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" /></svg><span>Jeda credit</span></button></div>
+ <div class="theatre-curtain curtain-call" hidden><div class="curtain-panel curtain-left" aria-hidden="true"><i class="curtain-fringe"></i></div><div class="curtain-panel curtain-right" aria-hidden="true"><i class="curtain-fringe"></i></div><div class="curtain-valance" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><b></b><b></b><b></b><b></b></div><div class="curtain-call-copy"><p class="eyebrow">The End</p><p class="curtain-call-title">Terima Kasih</p><p class="curtain-call-text">telah hadir dalam cerita kami</p><span class="monogram">F &amp; A</span><button class="button gold-button" id="credits-reopen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 0 5M4 4v6h6" /></svg><span>Buka Tirai Lagi</span></button></div></div>
+</section>
+</div>
+</main>
+<svg class="venue-filter-definitions" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs><filter id="venue-ink-filter" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%"><feColorMatrix type="matrix" values="0 0 0 0 .97  0 0 0 0 .88  0 0 0 0 .72  .2126 .7152 .0722 0 0"/><feComponentTransfer><feFuncA type="linear" slope="2.2" intercept="-.30"/></feComponentTransfer></filter></defs></svg>
+<nav class="scene-nav" aria-label="Navigasi undangan" id="scene-nav"></nav>
+<button class="music-toggle" id="music-toggle" aria-label="Putar musik" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V5l11-2v12M9 9l11-2" /><ellipse cx="6" cy="17" rx="3" ry="2.5" /><ellipse cx="17" cy="15" rx="3" ry="2.5" /><path class="music-off-line" d="M3 3l18 18" /></svg></button>
+<button class="auto-scroll-toggle" id="auto-scroll-toggle" type="button" aria-label="Lanjutkan scroll otomatis" aria-pressed="false" hidden><svg class="auto-play" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z" /></svg><svg class="auto-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" /></svg><span>Lanjut scroll</span></button>
+<dialog id="gallery-lightbox" aria-label="Galeri foto pernikahan" aria-describedby="viewer-caption">
+ <button type="button" data-viewer-close aria-label="Tutup foto" autofocus>×</button>
+ <figure><img alt="" decoding="async"><figcaption id="viewer-caption"></figcaption></figure>
+ <p data-viewer-status role="status" aria-live="polite"></p>
+ <div class="photo-viewer-controls"><button type="button" data-viewer-prev aria-label="Foto sebelumnya">‹</button><span data-viewer-count aria-live="polite"></span><button type="button" data-viewer-next aria-label="Foto berikutnya">›</button></div>
+</dialog>
+<audio id="background-music" preload="none" loop></audio>
+<div class="toast" role="status" aria-live="polite" id="toast"></div>
+<noscript><div class="noscript-note">Aktifkan JavaScript untuk membuka animasi dan fitur interaktif undangan.</div></noscript>
+</body></html>

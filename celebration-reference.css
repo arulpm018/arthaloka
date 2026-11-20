@@ -1,0 +1,114 @@
+/* Slide 05 layout; shared floral ornaments and idle motion for slides 03–05. */
+#celebration { min-height: 100svh; }
+#celebration .event-panel {
+  width: min(560px,100%); padding: 0; isolation: isolate;
+  background: none; border: 0; border-radius: 0; box-shadow: none;
+  filter: drop-shadow(0 18px 26px #080a0870);
+}
+#invitation-content #celebration .event-panel::before {
+  inset: 0; background: none; border-radius: 0;
+  border: solid transparent; border-width: 170px 42px;
+  border-image-source: url('assets/decorations/celebration-reference-frame.svg?v=20261014-damask');
+  border-image-slice: 250 72 250 72 fill;
+  border-image-width: 170px 42px; border-image-repeat: stretch;
+}
+#celebration .event-panel::after { display: none; }
+#celebration .event-panel .panel-content {
+  padding: clamp(140px,32vw,180px) clamp(38px,8.5vw,70px) 134px;
+  color: #fdf5e6; font-family: var(--serif);
+}
+:is(#couple,#date,#celebration) .celebration-crest {
+  position: absolute; left: 50%; width: 32px; height: 44px;
+  transform: translateX(-50%); pointer-events: none; z-index: 1;
+  background: url('assets/decorations/names-gold-flourish.svg') center/contain no-repeat;
+}
+:is(#couple,#date,#celebration) .celebration-crest-top { top: 32px; }
+:is(#couple,#date,#celebration) .celebration-crest-bottom { bottom: 35px; }
+:is(#couple,#date,#celebration) .celebration-bouquet {
+  position: absolute; display: block; top: 25px; width: 31%;
+  pointer-events: none; z-index: 2;
+}
+:is(#couple,#date,#celebration) .celebration-bouquet-left { left: -1%; }
+:is(#couple,#date,#celebration) .celebration-bouquet-right { right: -1%; transform: scaleX(-1); }
+:is(#couple,#date,#celebration) .celebration-bouquet img {
+  display: block; width: 100%; height: auto; transform-origin: 38% 29%;
+  animation: vvCelebrationRoseSway 8s ease-in-out -1.5s infinite;
+}
+:is(#couple,#date,#celebration) .celebration-bouquet-right img { animation-duration: 8.8s; animation-delay: -4.8s; }
+:is(#couple,#date,#celebration) .celebration-heading .eyebrow {
+  font: 500 clamp(.66rem,1.7vw,.8rem)/1.9 var(--serif);
+  letter-spacing: .19em; margin: 0; color: #fdf5e6;
+}
+#celebration #celebration-title {
+  font-family: 'Great Vibes',var(--script); font-weight: 400;
+  font-size: clamp(2.5rem,8.6vw,4.15rem); line-height: 1.5;
+  color: #e7c48e; padding: 0 .08em; margin: 0 auto;
+  text-wrap: balance;
+}
+:is(#couple,#date,#celebration) .celebration-drift {
+  display: inline-block; max-width: 100%; padding-inline: .04em;
+  animation: vvCelebrationTypeFloat 8.2s ease-in-out -1.2s infinite;
+}
+#celebration .event-block:nth-of-type(even) .celebration-drift { animation-delay: -3.8s; }
+#celebration .venue-details .celebration-drift { animation-delay: -5.2s; }
+:is(#couple,#date,#celebration) .celebration-flourish {
+  display: block; width: 76%; height: 34px; margin: 0 auto 29px;
+  background: url('assets/decorations/celebration-flourish.svg') center/contain no-repeat;
+}
+:is(#couple,#date,#celebration) .celebration-divider {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 58%; margin: 27px auto; color: #d7ad72; font: 23px/1 var(--serif);
+}
+:is(#couple,#date,#celebration) .celebration-divider::before,
+:is(#couple,#date,#celebration) .celebration-divider::after {
+  content: ''; flex: 1; height: 1px; background: linear-gradient(90deg,transparent,#cda06a);
+}
+:is(#couple,#date,#celebration) .celebration-divider::after { transform: scaleX(-1); }
+:is(#couple,#date,#celebration) .celebration-divider-small { width: 47%; margin: 12px auto 9px; font-size: 17px; }
+#celebration .event-block h3,
+#celebration .venue-details h3 {
+  font: 500 clamp(1.65rem,5.8vw,2.3rem)/1.4 var(--serif);
+  color: #fdf5e6; margin: 0; padding-bottom: 12px; text-wrap: balance;
+}
+#invitation-content #celebration :is(.event-block > p,.venue-details > p) {
+  font: 400 clamp(1rem,3.7vw,1.15rem)/1.8 var(--serif);
+  color: #fdf5e6; margin: 0 auto; max-width: 100%;
+}
+#celebration .event-block { padding: 0; }
+#celebration .venue-artwork {
+  width: 100%; max-width: 400px; margin: 2px auto 0;
+  /* The original image and its blending/mask travel as one layer. */
+  animation: vvVenueFloat 7s ease-in-out -1.4s infinite;
+}
+#celebration .venue-details h3 { padding-bottom: 4px; }
+#celebration #view-location {
+  border: 1px solid #d5aa70; border-radius: 999px; background: #2f111a40;
+  color: #fdf5e6; font: 500 clamp(1rem,3.8vw,1.2rem)/1.5 var(--serif);
+  text-transform: none; letter-spacing: .02em; padding: 13px 28px;
+  min-height: 48px; margin-top: 26px; gap: 13px;
+}
+#celebration #view-location svg { flex-basis: 22px; width: 22px; height: 26px; }
+#celebration .separate-venue { margin-top: 16px; }
+#celebration .separate-venue p { font: 1rem/1.8 var(--serif); color: #fdf5e6; }
+@keyframes vvCelebrationRoseSway {
+  0%,100% { transform: translate3d(0,1px,0) rotate(-1deg); }
+  50% { transform: translate3d(1px,-3px,0) rotate(1deg); }
+}
+@keyframes vvCelebrationTypeFloat {
+  0%,100% { transform: translate3d(0,1px,0) rotate(-.12deg); }
+  50% { transform: translate3d(0,-2px,0) rotate(.12deg); }
+}
+@media (max-width:600px) {
+  #invitation-content #celebration .event-panel::before {
+    border-width: 120px 30px; border-image-width: 120px 30px;
+  }
+  #celebration .event-panel .panel-content { padding-bottom: 112px; }
+  :is(#couple,#date,#celebration) .celebration-bouquet { top: 22px; }
+  :is(#couple,#date,#celebration) .celebration-crest-top { top: 25px; width: 26px; height: 36px; }
+  :is(#couple,#date,#celebration) .celebration-crest-bottom { bottom: 28px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  :is(#couple,#date,#celebration) .celebration-bouquet img,
+  :is(#couple,#date,#celebration) .celebration-drift,
+  #celebration .venue-artwork { animation: none !important; transform: none; }
+}

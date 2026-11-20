@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#20271B">
+<title>Kirim Undangan · Fifi &amp; Arul</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<style>
+/* Guest-link tool: same palette as the invitation, built for sending from a phone. */
+@font-face { font-family: 'Sacramento'; src: url('assets/fonts/sacramento-regular.ttf') format('truetype'); font-display: swap; }
+:root {
+  --olive: #20271b; --burgundy: #401426; --ivory: #faf1e8; --paper: #fffaf3; --gold: #b8a078; --ink: #4b2b30; --muted: #7a5d4c;
+  --serif: 'Cormorant Garamond', Georgia, serif; --sans: 'Poppins', Arial, sans-serif; --script: 'Sacramento', cursive;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(120% 60% at 50% 0%, #2c3524, var(--olive) 60%); color: var(--ivory); font: 16px/1.6 var(--serif); }
+main { width: min(760px, 100%); margin: 0 auto; padding: 40px 16px 72px; }
+h1, h2, p { margin: 0; }
+.intro { text-align: center; margin-bottom: 28px; }
+.eyebrow { font: 500 10px/1.8 var(--sans); letter-spacing: .24em; color: #cdb695; text-transform: uppercase; }
+h1 { font: 400 clamp(46px, 11vw, 64px)/1.25 var(--script); margin: 6px 0 4px; }
+.intro p:not(.eyebrow) { font-style: italic; font-size: 17px; color: #e4d6c5; max-width: 520px; margin: 0 auto; }
+.privacy { margin-top: 10px !important; font: 12px/1.7 var(--sans) !important; font-style: normal !important; color: #cdb695 !important; }
+
+.panel { background: var(--ivory); color: var(--burgundy); border-radius: 10px; padding: 22px 18px; margin-top: 16px; box-shadow: 0 18px 40px #0007; }
+.panel h2 { font: 600 22px/1.3 var(--serif); }
+.panel h2 span { font: 500 11px/1 var(--sans); letter-spacing: .16em; color: var(--gold); margin-right: 8px; vertical-align: 3px; }
+label { display: block; margin-top: 12px; font: 13px/1.6 var(--sans); color: var(--ink); }
+input, textarea {
+  display: block; width: 100%; margin-top: 6px; padding: 12px; border: 1px solid #c8b9ab; border-radius: 4px;
+  background: var(--paper); color: var(--burgundy); font: 15px/1.55 var(--sans);
+}
+textarea { resize: vertical; }
+input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
+.hint { margin-top: 8px; font: 12.5px/1.6 var(--sans); color: var(--muted); }
+.hint.warn { color: #9b1c2e; }
+.hint code { font-size: 12px; background: #b8a07826; padding: 1px 5px; border-radius: 3px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 14px;
+  border: 1px solid var(--gold); border-radius: 3px; background: transparent; color: var(--burgundy);
+  font: 500 12px/1.3 var(--sans); letter-spacing: .03em; text-decoration: none; cursor: pointer;
+}
+.btn svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.btn.primary { background: var(--burgundy); border-color: var(--burgundy); color: var(--ivory); }
+.btn[aria-disabled='true'], .btn:disabled { opacity: .45; pointer-events: none; }
+.text-button { margin-top: 8px; padding: 6px 0; border: 0; background: none; color: var(--muted); font: 12px var(--sans); text-decoration: underline; cursor: pointer; }
+
+.list-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+#summary { font: 12.5px/1.6 var(--sans); color: var(--muted); }
+.progress { height: 4px; margin-top: 12px; border-radius: 2px; background: #e6d7c3; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--gold); transition: width .3s; }
+.list-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.guest-list { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+.guest {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-items: start;
+  padding: 14px; background: var(--paper); border: 1px solid #e6d7c3; border-left: 3px solid var(--gold); border-radius: 4px;
+}
+.guest.is-sent { border-left-color: #5b7a4a; background: #f4f1e6; }
+.guest input[type=checkbox] { width: 20px; height: 20px; margin: 3px 0 0; accent-color: var(--burgundy); }
+.guest-name { font: 600 18px/1.35 var(--serif); overflow-wrap: anywhere; }
+.guest-meta { font: 12px/1.6 var(--sans); color: var(--muted); overflow-wrap: anywhere; }
+.guest-meta a { color: inherit; }
+.guest-actions { grid-column: 2; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.empty { padding: 18px; text-align: center; font-style: italic; color: var(--muted); border: 1px dashed #c8b9ab; border-radius: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.toast {
+  position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); z-index: 10; max-width: calc(100vw - 32px);
+  padding: 12px 18px; border-radius: 3px; background: var(--ivory); color: var(--burgundy); font: 13px/1.6 var(--sans);
+  box-shadow: 0 8px 30px #0006; opacity: 0; transform: translate(-50%, 12px); transition: .25s; pointer-events: none;
+}
+.toast.visible { opacity: 1; transform: translate(-50%, 0); }
+@media (min-width: 640px) { .panel { padding: 26px 28px; } }
+</style>
+<script src="wedding-config.js" defer></script>
+<script src="dates.js" defer></script>
+</head>
+<body>
+<main>
+ <header class="intro">
+  <p class="eyebrow">Alat pengiriman undangan</p>
+  <h1 id="title">Kirim Undangan</h1>
+  <p>Tulis daftar tamu sekali, lalu kirim link pribadi dan pesan WhatsApp untuk tiap tamu.</p>
+  <p class="privacy">Daftar tamu hanya tersimpan di browser ini, tidak dikirim ke mana pun.</p>
+ </header>
+
+ <section class="panel" aria-labelledby="step-base">
+  <h2 id="step-base"><span>01</span>Alamat undangan</h2>
+  <label>Link undangan yang sudah online<input id="base" type="url" inputmode="url" autocomplete="off" placeholder="https://domain-kamu/"></label>
+  <p class="hint" id="base-hint"></p>
+ </section>
+
+ <section class="panel" aria-labelledby="step-guests">
+  <h2 id="step-guests"><span>02</span>Daftar tamu</h2>
+  <label>Satu tamu per baris. Nomor WhatsApp boleh ditambahkan setelah koma.
+   <textarea id="guests" rows="8" spellcheck="false" placeholder="Budi Santoso, 0812 3456 7890&#10;Keluarga Bapak H. Ahmad, sesi 2&#10;Rina &amp; Suami, +62 813-1111-2222, sesi 1"></textarea></label>
+  <p class="hint">Bisa langsung tempel kolom Nama, Nomor, dan Sesi dari Excel atau Google Sheets. Nama ditulis persis seperti yang ingin tampil di undangan.</p>
+  <p class="hint" id="session-hint" hidden></p>
+ </section>
+
+ <section class="panel" aria-labelledby="step-message">
+  <h2 id="step-message"><span>03</span>Teks pesan</h2>
+  <label>Gunakan <code>{nama}</code>, <code>{link}</code>, <code>{tanggal}</code>, dan <code>{sesi}</code> (baris berisi <code>{sesi}</code> saja hilang untuk tamu tanpa sesi). Teks di antara bintang, misalnya *Fifi &amp; Arul*, tampil tebal di WhatsApp.
+   <textarea id="template" rows="16"></textarea></label>
+  <button type="button" class="text-button" id="reset-template">Kembalikan teks bawaan</button>
+ </section>
+
+ <section class="panel" aria-labelledby="step-send">
+  <div class="list-head"><h2 id="step-send"><span>04</span>Kirim</h2><p id="summary" aria-live="polite"></p></div>
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+  <div class="list-actions">
+   <button type="button" class="btn" id="export"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" /></svg>Unduh daftar (CSV)</button>
+   <button type="button" class="btn" id="clear-sent">Hapus tanda terkirim</button>
+  </div>
+  <ol class="guest-list" id="list"></ol>
+ </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+  window.addEventListener('DOMContentLoaded', () => {
+    const config = window.weddingConfig || {};
+    const $ = selector => document.querySelector(selector);
+    const couple = `${config.bride?.nickname || 'Fifi'} & ${config.groom?.nickname || 'Arul'}`;
+    const dateText = window.WeddingDates?.formatDate(config.date, config.timeZone, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) || '';
+    const KEY = 'kirim-undangan:';
+    const read = (name, fallback) => { try { const value = localStorage.getItem(KEY + name); return value === null ? fallback : value; } catch { return fallback; } };
+    const write = (name, value) => { try { localStorage.setItem(KEY + name, value); } catch { /* Private mode: the tool still works for this visit. */ } };
+
+    const defaultTemplate = [
+      'Assalamu’alaikum Warahmatullahi Wabarakatuh',
+      '',
+      'Kepada Yth.',
+      '*{nama}*',
+      '',
+      'Dengan memohon rahmat dan rida Allah SWT, tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri pernikahan kami:',
+      '',
+      `*${couple}*`,
+      '{tanggal}',
+      '{sesi}',
+      '',
+      'Informasi lengkap acara dapat dilihat melalui undangan berikut:',
+      '{link}',
+      '',
+      'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.',
+      '',
+      'Mohon maaf, undangan ini kami sampaikan melalui pesan digital.',
+      '',
+      'Wassalamu’alaikum Warahmatullahi Wabarakatuh',
+      '',
+      'Kami yang berbahagia,',
+      couple
+    ].join('\n');
+
+    const base = $('#base'), guests = $('#guests'), template = $('#template'), list = $('#list');
+    const autoBase = /^https?:$/.test(location.protocol) ? new URL('./', location.href).href : '';
+    base.value = read('base', config.siteUrl || autoBase);
+    guests.value = read('guests', '');
+    template.value = read('template', defaultTemplate);
+    let sent = new Set(JSON.parse(read('sent', '[]')));
+    document.title = `Kirim Undangan · ${couple}`;
+
+    let toastTimer;
+    function notify(message) {
+      const toast = $('#toast'); toast.textContent = message; toast.classList.add('visible');
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
+    }
+    async function copy(value, message) {
+      try { await navigator.clipboard.writeText(value); }
+      catch {
+        const area = document.createElement('textarea'); area.value = value; area.readOnly = true; area.style.cssText = 'position:fixed;top:0;opacity:0';
+        document.body.append(area); area.select(); const copied = document.execCommand('copy'); area.remove();
+        if (!copied) { notify('Belum dapat menyalin. Silakan salin manual.'); return; }
+      }
+      notify(message);
+    }
+
+    function invitationBase() {
+      let value = base.value.trim();
+      if (!value) return null;
+      if (!/^https?:\/\//i.test(value)) value = 'https://' + value;
+      try { const url = new URL(value); url.hash = ''; url.searchParams.delete('to'); return url; } catch { return null; }
+    }
+    // Indonesian numbers become 62…; anything that is not 9–15 digits is ignored.
+    function phoneFor(raw) {
+      let digits = String(raw || '').replace(/\D/g, '');
+      if (digits.startsWith('0')) digits = '62' + digits.slice(1);
+      else if (digits.startsWith('8')) digits = '62' + digits;
+      return digits.length >= 9 && digits.length <= 15 ? digits : '';
+    }
+    // Reception sessions come from wedding-config.js; "sesi 2" at the end of a line (or a third column) picks one.
+    const sessions = (config.reception?.sessions || []).filter(Boolean);
+    function sessionText(number) {
+      const entry = sessions[number - 1];
+      if (!entry) return '';
+      const label = entry.name || `Sesi ${number}`;
+      const hour = value => window.WeddingDates?.formatDate(value, config.timeZone, { hour: '2-digit', minute: '2-digit' });
+      const start = entry.start && hour(entry.start), end = entry.end && hour(entry.end);
+      return start ? `${label}, pukul ${start}${end ? '–' + end : ''} ${config.timeZoneLabel || 'WIB'}` : label;
+    }
+    function parseGuests() {
+      return guests.value.split(/\r?\n/).map(line => {
+        let rest = line, wanted = 0;
+        const tagged = rest.match(/[,;\t]\s*sesi\s*(\d+)\s*$/i);
+        if (tagged) { wanted = Number(tagged[1]); rest = rest.slice(0, tagged.index); }
+        const cells = rest.split('\t').map(cell => cell.trim());
+        let name = cells[0] || '', phone = cells[1] || '';
+        if (!tagged && /^(sesi\s*)?\d{1,2}$/i.test(cells[2] || '')) wanted = Number(cells[2].match(/\d+/)[0]);
+        if (cells.length < 2) {
+          const match = rest.match(/^(.*?)[,;]\s*(\+?[\d\s().-]{8,})\s*$/);
+          if (match) { name = match[1]; phone = match[2]; }
+        }
+        const session = sessions[wanted - 1] ? wanted : 0;
+        return { name: name.replace(/\s+/g, ' ').trim().slice(0, 120), phone: phoneFor(phone), session, missingSession: wanted && !session ? wanted : 0 };
+      }).filter(guest => guest.name);
+    }
+    const keyOf = guest => guest.name.toLowerCase();
+    function build(guest, root) {
+      const url = new URL(root.href); url.searchParams.set('to', guest.name);
+      if (guest.session) url.searchParams.set('sesi', String(guest.session));
+      const link = url.href, sesi = sessionText(guest.session);
+      // A line holding only {sesi} disappears for guests without a session.
+      const message = template.value.split('\n').filter(line => sesi || line.trim() !== '{sesi}').join('\n')
+        .replaceAll('{nama}', guest.name).replaceAll('{link}', link).replaceAll('{tanggal}', dateText).replaceAll('{sesi}', sesi);
+      const whatsapp = `https://wa.me/${guest.phone}?text=${encodeURIComponent(message)}`;
+      return { ...guest, link, message, whatsapp };
+    }
+
+    function render() {
+      const root = invitationBase();
+      const local = root && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(root.hostname);
+      const hint = $('#base-hint');
+      hint.className = 'hint' + (!root || local ? ' warn' : '');
+      hint.textContent = !root ? 'Isi dulu alamat undangan yang sudah online. Tanpa ini link dan pesan belum bisa dibuat.'
+        : local ? 'Alamat ini hanya bisa dibuka di komputer ini. Ganti dengan alamat undangan yang sudah online sebelum mengirim.'
+        : `Contoh link: ${build({ name: 'Budi Santoso', phone: '' }, root).link}`;
+
+      const rows = root ? parseGuests().map(guest => build(guest, root)) : [];
+      const done = rows.filter(row => sent.has(keyOf(row))).length;
+      $('#summary').textContent = rows.length ? `${done} dari ${rows.length} tamu sudah dikirimi` : '';
+      $('#progress').style.width = rows.length ? `${(done / rows.length) * 100}%` : '0';
+      $('#export').disabled = !rows.length;
+
+      if (!rows.length) {
+        const empty = document.createElement('li'); empty.className = 'empty';
+        empty.textContent = root ? 'Daftar tamu masih kosong. Tulis nama tamu di langkah 02.' : 'Isi alamat undangan di langkah 01 terlebih dahulu.';
+        list.replaceChildren(empty); return;
+      }
+      list.replaceChildren(...rows.map((row, index) => {
+        const item = document.createElement('li'); item.className = 'guest' + (sent.has(keyOf(row)) ? ' is-sent' : '');
+        const check = document.createElement('input'); check.type = 'checkbox'; check.checked = sent.has(keyOf(row));
+        check.id = `sent-${index}`; check.setAttribute('aria-label', `Tandai ${row.name} sudah dikirimi`);
+        check.addEventListener('change', () => mark(row, check.checked));
+        const info = document.createElement('div');
+        const name = document.createElement('p'); name.className = 'guest-name'; name.textContent = row.name;
+        const meta = document.createElement('p'); meta.className = 'guest-meta';
+        const open = document.createElement('a'); open.href = row.link; open.target = '_blank'; open.rel = 'noopener'; open.textContent = 'lihat undangannya';
+        const session = row.session ? `${sessions[row.session - 1].name || `Sesi ${row.session}`} · `
+          : row.missingSession ? `Sesi ${row.missingSession} belum ada di wedding-config.js · ` : '';
+        meta.append(row.phone ? `+${row.phone} · ` : 'Tanpa nomor (pilih kontak di WhatsApp) · ', session, open);
+        info.append(name, meta);
+        const actions = document.createElement('div'); actions.className = 'guest-actions';
+        const wa = document.createElement('a'); wa.className = 'btn primary'; wa.href = row.whatsapp; wa.target = '_blank'; wa.rel = 'noopener';
+        wa.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8Z"/><path d="M9 9.5c.3 2 2.5 4.2 4.5 4.5l1.2-1.2 1.8.9-.5 1.6c-3.5.3-7.6-3.8-7.3-7.3l1.6-.5.9 1.8Z"/></svg>';
+        wa.append('Kirim WhatsApp'); wa.setAttribute('aria-label', `Kirim undangan ke ${row.name} lewat WhatsApp`);
+        wa.addEventListener('click', () => mark(row, true));
+        const copyLink = document.createElement('button'); copyLink.type = 'button'; copyLink.className = 'btn'; copyLink.textContent = 'Salin link';
+        copyLink.addEventListener('click', () => copy(row.link, `Link untuk ${row.name} disalin.`));
+        const copyMessage = document.createElement('button'); copyMessage.type = 'button'; copyMessage.className = 'btn'; copyMessage.textContent = 'Salin pesan';
+        copyMessage.addEventListener('click', () => copy(row.message, `Pesan untuk ${row.name} disalin.`));
+        actions.append(wa, copyLink, copyMessage);
+        info.append(actions);
+        item.append(check, info);
+        return item;
+      }));
+    }
+    function mark(row, value) {
+      if (value) sent.add(keyOf(row)); else sent.delete(keyOf(row));
+      write('sent', JSON.stringify([...sent])); render();
+    }
+
+    base.addEventListener('input', () => { write('base', base.value); render(); });
+    guests.addEventListener('input', () => { write('guests', guests.value); render(); });
+    template.addEventListener('input', () => { write('template', template.value); render(); });
+    if (sessions.length) {
+      $('#session-hint').hidden = false;
+      $('#session-hint').textContent = `Resepsi dibagi ${sessions.length} sesi (${sessions.map((entry, i) => entry.name || `Sesi ${i + 1}`).join(', ')}). ` +
+        'Tulis "sesi 2" di akhir baris agar tamu melihat jam sesinya. Tanpa keterangan sesi, jam resepsi umum yang tampil.';
+    }
+    $('#reset-template').addEventListener('click', () => { template.value = defaultTemplate; write('template', defaultTemplate); render(); notify('Teks pesan dikembalikan ke bawaan.'); });
+    $('#clear-sent').addEventListener('click', () => {
+      if (!sent.size || !confirm('Hapus semua tanda "sudah dikirimi"?')) return;
+      sent = new Set(); write('sent', '[]'); render();
+    });
+    $('#export').addEventListener('click', () => {
+      const root = invitationBase(); if (!root) return;
+      const cell = value => `"${String(value).replace(/"/g, '""')}"`;
+      const lines = [['Nama', 'Nomor WhatsApp', 'Sesi', 'Link Undangan', 'Pesan', 'Sudah Dikirim'].map(cell).join(',')]
+        .concat(parseGuests().map(guest => build(guest, root))
+          .map(row => [row.name, row.phone ? `+${row.phone}` : '', row.session ? sessionText(row.session) : '', row.link, row.message, sent.has(keyOf(row)) ? 'Ya' : 'Belum'].map(cell).join(',')));
+      const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob), link = document.createElement('a');
+      link.href = url; link.download = `daftar-undangan-${couple.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.csv`;
+      document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+    render();
+  });
+})();
+</script>
+</body>
+</html>

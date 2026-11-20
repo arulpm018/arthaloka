@@ -1,0 +1,172 @@
+/* The photobooth owns its paper, mask and motion. No rules escape #gallery. */
+#gallery.photobooth-gallery {
+  --vv-paper: #faf1e8;
+  --vv-paper-width: 78%;
+  --vv-film-gold: #c5a66a;
+  --vv-film-padding: clamp(21px, 5.5vw, 30px);
+  min-height: 100svh; width: 100%; max-width: 100%;
+  padding: 94px 24px 80px; gap: 0; justify-content: center;
+}
+#gallery .vv-gallery-heading { text-align: center; max-width: 520px; margin: 0 auto 8px; }
+#gallery .vv-gallery-heading .eyebrow { color: #cdb695; font-size: 10px; letter-spacing: .22em; }
+#gallery #gallery-title { font-size: clamp(46px, 7vw, 64px); line-height: 1.25; margin: 9px 0 4px; color: #faf1e8; }
+#gallery .vv-gallery-heading p { font-size: 16px; font-style: italic; line-height: 1.6; color: #e4d6c5; }
+#gallery .vv-booth-stage { position: relative; width: min(500px, 100%); isolation: isolate; padding-bottom: 30px; }
+#gallery .vv-booth-stage::before {
+  content: ''; position: absolute; inset: -24px -12px 0; pointer-events: none; z-index: -1;
+  background: radial-gradient(ellipse at 50% 30%, #e8c5901c, transparent 68%);
+}
+#gallery .vv-printer {
+  /* The art's output lip is at 67% of its 3:2 canvas. The transparent
+     tassels continue below it; this overlap keeps the paper attached. */
+  position: relative; z-index: 3; width: 100%; aspect-ratio: 3 / 2;
+  margin: 0 auto -22%; pointer-events: none;
+}
+#gallery .vv-camera-art { position: relative; z-index: 2; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 5px 6px #10080c35); }
+#gallery .vv-printer::before {
+  content: ''; position: absolute; z-index: 1; left: 50%; top: 65.5%;
+  width: calc(var(--vv-paper-width) + 5px); height: 12px; transform: translateX(-50%);
+  border: 1px solid #a37b45; border-radius: 4px; background: #200c15;
+  box-shadow: inset 0 3px 4px #000b, 0 -1px 0 #d9b674;
+}
+#gallery .vv-printer::after {
+  content: ''; position: absolute; z-index: 1; left: 50%; top: 67%;
+  width: calc(var(--vv-paper-width) + 6px); height: 7px; transform: translateX(-50%);
+  background: linear-gradient(#6c3040, #3e1726 55%, #b59661);
+  border-radius: 0 0 3px 3px; box-shadow: 0 2px 3px #16090e55;
+}
+#gallery .vv-print-window { position: relative; width: 100%; overflow: visible; }
+#gallery .vv-photo-paper {
+  position: relative; z-index: 1; width: var(--vv-paper-width); max-width: 100%;
+  margin: 0 auto; padding: 14px var(--vv-film-padding); list-style: none;
+  display: flex; flex-direction: column; gap: 27px;
+  background: repeating-linear-gradient(91deg, #f2cfb306 0 1px, #13081205 1px 3px), linear-gradient(105deg, #582737, #401426 45%, #542331);
+  border-inline: 2px solid var(--vv-film-gold);
+  box-shadow: 0 7px 15px #0b0f0940, inset 3px 0 0 #27101c, inset -3px 0 0 #27101c;
+  border-radius: 2px;
+}
+#gallery .vv-photo-paper::before, #gallery .vv-photo-paper::after {
+  content: ''; position: absolute; top: 13px; bottom: 13px; width: 11px;
+  background: url('assets/decorations/gallery-film-perforation.svg') center top / 11px 38px repeat-y;
+  pointer-events: none;
+}
+#gallery .vv-photo-paper::before { left: 6px; }
+#gallery .vv-photo-paper::after { right: 6px; }
+#gallery .vv-shot { position: relative; flex: 0 0 auto; min-width: 0; margin: 0; padding: 0; }
+#gallery .vv-shot figure {
+  position: relative; margin: 0; padding: 3px; border: 1px solid var(--vv-film-gold);
+  border-radius: 15px; box-shadow: 0 0 0 2px #351020, 0 0 0 3px #b39055b3;
+}
+#gallery .vv-shot figure::after {
+  content: ''; position: absolute; bottom: -25px; left: 0; width: 100%; height: 21px;
+  background: url('assets/decorations/gallery-film-flourish.svg') center / min(100%, 210px) 21px no-repeat;
+  pointer-events: none;
+}
+/* No loose flourish beyond the last physical edge of either strip ordering. */
+#gallery .vv-shot:last-child figure::after { display: none; }
+#gallery.vv-gallery-enhanced .vv-shot:last-child figure::after { display: block; }
+#gallery.vv-gallery-enhanced .vv-shot:first-child figure::after { display: none; }
+#gallery .vv-photo { position: relative; width: 100%; aspect-ratio: 3 / 2; background: var(--vv-paper); overflow: hidden; }
+#gallery .vv-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 50%; }
+#gallery .vv-photo-placeholder { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 6px; border: 1px solid #b8a0784d; color: #754453; font: 18px var(--serif); }
+#gallery .vv-photo-placeholder small { font: 10px/1.6 var(--sans); padding: 0 12px; }
+#gallery .vv-shot.has-image .vv-photo-placeholder { display: none; }
+#gallery .vv-photo-description { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#gallery.vv-gallery-enhanced .vv-print-window {
+  height: calc(var(--vv-photo-height, 200px) * 2.8);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, #000d 81%, #0005 93%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, #000d 81%, #0005 93%, transparent 100%);
+}
+#gallery.vv-gallery-enhanced .vv-photo-paper {
+  /* DOM order stays 1–9. Reversed flex order puts Photo 1 at the exiting end. */
+  flex-direction: column-reverse; transform: translate3d(0,-100%,0);
+  will-change: transform; backface-visibility: hidden;
+}
+#gallery.vv-gallery-enhanced:not(.vv-gallery-ready) .vv-photo-paper { visibility: hidden; }
+#gallery .vv-booth-florals { position: absolute; z-index: 2; left: -2%; bottom: -14px; width: 104%; pointer-events: none; }
+#gallery .vv-booth-florals img { width: 100%; height: auto; transform-origin: 50% 90%; animation: vvGalleryFloralSway 6.8s ease-in-out infinite; }
+@keyframes vvGalleryFloralSway { 0%,100% { transform: translateY(2px) rotate(-1.2deg); } 50% { transform: translateY(-3px) rotate(1.2deg); } }
+#gallery .vv-gallery-controls { min-height: 48px; margin-top: 14px; display: flex; align-items: center; justify-content: center; }
+#gallery .vv-gallery-controls .button { min-width: 140px; min-height: 44px; padding: 10px 19px; font-size: 11px; border-radius: 24px; }
+#gallery .vv-gallery-controls svg { width: 16px; height: 16px; }
+#gallery .vv-gallery-status { min-height: 24px; max-width: 360px; margin: 10px auto 0; padding: 0 8px; font: 11px/1.8 var(--sans); color: #d3c4af; text-align: center; }
+#gallery .vv-gallery-signoff { margin: 22px auto 0; color: #bba483; font: italic 17px var(--serif); }
+@media (max-width: 600px) {
+  #gallery.photobooth-gallery { --vv-paper-width: 82%; padding: 76px 14px 90px; }
+  #gallery .vv-gallery-heading { margin-bottom: 4px; }
+  #gallery .vv-gallery-heading p { font-size: 14px; }
+}
+/* Camera flash (2 s) before each print run: the flash window charges, fires at 0.7 s
+   and its light washes over the scene from the camera. One flash only (photosafe). */
+#gallery .vv-flash-glow, #gallery .vv-flash-burst, #gallery .vv-lens-glint { position: absolute; z-index: 3; pointer-events: none; opacity: 0; }
+#gallery .vv-flash-glow {
+  /* the flash panel of the camera art: 64.1% / 20.5%, 11.4% x 14.6% */
+  left: 64.1%; top: 20.5%; width: 11.4%; height: 14.6%; border-radius: 6%;
+  background: radial-gradient(ellipse at 50% 50%, #fff 0 38%, #fff6d8 62%, #ffe7a800 100%);
+  mix-blend-mode: screen; box-shadow: 0 0 18px 6px #fff3cf;
+}
+#gallery .vv-flash-burst {
+  left: 69.8%; top: 27.8%; width: 120%; aspect-ratio: 1; transform: translate(-50%, -50%) scale(.2);
+  background:
+    radial-gradient(circle, #ffffff 0 4%, #fffbeacc 10%, #fff1c855 24%, transparent 46%),
+    linear-gradient(90deg, transparent 8%, #fff7dfaa 50%, transparent 92%) 50% 50% / 100% 1.6% no-repeat,
+    linear-gradient(0deg, transparent 22%, #fff7df88 50%, transparent 78%) 50% 50% / 1.2% 100% no-repeat;
+  mix-blend-mode: screen;
+}
+#gallery .vv-lens-glint {
+  left: 48.8%; top: 29.5%; width: 9%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle, #fff 0 10%, #ffffff80 22%, transparent 50%),
+    linear-gradient(45deg, transparent 47%, #fff 50%, transparent 53%),
+    linear-gradient(-45deg, transparent 47%, #fff 50%, transparent 53%);
+  mix-blend-mode: screen;
+}
+#gallery .vv-flash-screen {
+  position: absolute; inset: 0; z-index: 30; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle at var(--vv-flash-x, 70%) var(--vv-flash-y, 30%),
+    #ffffff 0, #fffaf0f0 9%, #fff4dcb3 26%, #ffefd04d 52%, #ffffff14 78%, transparent 100%);
+}
+#gallery.vv-flashing .vv-flash-glow { animation: vvFlashGlow 2s ease-out both; }
+#gallery.vv-flashing .vv-flash-burst { animation: vvFlashBurst 2s ease-out both; }
+#gallery.vv-flashing .vv-lens-glint { animation: vvLensGlint 2s ease-out both; }
+#gallery.vv-flashing .vv-flash-screen { animation: vvFlashScreen 2s linear both; }
+#gallery.vv-flashing .vv-camera-art { animation: vvShutterKick 2s ease-out both; }
+@keyframes vvFlashGlow {
+  0% { opacity: 0; transform: scale(1); }
+  14% { opacity: .14; } 20% { opacity: .08; } 26% { opacity: .3; } 31% { opacity: .22; }
+  35% { opacity: 1; transform: scale(1.25); }
+  52% { opacity: .55; transform: scale(1.08); }
+  80% { opacity: .12; transform: scale(1); }
+  100% { opacity: 0; }
+}
+@keyframes vvFlashBurst {
+  0%, 34% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+  37% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  56% { opacity: .45; transform: translate(-50%, -50%) scale(1.3); }
+  78%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.55); }
+}
+@keyframes vvLensGlint {
+  0%, 36% { opacity: 0; transform: translate(-50%, -50%) scale(.3) rotate(0deg); }
+  42% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(30deg); }
+  72%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(.6) rotate(70deg); }
+}
+@keyframes vvFlashScreen {
+  0%, 34.5% { opacity: 0; }
+  37% { opacity: .9; }
+  46% { opacity: .55; }
+  70% { opacity: .14; }
+  100% { opacity: 0; }
+}
+@keyframes vvShutterKick {
+  0%, 34.5%, 46%, 100% { transform: none; }
+  36% { transform: translateY(1.5px) scale(.994); }
+  39% { transform: translateY(-1px) scale(1.003); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #gallery.vv-flashing :is(.vv-flash-glow, .vv-flash-burst, .vv-lens-glint, .vv-flash-screen, .vv-camera-art) { animation: none !important; opacity: 0; }
+  #gallery.vv-flashing .vv-camera-art { opacity: 1; }
+  #gallery.vv-gallery-enhanced .vv-print-window { height: auto; overflow: visible; mask-image: none; -webkit-mask-image: none; }
+  #gallery.vv-gallery-enhanced .vv-photo-paper { flex-direction: column; transform: none !important; visibility: visible; will-change: auto; }
+  #gallery .vv-booth-florals img { animation: none !important; }
+}

@@ -1,0 +1,109 @@
+/* More visible idle motion. Entrance, opening, scroll and printing timelines
+   keep their original owners; text moves independently of the stationery. */
+@media (prefers-reduced-motion:no-preference) {
+  #cover:not(.is-opening) .opening-envelope { animation-duration: 5.6s; }
+  #cover:not(.is-opening) .cover-top {
+    animation: vvCoverTypeFloat 5.4s ease-in-out -1.2s infinite;
+  }
+  #cover:not(.is-opening) .envelope-bouquet {
+    transform-origin: 50% 92%;
+    animation: vvCoverBouquetSway 5.8s ease-in-out -2.1s infinite;
+  }
+  .js #cover:not(.in-view) :is(.cover-top,.envelope-bouquet) { animation-play-state: paused; }
+  #invitation-content .floral-anchor > .floral-sway { animation-duration: 5.4s; }
+  #names .names-botanical img { animation-duration: 5.8s; }
+  #names .names-botanical-right img { animation-duration: 6.3s; }
+  #names .names-script-float { animation-duration: 5.2s; }
+  #names .name-groom .names-script-float { animation-duration: 5.8s; }
+  #names .couple-amp > span { animation-duration: 5.6s; }
+  #names .date-short { animation-duration: 6s; }
+  #verse .verse-reference-top img { animation-duration: 5.4s; }
+  #verse .verse-reference-bottom img { animation-duration: 6s; }
+  :is(#couple,#date,#celebration) .celebration-bouquet img { animation-duration: 5.6s; }
+  :is(#couple,#date,#celebration) .celebration-bouquet-right img { animation-duration: 6.1s; }
+  :is(#couple,#date,#celebration) .celebration-drift { animation-duration: 5.4s; }
+  #couple .vv-sway-profile { animation-duration: 5.2s; }
+  #couple .groom-profile .vv-sway-profile { animation-duration: 5.8s; }
+  #celebration .venue-artwork { animation-duration: 5.8s; }
+  #date .vv-date-month > span { animation-duration: 5.2s; }
+  #date .vv-date-week :is(abbr,.vv-date-numeral) { animation-duration: 5.4s; }
+  #date .vv-date-heart { animation-duration: 3.2s; }
+  #forever .vv-sway-couple { animation-duration: 5.8s; }
+  #forever-title > span { animation-duration: 5.2s; }
+  #forever-title > [data-name='groom'] { animation-duration: 5.7s; }
+  #gallery .vv-heart-top { animation-duration: 4.8s; }
+  #gallery .vv-heart-bottom { animation-duration: 5.4s; }
+
+  @keyframes rose-envelope-float {
+    0%,100% { transform: translateY(2px) rotate(-.8deg); }
+    50% { transform: translateY(-8px) rotate(.8deg); }
+  }
+  @keyframes vvCoverTypeFloat {
+    0%,100% { transform: translateY(2px) rotate(-.45deg); }
+    50% { transform: translateY(-4px) rotate(.45deg); }
+  }
+  @keyframes vvCoverBouquetSway {
+    0%,100% { transform: translateY(1px) rotate(-1.8deg); }
+    50% { transform: translateY(-5px) rotate(1.8deg); }
+  }
+  @keyframes vvFloralSway {
+    0%,100% { transform: translate3d(-2px,1px,0) rotate(-3.6deg); }
+    50% { transform: translate3d(3px,-6px,0) rotate(3.6deg); }
+  }
+  @keyframes vvNamesBotanicalSway {
+    0%,100% { transform: rotate(-3.6deg) translateY(2px); }
+    50% { transform: rotate(3.6deg) translateY(-6px); }
+  }
+  @keyframes vvNamesLetterFloat {
+    0%,100% { transform: translateY(2px) rotate(-.9deg); }
+    50% { transform: translateY(-5px) rotate(.9deg); }
+  }
+  @keyframes vvVerseOrchidSway {
+    0%,100% { transform: translate(-1px,2px) rotate(-2.5deg); }
+    50% { transform: translate(3px,-6px) rotate(2.5deg); }
+  }
+  @keyframes vvVerseRoseSway {
+    0%,100% { transform: translate(1px,2px) rotate(2.3deg); }
+    50% { transform: translate(-3px,-6px) rotate(-2.3deg); }
+  }
+  @keyframes vvCelebrationRoseSway {
+    0%,100% { transform: translate3d(-1px,2px,0) rotate(-3.4deg); }
+    50% { transform: translate3d(2px,-6px,0) rotate(3.4deg); }
+  }
+  @keyframes vvCelebrationTypeFloat {
+    0%,100% { transform: translate3d(0,2px,0) rotate(-.65deg); }
+    50% { transform: translate3d(0,-4px,0) rotate(.65deg); }
+  }
+  @keyframes vvProfileRock {
+    0%,100% { transform: translate3d(-3px,1px,0) rotate(-2.5deg); }
+    50% { transform: translate3d(3px,-5px,0) rotate(2.5deg); }
+  }
+  @keyframes vvVenueFloat {
+    0%,100% { transform: translate(-2px,2px) rotate(-1.6deg); }
+    50% { transform: translate(2px,-6px) rotate(1.6deg); }
+  }
+  @keyframes vvDateLetterFloat {
+    0%,100% { transform: translateY(2px) rotate(-1.2deg); }
+    50% { transform: translateY(-3px) rotate(1.2deg); }
+  }
+  @keyframes vvDateHeartSway {
+    0%,100% { transform: rotate(-9deg) scale(.98); }
+    50% { transform: rotate(9deg) scale(1.07); }
+  }
+  @keyframes vvCoupleRock {
+    0%,100% { transform: translate3d(-3px,1px,0) rotate(-1.8deg); }
+    50% { transform: translate3d(3px,-5px,0) rotate(1.8deg); }
+  }
+  @keyframes vvNameFloat {
+    0%,100% { transform: translate3d(0,2px,0) rotate(-.9deg); }
+    50% { transform: translate3d(0,-5px,0) rotate(.9deg); }
+  }
+  @keyframes vvGalleryHeartTop {
+    0%,100% { transform: rotate(17deg) scale(1); }
+    50% { transform: rotate(9deg) scale(1.1); }
+  }
+  @keyframes vvGalleryHeartBottom {
+    0%,100% { transform: rotate(-22deg) scale(1); }
+    50% { transform: rotate(-13deg) scale(1.1); }
+  }
+}

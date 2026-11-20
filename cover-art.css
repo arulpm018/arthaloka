@@ -1,0 +1,114 @@
+/* Cover envelope, painted edition: the burgundy felt reference split into layers.
+   Envelope canvas = 980 x 636 px of the source art; positions are % of it.
+   Each layer keeps the element (and so the float/sway/opening timeline) it replaces. */
+#cover .opening-stage { height: auto; aspect-ratio: 980 / 636; }
+#cover .opening-envelope { filter: drop-shadow(0 22px 22px #00000080); }
+
+/* inside of the envelope, seen through the V once the flap lifts */
+#cover .opening-pocket-back {
+  border: 0; border-radius: 0;
+  background: url('assets/decorations/cover-art/pocket-back.webp') 0 0 / 100% 100% no-repeat;
+}
+/* side and bottom flaps (the pocket the card slides out of) */
+#cover .opening-front {
+  clip-path: none; box-shadow: none; background: url('assets/decorations/cover-art/front.webp') 0 0 / 100% 100% no-repeat;
+}
+#cover .opening-front-fold, #cover .envelope-line { display: none; }
+/* the felt ends ~1% above the canvas edge; stop the rising card there too */
+#cover .opening-card-clip { bottom: 1%; }
+/* top flap: hinges on the envelope's top edge */
+#cover .opening-flap {
+  inset: 0; height: 100%; clip-path: none;
+  background: url('assets/decorations/cover-art/flap.webp') 0 0 / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px #14050a99);
+}
+#cover .opening-flap::after { content: none; }
+/* gold fan crest at the flap tip */
+#cover .opening-envelope > .envelope-gold-emblem {
+  left: 28.571%; top: 47.484%; width: 42.755%; height: 34.906%;
+  filter: drop-shadow(0 1px 1px #1a060c80);
+}
+#cover .envelope-gold-emblem img { object-fit: fill; }
+/* bouquet tucked behind the envelope; its stems continue under the top edge */
+#cover .opening-envelope .envelope-bouquet {
+  left: 8.776%; width: 87.653%; bottom: 92.453%; height: auto; object-fit: fill;
+  transform-origin: 50% 84.5%; filter: drop-shadow(0 4px 4px #0000004d);
+}
+
+/* Name ribbon lying across the carpet of the card art, tucked behind the vases: the SVG shares
+   the art's 1086x1448 canvas (same box, same "contain" fit), and its last layer re-draws the
+   vases and hanging flowers from opening-card-front.webp over the ribbon. That layer is cut
+   from opening-card-burgundy.webp, so it only fits that illustration. */
+#cover .opening-ribbon {
+  position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none;
+}
+
+/* First screen and opening film: the envelope is hidden behind the curtain and then the film,
+   so its space is folded away and the cover fits the visible viewport; the guest's name and
+   "Buka Tirai" show without scrolling. The full-size envelope returns over the film's last
+   frame (.intro-envelope). Without the film, curtain.js keeps this compact layout for a moment
+   after "Buka Undangan", until the copy has faded. */
+html.invitation-locked #cover:not(.intro-envelope), #cover.cover-compact {
+  min-height: 100vh; min-height: 100svh; padding-bottom: max(28px, env(safe-area-inset-bottom));
+}
+html.invitation-locked #cover:not(.intro-envelope) .opening-stage, #cover.cover-compact .opening-stage {
+  height: 0; margin: 0; visibility: hidden;
+}
+
+/* Cover heading (and the closing curtain's "Terima Kasih"): raised cream-and-gold lettering,
+   thick enough to read over the songket weave and the film. The script is thickened with a
+   stroke painted under a metallic gradient fill; the relief comes from stacked drop-shadows (a
+   light rim above, a dark edge and a soft shadow below), so it moves with the heading's rise
+   and float. */
+#cover .cover-top > .eyebrow {
+  color: #ecd3a0; font-weight: 600; text-shadow: 0 1px 0 #2a0b06, 0 2px 10px #0a0205;
+}
+#cover #cover-title, #cover .cover-subtitle, .curtain-call-title {
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent; paint-order: stroke fill;
+  text-shadow: none;
+  /* room for the script's swashes, which would otherwise fall outside the gradient */
+  padding: .12em .3em; margin-block: -.12em; margin-inline: -.3em;
+}
+#cover #cover-title, .curtain-call-title {
+  background-image: linear-gradient(180deg, #fffaf0 10%, #f6e5c2 44%, #dcb882 60%, #f3dfb4 80%, #c9a06a 98%);
+  -webkit-text-stroke: .027em #e8cf9f;
+  filter: drop-shadow(0 -1px 0 #fff6e2b3) drop-shadow(0 2px 1px #2e0c06) drop-shadow(0 5px 10px #0a0205d9);
+}
+#cover .cover-subtitle {
+  background-image: linear-gradient(180deg, #fff3c4 8%, #f8d16e 46%, #d99c36 92%);
+  -webkit-text-stroke: .035em #e9b94e;
+  filter: drop-shadow(0 -1px 0 #fff2c899) drop-shadow(0 2px 1px #2e0c06) drop-shadow(0 4px 9px #0a0205d9);
+}
+#cover .cover-top .fine-rule {
+  width: 90px; opacity: 1;
+  background: linear-gradient(90deg, #e6c47e00, #e6c47e, #e6c47e00); box-shadow: 0 1px 4px #0a0205;
+}
+@media (max-width: 600px) {
+  #cover .cover-top > .eyebrow { font-size: 10.5px; }
+}
+
+/* Cover foot in the same cream and gold: the greeting reads over the weave. The entry buttons
+   (Buka Tirai, Buka Undangan, and Buka Tirai Lagi on the closing curtain) are a burnished
+   champagne-gold plate. */
+#cover .cover-bottom .guest-label { color: #e8cfa0; opacity: 1; text-shadow: 0 1px 0 #2a0b06, 0 2px 10px #0a0205; }
+#cover .cover-bottom .guest-name { color: #f4e3c3; text-shadow: 0 1px 0 #2a0b06, 0 0 14px #f3d9a033, 0 3px 12px #0a0205; }
+#cover .cover-bottom .little-note { color: #e8d1a8; text-shadow: 0 1px 0 #2a0b06, 0 2px 10px #0a0205; }
+.button.gold-button {
+  color: #3a0f1e; border: 2px solid #9a7638; border-radius: 10px;
+  background:
+    /* fine brushed grain */
+    repeating-linear-gradient(180deg, #ffffff0d 0 1px, #ffffff00 1px 3px),
+    /* light from above, a little shade at the foot */
+    linear-gradient(180deg, #ffffff2e 0%, #ffffff00 42%, #0000001a 100%),
+    /* the plate: warm champagne gold, brightest across the middle */
+    linear-gradient(90deg, #b39566 0%, #cdb68a 16%, #e6d6b2 50%, #cdb68a 84%, #b39566 100%);
+  box-shadow: inset 0 0 0 1px #f2dc9e, inset 0 1px 1px #fff3cf, 0 0 0 1px #4a2e10, 0 6px 16px #0a0205b3;
+}
+.button.gold-button:hover {
+  box-shadow: inset 0 0 0 1px #f2dc9e, inset 0 1px 1px #fff3cf, 0 0 0 1px #4a2e10, 0 8px 20px #0a0205b3;
+  background:
+    repeating-linear-gradient(180deg, #ffffff0d 0 1px, #ffffff00 1px 3px),
+    linear-gradient(180deg, #ffffff3d 0%, #ffffff00 42%, #00000014 100%),
+    linear-gradient(90deg, #bb9e6e 0%, #d4be93 16%, #ecdcbb 50%, #d4be93 84%, #bb9e6e 100%);
+}

@@ -1,0 +1,56 @@
+/* RSVP wishes and the digital envelope share the ivory arch stationery of the RSVP card. */
+#gift .gift-card { padding: 85px clamp(22px,5vw,42px) 56px; }
+.rsvp-card h3.script { font-size: 34px; line-height: 1.35; color: var(--burgundy); }
+.rsvp-wishes-rule, .gift-rule {
+  display: block; width: 46px; height: 1px; margin: 36px auto 16px;
+  background: linear-gradient(90deg, transparent, #b8a078, transparent);
+}
+
+/* Guest wishes: short ivory notes in a calm, scrollable stack. */
+.rsvp-hint { display: block; margin-top: 7px; font: italic 14px/1.5 var(--serif); color: #7a5d4c; }
+.rsvp-wishes { text-align: center; }
+.rsvp-wish-empty { margin-top: 6px; font: italic 17px/1.6 var(--serif); color: #7a5d4c; }
+.rsvp-wish-empty:empty, .rsvp-wish-list:empty { display: none; }
+.rsvp-wish-list {
+  list-style: none; margin: 16px 0 0; padding: 2px 6px 2px 0;
+  display: grid; gap: 12px; max-height: 430px; overflow-y: auto; text-align: left;
+  overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #b8a078 transparent;
+}
+.rsvp-wish-list:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
+.rsvp-wish {
+  padding: 15px 18px 13px; background: #fffaf3;
+  border: 1px solid #e6d7c3; border-left: 3px solid #b8a078; border-radius: 2px;
+}
+.rsvp-wish-name { font: 600 18px/1.4 var(--serif); color: var(--burgundy); }
+.rsvp-wish-text {
+  margin-top: 4px; font: 17px/1.65 var(--serif); color: #4b2b30;
+  white-space: pre-line; overflow-wrap: anywhere;
+}
+.rsvp-wish-time { display: block; margin-top: 8px; font: 11px/1.6 var(--sans); letter-spacing: .04em; color: #9a8270; }
+
+/* Digital envelope: each account is a small gold-ruled card with one copy action. */
+.gift-details { margin-top: 30px; }
+.gift-accounts { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.gift-account {
+  padding: 22px 18px 20px; text-align: center; border: 1px solid #b8a078; border-radius: 3px;
+  background: linear-gradient(160deg, #fffaf3, #f3e5d4);
+  box-shadow: inset 0 0 0 4px #fffaf3, inset 0 0 0 5px #b8a07859;
+}
+.gift-bank { font: 500 11px/1.6 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: #8a6d4f; }
+.gift-number {
+  margin-top: 6px; font: 600 25px/1.35 var(--serif); letter-spacing: .07em; color: var(--burgundy);
+  font-variant-numeric: lining-nums tabular-nums; overflow-wrap: anywhere;
+}
+.gift-holder { margin-top: 2px; font: italic 17px/1.5 var(--serif); color: #6b4a3d; }
+.gift-holder:empty { display: none; }
+.gift-recipient { margin-top: 8px; font: 600 18px/1.6 var(--serif); color: var(--burgundy); }
+.gift-address-text { margin-top: 4px; font: 17px/1.7 var(--serif); color: #4b2b30; white-space: pre-line; }
+.rsvp-card .gift-copy {
+  margin-top: 16px; min-width: 0; min-height: 44px; padding: 10px 22px; gap: 9px;
+  font-size: 11px; color: var(--burgundy); background: transparent; border-color: #b8a078;
+}
+.rsvp-card .gift-copy svg { width: 16px; height: 16px; }
+.rsvp-card .gift-copy:disabled { opacity: .45; cursor: not-allowed; }
+@media (hover:hover) and (pointer:fine) {
+  .rsvp-card .gift-copy:not(:disabled):hover { background: #b8a0781f; }
+}

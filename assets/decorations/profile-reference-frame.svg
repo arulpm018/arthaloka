@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 900" preserveAspectRatio="none">
+  <defs><path id="profile-paper" d="M250 8 C278 8 289 29 318 29 C341 29 350 41 369 46 C392 52 416 48 435 70 C451 88 444 113 456 134 C475 165 490 187 486 225 C482 261 483 285 487 320 C491 350 484 375 484 402 C484 430 489 451 487 477 C485 510 482 536 485 566 C488 596 491 623 486 654 C482 682 483 710 478 741 C474 766 459 778 458 801 C457 826 459 844 438 858 C417 872 391 864 370 875 C348 886 338 882 315 884 C283 886 280 893 250 893 C220 893 217 886 185 884 C162 882 152 886 130 875 C109 864 83 872 62 858 C41 844 43 826 42 801 C41 778 26 766 22 741 C17 710 18 682 14 654 C9 623 12 596 15 566 C18 536 15 510 13 477 C11 451 16 430 16 402 C16 375 9 350 13 320 C17 285 18 261 14 225 C10 187 25 165 44 134 C56 113 49 88 65 70 C84 48 108 52 131 46 C150 41 159 29 182 29 C211 29 222 8 250 8 Z"/></defs>
+  <use href="#profile-paper" fill="#401b2c" stroke="#A57980" stroke-width="1.2" stroke-opacity=".55"/>
+  <use href="#profile-paper" transform="translate(5 7) scale(.98 .9844)" fill="none" stroke="#B89688" stroke-width=".8" stroke-opacity=".64"/>
+  <use href="#profile-paper" transform="translate(10 14) scale(.96 .9689)" fill="none" stroke="#B88A8C" stroke-width=".65" stroke-opacity=".5"/>
+</svg>

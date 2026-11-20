@@ -1,0 +1,45 @@
+/* Slides 03–04 share the gold stationery of slide 05. Content remains live. */
+:is(#couple,#date) .matched-stationery {
+  width: min(560px,100%); min-height: 0; padding: 0;
+  isolation: isolate; background: none; border: 0; border-radius: 0;
+  box-shadow: none; filter: drop-shadow(0 18px 26px #080a0870);
+}
+#invitation-content :is(#couple,#date) .matched-stationery::before {
+  inset: 0; background: none; border-radius: 0;
+  border: solid transparent; border-width: 170px 42px;
+  border-image-source: url('assets/decorations/celebration-reference-frame.svg?v=20261014-damask');
+  border-image-slice: 250 72 250 72 fill;
+  border-image-width: 170px 42px; border-image-repeat: stretch;
+}
+:is(#couple,#date) .matched-stationery::after { display: none; }
+:is(#couple,#date) .matched-stationery .panel-content {
+  padding: clamp(140px,32vw,180px) clamp(38px,8.5vw,70px) 134px;
+  color: #fdf5e6; min-width: 0; font-family: var(--serif);
+}
+#couple #couple-title,
+#date #date-title {
+  font-family: 'Great Vibes',var(--script); font-weight: 400;
+  color: #e7c48e; line-height: 1.5; margin: 0 auto;
+  padding-inline: .08em; text-wrap: balance;
+}
+/* The long opening line needs a smaller size than a short script title. */
+#couple #couple-title { font-size: clamp(1.375rem,6vw,2.75rem); }
+#date #date-title { font-size: clamp(2.5rem,8.6vw,4.15rem); }
+#couple .profile-copy h3 {
+  font-family: 'Great Vibes',var(--script); font-weight: 400;
+  font-size: clamp(1.75rem,6.5vw,2.25rem); line-height: 1.5;
+  color: #e7c48e; padding-inline: .08em; text-wrap: balance;
+}
+#couple .matched-stationery .celebration-flourish { margin-bottom: 20px; }
+#date .matched-stationery .celebration-flourish { margin-bottom: 18px; }
+#date .date-calendar { margin-top: 20px; }
+#date .vv-date-week { border-top-color: #d7ad7280; }
+#date .date-bottom-label { color: #fdf5e6; }
+/* Keep the original composited venue image blending into the new frame color. */
+#celebration .venue-artwork { background-color: #3B1D2B; }
+@media (max-width:600px) {
+  #invitation-content :is(#couple,#date) .matched-stationery::before {
+    border-width: 120px 30px; border-image-width: 120px 30px;
+  }
+  :is(#couple,#date) .matched-stationery .panel-content { padding-bottom: 112px; }
+}

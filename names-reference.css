@@ -1,0 +1,123 @@
+/* The Beginning: ivory stationery, gold lace, dusty-rose envelope.
+   Each reveal stays on a wrapper; only its inner lettering/botanical gently moves. */
+#names .names-composition {
+  --names-pocket-height: clamp(180px,58vw,300px);
+  width: min(480px,100%); max-width: 100%; height: auto; padding-bottom: 0;
+  isolation: isolate;
+}
+#names .names-card {
+  width: 88%; margin-inline: auto; padding: 26px 24px 146px;
+  height: auto; min-height: 0; background-color: #faf1e2;
+  background-image: url('assets/decorations/names-paper-grain.svg');
+  border: 1px solid #b38b52; color: #491629;
+  box-shadow: 0 8px 25px #080a063d;
+}
+#names .names-paper-trim {
+  position: absolute; inset: 3px; z-index: 0; pointer-events: none;
+  background-image: url('assets/decorations/names-gold-lace.svg'),url('assets/decorations/names-gold-lace.svg'),url('assets/decorations/names-gold-lace.svg'),url('assets/decorations/names-gold-lace.svg');
+  background-position: left top,right top,left top,left bottom;
+  background-size: 25px 25px;
+  background-repeat: repeat-y,repeat-y,repeat-x,repeat-x;
+}
+#names .names-paper-trim::after {
+  content: ''; position: absolute; inset: 27px; border: 3px double #b48e5680;
+}
+#names .names-oval { margin: 19px 12px 0; padding-block: var(--ellipse-pad,140px); }
+#names .oval-rule { inset: 0; border: 1px solid #b48a4d; }
+#names .oval-rule::after { content: ''; position: absolute; inset: 5px; border: 1px solid #b48a4d88; border-radius: 50%; }
+#names .names-oval-flourish {
+  position: absolute; width: 32px; height: 38px; z-index: 1;
+  background: #faf1e2 url('assets/decorations/names-gold-flourish.svg') center/contain no-repeat;
+}
+#names .names-flourish-top { top: 0; left: 50%; transform: translate(-50%,-50%); }
+#names .names-flourish-bottom { bottom: 0; left: 50%; transform: translate(-50%,50%) rotate(180deg); }
+#names .names-flourish-left { top: 50%; left: 0; transform: translate(-50%,-50%) scale(.68); }
+#names .names-flourish-right { top: 50%; right: 0; transform: translate(50%,-50%) scale(.68); }
+#names .names-copy { width: 72%; padding: 0; margin-inline: auto; }
+#names .names-copy .eyebrow {
+  font-family: var(--serif); font-size: clamp(10px,2.4vw,14px);
+  letter-spacing: .18em; line-height: 1.7; color: #775635; margin-bottom: 26px;
+}
+/* Reading focus after opening the envelope is not an interactive control. */
+#names #names-title:focus,
+#names #names-title:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+#names .names-copy h2 {
+  font-family: 'Great Vibes',var(--script); font-size: clamp(46px,10vw,80px);
+  line-height: 1.45; font-weight: 400; letter-spacing: 0; padding-inline: .12em;
+  color: #4e1829; margin: 0;
+}
+#names .names-script-float {
+  display: inline-block; max-width: 100%; padding-inline: .06em;
+  animation: vvNamesLetterFloat 7.4s ease-in-out -1.1s infinite;
+}
+#names .name-groom .names-script-float { animation-duration: 8.2s; animation-delay: -3.8s; }
+#names .couple-amp {
+  display: flex; justify-content: center; align-items: center; gap: 12px;
+  margin: 9px 0; color: #a17b42;
+  font: italic clamp(29px,6.5vw,42px)/1.4 var(--serif);
+}
+#names .couple-amp::before, #names .couple-amp::after { content: ''; height: 1px; flex: 1; background: #b38b5270; }
+#names .couple-amp > span { animation: vvNamesLetterFloat 8s ease-in-out -2.8s infinite; }
+#names .names-date-divider {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 65%; margin: 20px auto 14px; color: #a17b42; font-size: 19px;
+}
+#names .names-date-divider::before, #names .names-date-divider::after { content: ''; flex: 1; height: 1px; background: #b38b5280; }
+#names .names-date-line { margin: 0; }
+#names .date-short {
+  display: inline-block; max-width: 100%; font-family: var(--serif);
+  font-size: clamp(12px,2.8vw,16px); letter-spacing: .06em; line-height: 1.8;
+  color: #795635; animation: vvNamesLetterFloat 8.6s ease-in-out -4s infinite;
+}
+#names .names-envelope-back {
+  height: calc(var(--names-pocket-height) + 30px); z-index: 0;
+  background-color: #b87986;
+}
+#names .names-envelope-front {
+  height: var(--names-pocket-height); z-index: 4;
+  clip-path: polygon(0 0,50% 44%,100% 0,100% 100%,0 100%);
+  background-color: #b77c85;
+  background-image: linear-gradient(115deg,#e9b7ae33,#89555e26),var(--envelope-paper);
+  box-shadow: inset 0 -2px 0 #87515c99; filter: drop-shadow(0 8px 9px #0004);
+}
+#names .names-envelope-front::after { inset: 5px; border: 1px solid #774c5d55; }
+#names .names-envelope-folds { position: absolute; inset: 0; width: 100%; height: 100%; }
+#names .names-reference-crest {
+  position: absolute; width: 46%; height: auto; left: 27%;
+  bottom: calc(var(--names-pocket-height) * .12); z-index: 5;
+  filter: drop-shadow(0 1px 1px #76473588); pointer-events: none;
+}
+#names .names-botanical {
+  position: absolute; width: 38%; bottom: calc(var(--names-pocket-height) * .55);
+  z-index: 1; pointer-events: none; line-height: 0;
+}
+#names .names-botanical-left { left: -8%; }
+#names .names-botanical-right { right: -8%; transform: scaleX(-1); }
+#names .names-botanical img {
+  display: block; width: 100%; height: auto; transform-origin: 86% 96%;
+  animation: vvNamesBotanicalSway 8s ease-in-out -2s infinite;
+}
+#names .names-botanical-right img { animation-duration: 9s; animation-delay: -5s; }
+@keyframes vvNamesLetterFloat {
+  0%,100% { transform: translateY(1px) rotate(-.4deg); }
+  50% { transform: translateY(-2px) rotate(.4deg); }
+}
+@keyframes vvNamesBotanicalSway {
+  0%,100% { transform: rotate(-1.6deg) translateY(1px); }
+  50% { transform: rotate(1.6deg) translateY(-3px); }
+}
+@media (max-width:600px) {
+  #names .names-card { width: 88%; padding: 20px 16px 114px; }
+  #names .names-paper-trim { background-size: 19px 19px; }
+  #names .names-paper-trim::after { inset: 20px; }
+  #names .names-oval { margin-inline: 9px; }
+  #names .names-copy .eyebrow { letter-spacing: .12em; margin-bottom: 20px; }
+  #names .names-oval-flourish { width: 26px; height: 32px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #names .names-script-float, #names .couple-amp > span, #names .date-short,
+  #names .names-botanical img { animation: none !important; transform: none; }
+}

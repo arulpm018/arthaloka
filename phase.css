@@ -1,0 +1,44 @@
+/* Time-based states: the H-1 / hari H ribbon and the live-stream invitation. */
+/* On H-1 and hari H the ribbon takes the eyebrow's place, keeping the cover's height. */
+#cover .phase-ribbon:not([hidden]) + .eyebrow { display: none; }
+#cover .phase-ribbon {
+  display: flex; width: fit-content; align-items: center; gap: 9px; margin: 0 auto 16px; padding: 7px 16px 7px 14px;
+  border: 1px solid #c9a96e; border-radius: 999px; background: #2b081266; backdrop-filter: blur(4px);
+  font: 500 10px/1.5 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: #f1dfbd;
+}
+#cover .phase-ribbon::before {
+  content: ''; width: 6px; height: 6px; flex: none; background: #c9a96e; transform: rotate(45deg);
+}
+html[data-phase='day'] #cover .phase-ribbon::before { animation: phase-glow 1.8s ease-in-out infinite; }
+#cover .cover-live { display: flex; width: fit-content; margin: 12px auto 0; }
+#cover .cover-live[hidden] { display: none; }
+/* The live button replaces the small note under "Buka Undangan" on the day. */
+#cover .cover-live:not([hidden]) + .little-note { display: none; }
+
+.live-dot {
+  width: 8px; height: 8px; flex: none; border-radius: 50%; background: #e0475b; box-shadow: 0 0 0 0 #e0475b88;
+}
+.is-live .live-dot, #cover .cover-live .live-dot { animation: live-pulse 1.6s ease-out infinite; }
+#celebration .live-stream .celebration-divider { margin-top: 30px; }
+#celebration .live-stream h3 {
+  display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+  margin: 0; padding-bottom: 10px; font: 500 clamp(1.65rem, 5.8vw, 2.3rem)/1.4 var(--serif); color: #fdf5e6;
+}
+.live-badge {
+  padding: 3px 9px; border-radius: 3px; background: #b3263a; color: #fff;
+  font: 600 10px/1.4 var(--sans); letter-spacing: .18em; text-transform: uppercase;
+}
+.live-stream:not(.is-live) .live-badge { background: transparent; border: 1px solid #c9a96e; color: #e9d3a6; }
+#invitation-content #celebration .live-stream > .live-note {
+  max-width: 330px; margin: 0 auto 18px; font: 400 clamp(1rem, 3.7vw, 1.15rem)/1.8 var(--serif); color: #fdf5e6;
+}
+.live-stream:not(.is-live) .live-dot { background: #c9a96e; }
+
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 #e0475b88; }
+  70%, 100% { box-shadow: 0 0 0 9px #e0475b00; }
+}
+@keyframes phase-glow { 50% { box-shadow: 0 0 10px 2px #e7c98a; } }
+@media (prefers-reduced-motion: reduce) {
+  .live-dot, html[data-phase='day'] #cover .phase-ribbon::before { animation: none !important; }
+}

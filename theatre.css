@@ -1,0 +1,138 @@
+/* Theatre bookends: a songket curtain, burgundy woven with gold, that parts on the cover and
+   closes again after the end credits. */
+.theatre-curtain {
+  --curtain-ease: cubic-bezier(.65,0,.35,1);
+  --songket: url('assets/decorations/songket/tirai.webp');
+  --songket-kiri: url('assets/decorations/songket/tirai-kiri.png');
+  --songket-kanan: url('assets/decorations/songket/tirai-kanan.png');
+  position: absolute; inset: 0; z-index: 4; overflow: hidden; pointer-events: none;
+}
+/* Wider than a phone: the same cloth woven wider, its tumpal borders still at the outer edges. */
+@media (min-aspect-ratio: 3/4) {
+  .theatre-curtain {
+    --songket: url('assets/decorations/songket/tirai-lebar.webp');
+    --songket-kiri: url('assets/decorations/songket/tirai-lebar-kiri.png');
+    --songket-kanan: url('assets/decorations/songket/tirai-lebar-kanan.png');
+  }
+}
+.theatre-curtain[hidden] { display: none; }
+/* Shade at the head and foot so the copy on the closed curtain reads over the gold weave. */
+.theatre-curtain::after {
+  content: ''; position: absolute; z-index: 1; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, #14050ad9 0%, #14050aa6 20%, #14050a59 34%, #14050a1a 50%, #14050a40 64%, #14050ab3 82%, #14050ad9 100%);
+}
+
+/* One woven cloth cut along its gold scalloped seam: each half shows the cloth through its own
+   side of the cut (the masks share the cloth's size), so the halves interlock while closed. */
+.curtain-panel {
+  position: absolute; inset: 0; will-change: transform;
+  background: #3a0d1c var(--songket) 50% 50% / cover no-repeat;
+  -webkit-mask: var(--seam) 50% 50% / cover no-repeat;
+  mask: var(--seam) 50% 50% / cover no-repeat;
+}
+.curtain-left { --seam: var(--songket-kiri); }
+.curtain-right { --seam: var(--songket-kanan); }
+.theatre-curtain :is(.curtain-fringe, .curtain-valance) { display: none; }
+
+/* Parting: the halves slip apart along the seam and slide off to their wings. */
+.theatre-curtain.is-parting .curtain-left { animation: curtain-part-left 1.9s var(--curtain-ease) both; }
+.theatre-curtain.is-parting .curtain-right { animation: curtain-part-right 1.9s var(--curtain-ease) both; }
+.theatre-curtain.is-parting::after { animation: curtain-fade-out 1.2s .3s ease both; }
+/* Closing is the same movement played backwards. */
+.theatre-curtain.is-closing .curtain-left { animation: curtain-part-left 2s var(--curtain-ease) reverse both; }
+.theatre-curtain.is-closing .curtain-right { animation: curtain-part-right 2s var(--curtain-ease) reverse both; }
+@keyframes curtain-part-left { from { transform: none; } to { transform: translateX(-66%); } }
+@keyframes curtain-part-right { from { transform: none; } to { transform: translateX(66%); } }
+
+/* Cover: closed until "Buka Tirai"; the copy and button stay in front of it. The gate stays locked
+   through the opening film, so a parted (hidden) curtain must not come back while it plays. */
+#cover .theatre-curtain { display: none; }
+html.invitation-locked #cover .theatre-curtain:not([hidden]), #cover .theatre-curtain.is-parting { display: block; }
+html.invitation-locked #cover :is(.cover-top, .cover-corner) { z-index: 6; }
+html.invitation-locked #cover .cover-top { text-shadow: 0 2px 14px #1a0509; }
+/* While the curtain is closed the header lines stay away so the songket reads clean; they return
+   once it has parted. */
+.site-header :is(.header-note, .edition) { transition: opacity .8s ease 1.9s; }
+html.invitation-locked .site-header :is(.header-note, .edition) { opacity: 0; transition: none; }
+
+/* End credits: a calm roll inside a softly masked screen. */
+#credits { justify-content: center; gap: 22px; }
+.credits-screen {
+  position: relative; width: min(520px, 100%); height: min(62svh, 540px); overflow: hidden;
+  -webkit-mask: linear-gradient(transparent, #000 13%, #000 87%, transparent);
+  mask: linear-gradient(transparent, #000 13%, #000 87%, transparent);
+}
+.credits-roll {
+  text-align: center; will-change: transform;
+  transform: translateY(var(--credits-from, 600px));
+}
+.credits-roll.is-rolling { animation: credits-roll var(--credits-duration, 40s) linear both; }
+.credits-roll.is-paused { animation-play-state: paused; }
+@keyframes credits-roll {
+  from { transform: translateY(var(--credits-from, 600px)); }
+  to { transform: translateY(var(--credits-to, -1500px)); }
+}
+.credits-roll :is(p, h3, ul) { margin: 0; }
+.credits-block { padding: 0 10px 62px; }
+.credits-block:last-child { padding-bottom: 0; }
+.credits-label { font: 500 10px/1.8 var(--sans); letter-spacing: .26em; text-transform: uppercase; color: #c9a96e; padding-left: .26em; }
+.credits-title { font: 400 clamp(48px, 12vw, 64px)/1.3 var(--script); color: #faf1e8; }
+.credits-date { font: 500 12px/1.8 var(--sans); letter-spacing: .3em; color: #e4d6c5b3; }
+.credits-roll .credits-name { margin-top: 6px; font: 600 23px/1.4 var(--serif); color: #faf1e8; overflow-wrap: anywhere; }
+.credits-roll .credits-note { margin-top: 2px; font: italic 16px/1.55 var(--serif); color: #e4d6c5c7; }
+.credits-roll .credits-list { list-style: none; padding: 0; margin-top: 8px; display: grid; gap: 6px; }
+.credits-list li { font: 500 19px/1.45 var(--serif); color: #faf1e8; overflow-wrap: anywhere; }
+.credits-list .credits-role { display: block; font: 500 9px/1.8 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: #c9a96eb3; }
+.credits-list .credits-role + span { display: block; margin-bottom: 8px; }
+.credits-controls { min-height: 44px; }
+.credits-static .credits-screen { height: auto; -webkit-mask: none; mask: none; }
+.credits-static .credits-roll { transform: none; animation: none; }
+
+/* Curtain call over the credits: thanks, then an invitation to raise the curtain again. The thanks
+   sit mid-curtain, so the shade gathers there too. */
+.curtain-call.is-closed { pointer-events: auto; }
+.curtain-call::after {
+  background:
+    radial-gradient(ellipse 78% 30% at 50% 50%, #14050acc, #14050a66 55%, transparent 80%),
+    linear-gradient(180deg, #14050ad9 0%, #14050aa6 20%, #14050a59 34%, #14050a1a 50%, #14050a40 64%, #14050ab3 82%, #14050ad9 100%);
+}
+.curtain-call-copy {
+  position: absolute; z-index: 3; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 120px 28px 90px; text-align: center; color: #faf1e8; opacity: 0; visibility: hidden;
+  transition: opacity .9s ease, visibility 0s .9s;
+}
+.curtain-call.is-closed .curtain-call-copy { opacity: 1; visibility: visible; transition: opacity 1.1s ease .1s; }
+.curtain-call-copy p { margin: 0; }
+/* "The End" between two gold rules; the thanks in the cover's raised lettering (cover-art.css);
+   the monogram between two small songket flowers. */
+.curtain-call-copy .eyebrow {
+  display: flex; align-items: center; gap: 14px; padding-left: .32em;
+  color: #ecd3a0; font-size: 11px; font-weight: 600; letter-spacing: .32em;
+  text-shadow: 0 1px 0 #2a0b06, 0 2px 10px #0a0205;
+}
+.curtain-call-copy .eyebrow::before, .curtain-call-copy .eyebrow::after {
+  content: ''; width: clamp(40px, 16vw, 150px); height: 1px; box-shadow: 0 1px 3px #0a0205;
+  background: linear-gradient(90deg, #e6c47e00, #e6c47e);
+}
+.curtain-call-copy .eyebrow::after { background: linear-gradient(90deg, #e6c47e, #e6c47e00); }
+/* Narrower swash room than the cover heading, so "Terima Kasih" stays on one line on phones. */
+.curtain-call-title { font: 400 clamp(56px, 14vw, 76px)/1.25 var(--script); padding-inline: .12em; margin-inline: -.12em; }
+.curtain-call-copy .curtain-call-text {
+  font: italic 20px/1.55 var(--serif); color: #ecd8b4; text-shadow: 0 1px 0 #2a0b06, 0 2px 10px #0a0205;
+}
+.curtain-call-copy .monogram {
+  display: flex; align-items: center; gap: 16px; margin: 14px 0 22px; padding-left: .3em;
+  font: 600 24px/1 var(--serif); letter-spacing: .3em; color: #e8c983;
+  text-shadow: 0 1px 0 #2a0b06, 0 2px 10px #0a0205;
+}
+.curtain-call-copy .monogram::before, .curtain-call-copy .monogram::after {
+  content: ''; width: 16px; height: 16px; filter: drop-shadow(0 1px 2px #0a0205);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='%23dcb871'%3E%3Cpath d='M12 2l2.2 5.3L12 9.6 9.8 7.3z'/%3E%3Cpath d='M12 22l-2.2-5.3L12 14.4l2.2 2.3z'/%3E%3Cpath d='M2 12l5.3-2.2L9.6 12l-2.3 2.2z'/%3E%3Cpath d='M22 12l-5.3 2.2L14.4 12l2.3-2.2z'/%3E%3Cpath d='M4.9 4.9l5 2.1-.3 2.6-2.6.3z'/%3E%3Cpath d='M19.1 19.1l-5-2.1.3-2.6 2.6-.3z'/%3E%3Cpath d='M19.1 4.9l-2.1 5-2.6-.3-.3-2.6z'/%3E%3Cpath d='M4.9 19.1l2.1-5 2.6.3.3 2.6z'/%3E%3Ccircle cx='12' cy='12' r='1.6'/%3E%3C/g%3E%3C/svg%3E") 50% 50% / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theatre-curtain.is-parting { animation: curtain-fade-out .4s ease both; }
+  .theatre-curtain.is-closing { animation: curtain-fade-out .4s ease reverse both; }
+  .theatre-curtain :is(.curtain-panel, .curtain-valance, .curtain-valance b) { animation: none !important; }
+}
+@keyframes curtain-fade-out { to { opacity: 0; } }
