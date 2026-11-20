@@ -9,6 +9,7 @@
       const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
       const transitionMs = clamp(Number(config.transitionMs) || 1500, 900, 4000);
       const speed = clamp(Number(config.pixelsPerSecond) || 110, 40, 160);
+      const TAIL = 110; // px: a scene's bottom padding plus the 20px margin endOf() adds
       let running = false, armed = false, opened = false, completed = false;
       let timer = 0, frame = 0, index = 0, generation = 0, scenes = [];
       let viewportWidth = window.innerWidth;
@@ -74,6 +75,12 @@
         }
         frame = requestAnimationFrame(tick);
       }
+      // A move between scenes takes transitionMs for a full screen and proportionally less for a
+      // shorter hop, so a small correction never crawls.
+      function glide(destination, next) {
+        const share = Math.abs(destination - position()) / Math.max(1, viewport());
+        moveTo(destination, clamp(share * transitionMs, 350, transitionMs), next);
+      }
       function arrived() {
         // Stop at the form until the visitor explicitly chooses to continue (it closes after the wedding).
         if (scenes[index].id === 'rsvp' && !scenes[index].querySelector('#rsvp-form')?.hidden) { pause(); return; }
@@ -92,7 +99,7 @@
         const overflow = rect.bottom - portTop() - viewport() + 24;
         const destination = overflow > 0 ? clamp(position() + Math.min(overflow, rect.top - portTop() - 20), 0, maxScroll()) : position();
         const run = generation;
-        moveTo(destination, transitionMs, () => {
+        glide(destination, () => {
           const printing = scene.classList.contains('vv-gallery-enhanced') && scene.querySelector('[data-gallery-replay]')?.hidden !== false;
           if (!printing) { wait(dwell(scene), advance); return; }
           scene.addEventListener('wedding:gallery-finished', () => {
@@ -102,15 +109,14 @@
       }
       function advance() {
         if (!running) return;
-        const bottom = endOf(scenes[index]);
-        if (bottom - position() > 4) {
-          // Read tall cards in overlapping viewport portions, never skip their tail.
-          const destination = Math.min(bottom, position() + viewport() * .65);
-          const duration = clamp((destination - position()) / speed * 1000, 700, 6500);
-          moveTo(destination, duration, () => wait(650, advance));
+        const rest = endOf(scenes[index]) - position();
+        // A tall card is read in one even glide down to its foot. A tail no taller than the
+        // scene's own bottom padding holds nothing to read, so it is not worth a separate nudge.
+        if (rest > TAIL) {
+          moveTo(position() + rest, clamp(rest / speed * 1000, 900, 30000), () => wait(900, advance));
         } else if (index < scenes.length - 1) {
           index++;
-          moveTo(topOf(scenes[index]), transitionMs, arrived);
+          glide(topOf(scenes[index]), arrived);
         } else {
           completed = true;
           pause();
@@ -129,7 +135,7 @@
           scenes.forEach((scene, i) => { if (topOf(scene) <= position() + 50) index = i; });
         }
         sync();
-        if (replay || position() < topOf(scenes[index]) - 4) moveTo(topOf(scenes[index]), transitionMs, arrived);
+        if (replay || position() < topOf(scenes[index]) - 4) glide(topOf(scenes[index]), arrived);
         else if (scenes[index].dataset.autoScrollStop === 'true') arrived();
         else wait(dwell(scenes[index]), advance);
       }

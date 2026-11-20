@@ -68,9 +68,9 @@ window.weddingConfig = {
   },
   autoScroll: {
     enabled: true,
-    transitionMs: 1500,
+    transitionMs: 2000,
     pixelsPerSecond: 110,
-    pauses: { names: 1800, verse: 4000, couple: 3500, date: 2000, celebration: 4000, gallery: 3000, gift: 3500, forever: 2500, credits: 4000 }
+    pauses: { names: 5500, verse: 4000, couple: 3500, date: 2000, celebration: 4000, gallery: 3000, gift: 3500, forever: 2500, credits: 4000 }
   },
   // Satu strip; order adalah urutan KELUAR dari printer (1, 2, 3, ...).
   // Jumlah lembar mengikuti jumlah foto di sini, maksimal 9; tambah foto ke-9 cukup di daftar ini.

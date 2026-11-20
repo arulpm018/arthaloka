@@ -83,6 +83,9 @@ html.invitation-locked .site-header :is(.header-note, .edition) { opacity: 0; tr
 
 /* Curtain call over the credits: thanks, then an invitation to raise the curtain again. The thanks
    sit mid-curtain, so the shade gathers there too. */
+/* It closes over the whole screen, not just over the credits scene (which rarely lines up with
+   the screen edge to the pixel); credits.js takes it away if the guest scrolls back up. */
+.curtain-call { position: fixed; }
 .curtain-call.is-closed { pointer-events: auto; }
 .curtain-call::after {
   background:

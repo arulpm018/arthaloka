@@ -62,6 +62,11 @@
         frame = requestAnimationFrame(step);
       }
       function sync() {
+        // The closed curtain is fixed to the screen: leaving the credits lifts it and resets the roll.
+        if (!visible && !curtain.hidden) {
+          clearTimeout(timer); curtain.hidden = true; curtain.classList.remove('is-closing', 'is-closed', 'is-parting');
+          started = false; finished = false; userPaused = false;
+        }
         section.classList.toggle('credits-static', still());
         toggle.hidden = still() || !started || finished;
         toggle.setAttribute('aria-pressed', String(userPaused));
